@@ -1,4 +1,5 @@
 // 模拟后端动态生成路由
+import { system } from "@/router/enums";
 import { defineFakeRoute } from "vite-plugin-fake-server/client";
 
 /**
@@ -6,6 +7,7 @@ import { defineFakeRoute } from "vite-plugin-fake-server/client";
  * admin：管理员角色
  * common：普通角色
  */
+
 const permissionRouter = {
   path: "/permission",
   meta: {
@@ -47,13 +49,52 @@ const permissionRouter = {
           component: "permission/button/perms",
           name: "PermissionButtonLogin",
           meta: {
-            title: "登录接口返回按钮权限"
+            title: "登录接口返回按钮权限",
           }
         }
       ]
     }
   ]
 };
+const systemManagementRouter = {
+  path: "/system",
+  meta: {
+    icon: "ri:settings-3-line",
+    title: "系统管理",
+    rank: system
+  },
+  children: [
+    {
+      path: "/system/user/index",
+      name: "SystemUser",
+      meta: {
+        icon: "ri:admin-line",
+        title: "用户管理",
+        roles: ["admin"]
+      }
+    },
+    {
+      path: "/system/role/index",
+      name: "SystemRole",
+      meta: {
+        icon: "ri:admin-fill",
+        title: "角色管理",
+        roles: ["admin"]
+      }
+    },
+    {
+      path: "/system/menu/index",
+      name: "SystemMenu",
+      meta: {
+        // icon: "ep:menu",
+        icon: "svg-spinners:blocks-scale",
+        title: "菜单管理",
+        roles: ["admin"]
+      }
+    }
+  ]
+};
+
 
 export default defineFakeRoute([
   {
@@ -62,7 +103,7 @@ export default defineFakeRoute([
     response: () => {
       return {
         success: true,
-        data: [permissionRouter]
+        data: [permissionRouter, systemManagementRouter]
       };
     }
   }
