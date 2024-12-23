@@ -49,7 +49,7 @@ const permissionRouter = {
           component: "permission/button/perms",
           name: "PermissionButtonLogin",
           meta: {
-            title: "登录接口返回按钮权限",
+            title: "登录接口返回按钮权限"
           }
         }
       ]
@@ -94,7 +94,71 @@ const systemManagementRouter = {
     }
   ]
 };
-
+const goodsManagementRouter = {
+  path: "/goods",
+  meta: {
+    icon: "ep:box",
+    title: "商品系统",
+    rank: system
+  },
+  children: [
+    {
+      path: "/goods/attr",
+      meta: {
+        icon: "ri:node-tree",
+        title: "平台属性",
+        roles: ["admin"]
+      },
+      children: [
+        {
+          path: "/goods/attr/group/index",
+          name: "GoodsAttrGroup",
+          meta: {
+            icon: "ri:node-tree",
+            title: "属性分组",
+            roles: ["admin"]
+          }
+        },
+        {
+          path: "/goods/attr/spuAttr/index",
+          name: "GoodsAttrSpu",
+          meta: {
+            icon: "ri:node-tree",
+            title: "规格参数",
+            roles: ["admin"]
+          }
+        },
+        {
+          path: "/goods/attr/skuAttr/index",
+          name: "GoodsAttrSku",
+          meta: {
+            icon: "ri:node-tree",
+            title: "销售属性",
+            roles: ["admin"]
+          }
+        }
+      ]
+    },
+    {
+      path: "/goods/category/index",
+      name: "GoodsCategory",
+      meta: {
+        icon: "ri:node-tree",
+        title: "分类管理",
+        roles: ["admin"]
+      }
+    },
+    {
+      path: "/goods/goods/index",
+      name: "GoodsGoods",
+      meta: {
+        icon: "ri:node-tree",
+        title: "商品管理",
+        roles: ["admin"]
+      }
+    }
+  ]
+};
 
 export default defineFakeRoute([
   {
@@ -103,7 +167,7 @@ export default defineFakeRoute([
     response: () => {
       return {
         success: true,
-        data: [permissionRouter, systemManagementRouter]
+        data: [permissionRouter, systemManagementRouter, goodsManagementRouter]
       };
     }
   }
