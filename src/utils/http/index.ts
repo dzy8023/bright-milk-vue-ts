@@ -7,7 +7,8 @@ import type {
   PureHttpError,
   RequestMethods,
   PureHttpResponse,
-  PureHttpRequestConfig
+  PureHttpRequestConfig,
+  Data
 } from "./types.d";
 import { stringify } from "qs";
 import NProgress from "../progress";
@@ -16,7 +17,7 @@ import { useUserStoreHook } from "@/store/modules/user";
 
 // 相关配置请参考：www.axios-js.com/zh-cn/docs/#axios-request-config-1
 const defaultConfig: AxiosRequestConfig = {
-  // 请求超时时间
+  // 添加 baseURL 配置
   timeout: 10000,
   headers: {
     Accept: "application/json, text/plain, */*",
@@ -34,7 +35,6 @@ class PureHttp {
     this.httpInterceptorsRequest();
     this.httpInterceptorsResponse();
   }
-
   /** `token`过期后，暂存待执行的请求 */
   private static requests = [];
 
@@ -158,7 +158,6 @@ class PureHttp {
       ...param,
       ...axiosConfig
     } as PureHttpRequestConfig;
-
     // 单独处理自定义请求/响应回调
     return new Promise((resolve, reject) => {
       PureHttp.axiosInstance
@@ -190,5 +189,40 @@ class PureHttp {
     return this.request<T>("get", url, params, config);
   }
 }
-
-export const http = new PureHttp();
+const pureHttp = new PureHttp();
+class ApiHttp {
+  constructor(api?: string) {
+    this.api = api ?? "";
+  }
+  private api: string;
+  /** 通用请求工具函数 */
+  public request<T>(
+    method: RequestMethods,
+    url: string,
+    param?: AxiosRequestConfig,
+    axiosConfig?: PureHttpRequestConfig
+  ): Promise<Data<T>> {
+    return pureHttp.request<Data<T>>(
+      method,
+      this.api + url,
+      param,
+      axiosConfig
+    );
+  }
+  public post<T, P>(
+    url: string,
+    params?: AxiosRequestConfig<P>,
+    config?: PureHttpRequestConfig
+  ): Promise<T> {
+    return pureHttp.post<T, P>(this.api + url, params, config);
+  }
+  public get<T, P>(
+    url: string,
+    params?: AxiosRequestConfig<P>,
+    config?: PureHttpRequestConfig
+  ): Promise<T> {
+    return pureHttp.get<T, P>(this.api + url, params, config);
+  }
+}
+export const http = pureHttp;
+export const apiHttp = new ApiHttp(import.meta.env.VITE_APP_BASE_API);

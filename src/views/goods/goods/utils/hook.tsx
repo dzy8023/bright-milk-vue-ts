@@ -10,7 +10,7 @@ import { getKeyList, deviceDetection } from "@pureadmin/utils";
 import { getGoodsListApi } from "@/api/goods";
 import { ElMessageBox } from "element-plus";
 import { type Ref, ref, toRaw, computed, reactive, onMounted } from "vue";
-import { getCategoryListApi } from "@/api/category";
+import { getCategoryListApi, helloApi } from "@/api/category";
 import { GOOD_STATUS_0, GOOD_STATUS_1 } from "@/constant/status";
 
 export function useGoods(tableRef: Ref, treeRef: Ref) {
@@ -255,10 +255,11 @@ export function useGoods(tableRef: Ref, treeRef: Ref) {
   onMounted(async () => {
     treeLoading.value = true;
     onSearch();
-    // 归属部门
+    const hello = await helloApi();
+    console.log("hello", hello.result);
     const res = await getCategoryListApi();
-    higherCatOptions.value = handleTree(res);
-    treeData.value = handleTree(res);
+    higherCatOptions.value = handleTree(res.result);
+    treeData.value = handleTree(res.result);
     treeLoading.value = false;
   });
 

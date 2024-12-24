@@ -1,7 +1,12 @@
+import { apiHttp } from "@/utils/http";
 import type { CategoryListItem } from "@/types/category";
-import { http } from "@/utils/http";
 
-/**获取分类列表 */
 export const getCategoryListApi = () => {
-  return http.request<CategoryListItem[]>("get", "/category/list");
+  return apiHttp.request<CategoryListItem[]>("get", "/category/list");
+};
+export const helloApi = () => {
+  return apiHttp.request<string>("get", `/hello`);
+};
+export const getCategoryById = (id: string) => {
+  return apiHttp.request<CategoryListItem>("get", `/category/${id}`);
 };

@@ -105,7 +105,7 @@ const goodsManagementRouter = {
     {
       path: "/goods/attr",
       meta: {
-        icon: "ri:node-tree",
+        icon: "ep:set-up",
         title: "平台属性",
         roles: ["admin"]
       },
@@ -114,7 +114,7 @@ const goodsManagementRouter = {
           path: "/goods/attr/group/index",
           name: "GoodsAttrGroup",
           meta: {
-            icon: "ri:node-tree",
+            icon: "fa-solid:object-group",
             title: "属性分组",
             roles: ["admin"]
           }
@@ -123,7 +123,7 @@ const goodsManagementRouter = {
           path: "/goods/attr/spuAttr/index",
           name: "GoodsAttrSpu",
           meta: {
-            icon: "ri:node-tree",
+            icon: "ri:coupon-2-line",
             title: "规格参数",
             roles: ["admin"]
           }
@@ -132,7 +132,7 @@ const goodsManagementRouter = {
           path: "/goods/attr/skuAttr/index",
           name: "GoodsAttrSku",
           meta: {
-            icon: "ri:node-tree",
+            icon: "ri:award-fill",
             title: "销售属性",
             roles: ["admin"]
           }
@@ -152,7 +152,7 @@ const goodsManagementRouter = {
       path: "/goods/goods/index",
       name: "GoodsGoods",
       meta: {
-        icon: "ri:node-tree",
+        icon: "ep:milk-tea",
         title: "商品管理",
         roles: ["admin"]
       }
