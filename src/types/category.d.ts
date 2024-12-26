@@ -8,13 +8,11 @@ export type CategoryItem = {
   /**分类层级 */
   layer: number;
   /**分类状态 */
-  status: boolean;
+  status: number;
   /**分类排序 */
   sort: number;
 };
-export type CategoryListItem = Pick<
-  CategoryItem,
-  "id" | "name" | "parentId"
-> & {
-  children: CategoryListItem[];
+
+export type CategoryTreeNode = CategoryItem & {
+  children: CategoryTreeNode[];
 };

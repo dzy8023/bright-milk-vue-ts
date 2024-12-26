@@ -10,8 +10,9 @@ import { getKeyList, deviceDetection } from "@pureadmin/utils";
 import { getGoodsListApi } from "@/api/goods";
 import { ElMessageBox } from "element-plus";
 import { type Ref, ref, toRaw, computed, reactive, onMounted } from "vue";
-import { getCategoryListApi, helloApi } from "@/api/category";
+import { getCategoryListApi } from "@/api/category";
 import { GOOD_STATUS_0, GOOD_STATUS_1 } from "@/constant/status";
+import type { TabItem } from "./types";
 
 export function useGoods(tableRef: Ref, treeRef: Ref) {
   /**搜索条件 */
@@ -21,7 +22,8 @@ export function useGoods(tableRef: Ref, treeRef: Ref) {
     name: "",
     status: ""
   });
-  const dataList = ref([]);
+
+  const dataList = ref<TabItem[]>([]);
   const loading = ref(true);
   // 上传头像信息
   const switchLoadMap = ref({});
@@ -37,6 +39,10 @@ export function useGoods(tableRef: Ref, treeRef: Ref) {
     background: true
   });
   const columns: TableColumnList = [
+    {
+      type: "expand",
+      slot: "expand"
+    },
     {
       label: "勾选列", // 如果需要表格多选，此处label必须设置
       type: "selection",
@@ -57,7 +63,7 @@ export function useGoods(tableRef: Ref, treeRef: Ref) {
           preview-teleported={true}
           src={row.image || noImg}
           preview-src-list={Array.of(row.image || noImg)}
-          class="w-[24px] h-[24px] rounded-full align-middle"
+          class="w-[80px] h-[80px] rounded-full align-middle"
         />
       ),
       width: 90
@@ -71,12 +77,6 @@ export function useGoods(tableRef: Ref, treeRef: Ref) {
       label: "分类名称",
       prop: "catName",
       minWidth: 90
-    },
-    {
-      label: "商品展示价格",
-      prop: "price",
-      minWidth: 90,
-      formatter: ({ price }) => price.toFixed(2)
     },
     {
       label: "状态",
@@ -98,11 +98,33 @@ export function useGoods(tableRef: Ref, treeRef: Ref) {
       )
     },
     {
+      label: "商品快速展示属性",
+      prop: "attrText",
+      minWidth: 90,
+      cellRenderer: ({ row, props }) => (
+        <el-tag size={props.size} type="info">
+          {row.attrText}
+        </el-tag>
+      )
+    },
+    {
+      label: "商品展示价格",
+      prop: "price",
+      minWidth: 90,
+      sortable: true,
+      cellRenderer: ({ row, props }) => (
+        <el-tag size={props.size} type="danger">
+          {row.price.toFixed(2)}
+        </el-tag>
+      )
+    },
+    {
       label: "商品折扣",
       prop: "discount",
       minWidth: 90,
+      sortable: true,
       cellRenderer: ({ row, props }) => (
-        <el-tag size={props.size} effect="plain">
+        <el-tag size={props.size} type="success">
           {row.discount.toFixed(2)}
         </el-tag>
       )
@@ -111,8 +133,9 @@ export function useGoods(tableRef: Ref, treeRef: Ref) {
       label: "商品销量",
       prop: "sales",
       minWidth: 90,
+      sortable: true,
       cellRenderer: ({ row, props }) => (
-        <el-tag size={props.size} effect="plain">
+        <el-tag size={props.size} type="warning">
           {row.sales}
         </el-tag>
       )
@@ -121,14 +144,59 @@ export function useGoods(tableRef: Ref, treeRef: Ref) {
       label: "创建时间",
       minWidth: 90,
       prop: "createTime",
+      sortable: true,
       formatter: ({ createTime }) =>
         dayjs(createTime).format("YYYY-MM-DD HH:mm:ss")
+    },
+    {
+      label: "更新时间",
+      minWidth: 90,
+      prop: "updateTime",
+      sortable: true,
+      formatter: ({ updateTime }) =>
+        dayjs(updateTime).format("YYYY-MM-DD HH:mm:ss")
     },
     {
       label: "操作",
       fixed: "right",
       width: 180,
       slot: "operation"
+    }
+  ];
+  const childrenColumns: TableColumnList = [
+    {
+      label: "属性id",
+      prop: "attrId",
+      minWidth: 40
+    },
+    {
+      label: "属性名称",
+      prop: "name",
+      minWidth: 50
+    },
+    {
+      label: "属性值",
+      prop: "value",
+      minWidth: 90
+    },
+    {
+      label: "快速展示",
+      prop: "quickShow",
+      minWidth: 50,
+      cellRenderer: scope => (
+        <el-switch
+          size={scope.props.size === "small" ? "small" : "default"}
+          loading={switchLoadMap.value[scope.index]?.loading}
+          v-model={scope.row.quickShow}
+          active-value={1}
+          inactive-value={0}
+          active-text={GOOD_STATUS_1}
+          inactive-text={GOOD_STATUS_0}
+          inline-prompt
+          style={switchStyle.value}
+          onChange={() => console.log(scope)}
+        />
+      )
     }
   ];
   const buttonClass = computed(() => {
@@ -229,11 +297,11 @@ export function useGoods(tableRef: Ref, treeRef: Ref) {
   async function onSearch() {
     loading.value = true;
     const res = await getGoodsListApi(toRaw(form));
-    dataList.value = res.items;
-    pagination.total = res.total;
-    pagination.pageSize = res.pageSize;
-    pagination.currentPage = res.currentPage;
-
+    console.log(res.result);
+    dataList.value = res.result.items;
+    pagination.total = res.result.total;
+    pagination.pageSize = res.result.pageSize;
+    pagination.currentPage = res.result.currentPage;
     setTimeout(() => {
       loading.value = false;
     }, 500);
@@ -255,8 +323,6 @@ export function useGoods(tableRef: Ref, treeRef: Ref) {
   onMounted(async () => {
     treeLoading.value = true;
     onSearch();
-    const hello = await helloApi();
-    console.log("hello", hello.result);
     const res = await getCategoryListApi();
     higherCatOptions.value = handleTree(res.result);
     treeData.value = handleTree(res.result);
@@ -273,6 +339,7 @@ export function useGoods(tableRef: Ref, treeRef: Ref) {
     selectedNum,
     pagination,
     buttonClass,
+    childrenColumns,
     deviceDetection,
     onSearch,
     resetForm,

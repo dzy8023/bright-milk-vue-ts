@@ -5,9 +5,6 @@ import { useGoods } from "./utils/hook";
 import { PureTableBar } from "@/components/RePureTableBar";
 import { useRenderIcon } from "@/components/ReIcon/src/hooks";
 
-import Upload from "@iconify-icons/ri/upload-line";
-import Role from "@iconify-icons/ri/admin-line";
-import Password from "@iconify-icons/ri/lock-password-line";
 import More from "@iconify-icons/ep/more-filled";
 import Delete from "@iconify-icons/ep/delete";
 import EditPen from "@iconify-icons/ep/edit-pen";
@@ -15,6 +12,8 @@ import Refresh from "@iconify-icons/ep/refresh";
 import AddFill from "@iconify-icons/ri/add-circle-line";
 import { GOOD_STATUS_0, GOOD_STATUS_1 } from "@/constant/status";
 import { ElMessage } from "element-plus";
+import type { TabItem } from "./utils/types";
+import { getAttrListBySpuIdApi } from "@/api/attr";
 
 defineOptions({
   name: "GoodsGoods"
@@ -30,6 +29,20 @@ const onEditGood = (title, row) => {
   ElMessage.success(`编辑${title}成功`);
   console.log(row);
 };
+const subMonted = (row: TabItem) => {
+  //如果subLoading为未定义，则说明是第一次加载，需要重新加载数据
+  //如果subLoading为true，则说明已经加载过数据，不需要再次加载
+  //如果subLoading为false，则说明已经加载过数据，不需要再次加载
+  if (row.subLoading === undefined) row.subLoading = true;
+  else if (row.subLoading) return;
+  //模拟异步请求
+  setTimeout(async () => {
+    row.subLoading = false;
+    const res = await getAttrListBySpuIdApi(row.id);
+    console.log(res.result);
+    row.attrs = res.result;
+  }, 1000);
+};
 const {
   form,
   loading,
@@ -39,7 +52,7 @@ const {
   treeLoading,
   selectedNum,
   pagination,
-  buttonClass,
+  childrenColumns,
   deviceDetection,
   onSearch,
   resetForm,
@@ -107,8 +120,9 @@ const {
       </el-form>
 
       <PureTableBar
-        title="用户管理（仅演示，操作后不生效）"
+        title="商品管理（仅演示，操作后不生效）"
         :columns="columns"
+        :isExpandAll="false"
         @refresh="onSearch"
       >
         <template #buttons>
@@ -149,7 +163,7 @@ const {
             ref="tableRef"
             row-key="id"
             adaptive
-            :adaptiveConfig="{ offsetBottom: 108 }"
+            :adaptiveConfig="{ offsetBottom: 50 }"
             align-whole="center"
             table-layout="auto"
             :loading="loading"
@@ -161,11 +175,31 @@ const {
               background: 'var(--el-fill-color-light)',
               color: 'var(--el-text-color-primary)'
             }"
+            lazy
             @selection-change="handleSelectionChange"
             @page-size-change="handleSizeChange"
             @page-current-change="handleCurrentChange"
           >
-            <template #operation="{ row }">
+            <template #expand="{ row }: { row: TabItem }">
+              <div class="m-4">
+                <p class="mb-2">name: {{ row.name }}</p>
+                <p class="mb-2">catName: {{ row.catName }}</p>
+                <p class="mb-2">desc: {{ row.desc }}</p>
+                <p class="mb-4">catId: {{ row.catId }}</p>
+                <pure-table
+                  row-key="id"
+                  adaptive
+                  :adaptiveConfig="{ offsetBottom: 50 }"
+                  align-whole="center"
+                  table-layout="auto"
+                  border
+                  :data="row.attrs"
+                  :columns="childrenColumns"
+                  @vue:mounted="subMonted(row)"
+                />
+              </div>
+            </template>
+            <template #operation="{ row }: { row: TabItem }">
               <el-button
                 class="reset-margin"
                 link

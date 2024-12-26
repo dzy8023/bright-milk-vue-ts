@@ -4,7 +4,7 @@ import roleForm from "../form/role.vue";
 import editForm from "../form/index.vue";
 import { zxcvbn } from "@zxcvbn-ts/core";
 import { message } from "@/utils/message";
-import userAvatar from "@/assets/user.jpg";
+import userAvatar from "@/assets/img/user.jpg";
 import { usePublicHooks } from "../../hooks";
 import { addDialog } from "@/components/ReDialog";
 import type { PaginationProps } from "@pureadmin/table";
@@ -267,7 +267,7 @@ export function useUser(tableRef: Ref) {
     }, 500);
   }
 
-  const resetForm = formEl => {
+  const resetForm = (formEl: { resetFields: () => void }) => {
     if (!formEl) return;
     formEl.resetFields();
     onSearch();

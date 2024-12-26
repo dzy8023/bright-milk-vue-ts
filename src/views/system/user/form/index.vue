@@ -8,6 +8,7 @@ import { usePublicHooks } from "../../hooks";
 const props = withDefaults(defineProps<FormProps>(), {
   formInline: () => ({
     title: "新增",
+    higherDeptOptions: [],
     parentId: 0,
     nickname: "",
     username: "",
@@ -15,7 +16,8 @@ const props = withDefaults(defineProps<FormProps>(), {
     phone: "",
     email: "",
     sex: "",
-    status: 1
+    status: 1,
+    remark: ""
   })
 });
 

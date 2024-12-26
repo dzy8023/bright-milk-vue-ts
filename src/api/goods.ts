@@ -1,6 +1,6 @@
 import type { GoodItem } from "@/types/item";
 import type { PageQuery, PageResult } from "@/types/pageQuery";
-import { http } from "@/utils/http";
+import { apiHttp } from "@/utils/http";
 
 type PageParam = PageQuery & {
   status?: string;
@@ -25,10 +25,10 @@ export const getGoodsListApi = (
     pageSize: 10
   }
 ) => {
-  return http.request<PageResult<GoodItem>>("get", "/goods/page", { data });
+  return apiHttp.request<PageResult<GoodItem>>("get", "/goods/page", { data });
 };
 
 /**根据spuId获取商品详细信息  */
 export const getGoodDetailApi = (id: string) => {
-  return http.request<GoodItem>("get", `/goods/${id}`);
+  return apiHttp.request<GoodItem>("get", `/goods/${id}`);
 };
