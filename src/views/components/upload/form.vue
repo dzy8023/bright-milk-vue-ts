@@ -2,17 +2,36 @@
 import { reactive, ref } from "vue";
 import { message } from "@/utils/message";
 import { createFormData } from "@pureadmin/utils";
-
+import type { UploadFile, UploadUserFile } from "element-plus";
 import UploadIcon from "@iconify-icons/ri/upload-2-line";
 import { formUpload } from "@/api/mock";
+import { Delete, Download, ZoomIn } from "@element-plus/icons-vue";
 
 const formRef = ref();
 const uploadRef = ref();
 const validateForm = reactive({
-  fileList: [],
+  fileList: [] as UploadUserFile[],
   date: ""
 });
 
+const dialogImageUrl = ref("");
+const dialogVisible = ref(false);
+const disabled = ref(false);
+
+const handleRemove = (file: UploadFile) => {
+  console.log(file);
+  const index = validateForm.fileList.findIndex(item => item.raw === file.raw);
+  validateForm.fileList.splice(index, 1);
+};
+
+const handlePictureCardPreview = (file: UploadFile) => {
+  dialogImageUrl.value = file.url!;
+  dialogVisible.value = true;
+};
+
+const handleDownload = (file: UploadFile) => {
+  console.log(file);
+};
 const submitForm = formEl => {
   if (!formEl) return;
   formEl.validate(valid => {
@@ -38,7 +57,6 @@ const submitForm = formEl => {
     }
   });
 };
-
 const resetForm = formEl => {
   if (!formEl) return;
   formEl.resetFields();
@@ -56,9 +74,10 @@ const resetForm = formEl => {
         ref="uploadRef"
         v-model:file-list="validateForm.fileList"
         drag
+        list-type="picture-card"
+        accept=".jpg,.jpeg,.png,.gif"
         multiple
         action="#"
-        class="!w-[200px]"
         :auto-upload="false"
       >
         <div class="el-upload__text">
@@ -69,6 +88,37 @@ const resetForm = formEl => {
           />
           可点击或拖拽上传
         </div>
+        <template #file="{ file }">
+          <div>
+            <img
+              class="el-upload-list__item-thumbnail"
+              :src="file.url"
+              :alt="file.name"
+            />
+            <span class="el-upload-list__item-actions">
+              <span
+                class="el-upload-list__item-preview"
+                @click="handlePictureCardPreview(file)"
+              >
+                <el-icon><zoom-in /></el-icon>
+              </span>
+              <span
+                v-if="!disabled"
+                class="el-upload-list__item-delete"
+                @click="handleDownload(file)"
+              >
+                <el-icon><Download /></el-icon>
+              </span>
+              <span
+                v-if="!disabled"
+                class="el-upload-list__item-delete"
+                @click="handleRemove(file)"
+              >
+                <el-icon><Delete /></el-icon>
+              </span>
+            </span>
+          </div>
+        </template>
       </el-upload>
     </el-form-item>
     <el-form-item
@@ -91,4 +141,7 @@ const resetForm = formEl => {
       <el-button text bg @click="resetForm(formRef)">重置</el-button>
     </el-form-item>
   </el-form>
+  <el-dialog v-model="dialogVisible">
+    <img w-full :src="dialogImageUrl" alt="Preview Image" />
+  </el-dialog>
 </template>

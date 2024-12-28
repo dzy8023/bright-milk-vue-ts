@@ -2,39 +2,17 @@ import editForm from "../components/form.vue";
 import { message } from "@/utils/message";
 import { usePublicHooks } from "../../hooks";
 import { addDialog } from "@/components/ReDialog";
-import type { PaginationProps } from "@pureadmin/table";
 import type { FormItemProps } from "./types";
 import { deviceDetection } from "@pureadmin/utils";
 import { ElMessageBox } from "element-plus";
-import { h, ref, computed, reactive, type Ref } from "vue";
+import { h, ref, type Ref } from "vue";
 import { getCategoryTreeApi } from "@/api/category";
 import type { CategoryItem, CategoryTreeNode } from "@/types/category";
 
 export function useUser(treeRef: Ref) {
-  const form = reactive({
-    username: "",
-    phone: "",
-    status: ""
-  });
   const formRef = ref();
   const switchLoadMap = ref({});
   const { switchStyle } = usePublicHooks();
-  const selectedNum = ref(0);
-  const pagination = reactive<PaginationProps>({
-    total: 0,
-    pageSize: 10,
-    currentPage: 1,
-    background: true
-  });
-  const buttonClass = computed(() => {
-    return [
-      "!h-[20px]",
-      "reset-margin",
-      "!text-gray-500",
-      "dark:!text-white",
-      "dark:hover:!text-primary"
-    ];
-  });
   function onChange(data: CategoryItem) {
     ElMessageBox.confirm(
       `确认要<strong>${
@@ -90,11 +68,6 @@ export function useUser(treeRef: Ref) {
   const filterMethod = (query: string, node: CategoryTreeNode) => {
     return node.name!.indexOf(query) !== -1;
   };
-  const resetForm = formEl => {
-    if (!formEl) return;
-    formEl.resetFields();
-    getCategoryTreeData();
-  };
   /**新增，修改分类 */
   function openDialog(title = "新增", node, data?: FormItemProps) {
     addDialog({
@@ -139,17 +112,11 @@ export function useUser(treeRef: Ref) {
     getCategoryTreeData();
   }
   return {
-    form,
     treeData,
-    selectedNum,
-    pagination,
-    buttonClass,
     switchStyle,
     query,
     onChange,
-    deviceDetection,
     getCategoryTreeData,
-    resetForm,
     openDialog,
     handleDelete,
     filterMethod,

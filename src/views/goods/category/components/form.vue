@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import ReCol from "@/components/ReCol";
+import { formRules } from "../utils/rule";
 import { FormProps } from "../utils/types";
 import { usePublicHooks } from "../../hooks";
 
@@ -25,8 +27,13 @@ function getRef() {
 defineExpose({ getRef });
 </script>
 <template>
-  <el-form ref="ruleFormRef" :model="newFormInline" label-width="82px">
-    <re-row :gutter="30">
+  <el-form
+    ref="ruleFormRef"
+    :rules="formRules"
+    :model="newFormInline"
+    label-width="82px"
+  >
+    <el-row :gutter="30">
       <re-col :value="12" :xs="24" :sm="24">
         <el-form-item label="分类名称" prop="name">
           <el-input
@@ -80,6 +87,6 @@ defineExpose({ getRef });
           />
         </el-form-item>
       </re-col>
-    </re-row>
+    </el-row>
   </el-form>
 </template>

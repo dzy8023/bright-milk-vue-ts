@@ -103,41 +103,13 @@ const goodsManagementRouter = {
   },
   children: [
     {
-      path: "/goods/attr",
+      path: "/goods/attr/index",
+      name: "GoodsAttr",
       meta: {
         icon: "ep:set-up",
         title: "平台属性",
         roles: ["admin"]
-      },
-      children: [
-        {
-          path: "/goods/attr/group/index",
-          name: "GoodsAttrGroup",
-          meta: {
-            icon: "fa-solid:object-group",
-            title: "属性分组",
-            roles: ["admin"]
-          }
-        },
-        {
-          path: "/goods/attr/spuAttr/index",
-          name: "GoodsAttrSpu",
-          meta: {
-            icon: "ri:coupon-2-line",
-            title: "规格参数",
-            roles: ["admin"]
-          }
-        },
-        {
-          path: "/goods/attr/skuAttr/index",
-          name: "GoodsAttrSku",
-          meta: {
-            icon: "ri:award-fill",
-            title: "销售属性",
-            roles: ["admin"]
-          }
-        }
-      ]
+      }
     },
     {
       path: "/goods/category/index",
@@ -154,6 +126,15 @@ const goodsManagementRouter = {
       meta: {
         icon: "ep:milk-tea",
         title: "商品管理",
+        roles: ["admin"]
+      }
+    },
+    {
+      path: "/goods/add/index",
+      name: "GoodsAdd",
+      meta: {
+        icon: "ri:restaurant-line",
+        title: "发布商品",
         roles: ["admin"]
       }
     }

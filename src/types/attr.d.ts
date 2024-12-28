@@ -1,5 +1,5 @@
 /**属性：分为销售属性和商品规格属性 */
-export type Attr = {
+export type AttrItem = {
   /**属性id */
   id: number;
   /**属性名称 */

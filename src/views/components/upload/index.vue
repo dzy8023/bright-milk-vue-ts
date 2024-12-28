@@ -143,7 +143,7 @@ const onDownload = () => {
       class="pure-upload"
       list-type="picture-card"
       accept="image/jpeg,image/png,image/gif"
-      action="https://run.mocky.io/v3/3aa761d7-b0b3-4a03-96b3-6168d4f7467b"
+      action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
       :limit="3"
       :headers="{ Authorization: 'eyJhbGciOiJIUzUxMiJ9.admin' }"
       :on-exceed="onExceed"

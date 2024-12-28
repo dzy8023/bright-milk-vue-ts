@@ -3,7 +3,6 @@ import { ref } from "vue";
 import { useMenu } from "./utils/hook";
 import { PureTableBar } from "@/components/RePureTableBar";
 import { useRenderIcon } from "@/components/ReIcon/src/hooks";
-
 import Delete from "@iconify-icons/ep/delete";
 import EditPen from "@iconify-icons/ep/edit-pen";
 import Refresh from "@iconify-icons/ep/refresh";

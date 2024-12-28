@@ -48,9 +48,7 @@ const {
 
 <template>
   <div :class="['flex', 'justify-between', deviceDetection() && 'flex-wrap']">
-    <div
-      :class="[deviceDetection() ? ['w-full', 'mt-2'] : 'w-[calc(100%-200px)]']"
-    >
+    <div :class="[deviceDetection() ? ['w-full', 'mt-2'] : 'w-[calc(100%)]']">
       <el-form
         ref="formRef"
         :inline="true"
