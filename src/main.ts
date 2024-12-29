@@ -7,6 +7,7 @@ import { MotionPlugin } from "@vueuse/motion";
 import { createApp, type Directive } from "vue";
 import { useElementPlus } from "@/plugins/elementPlus";
 import { injectResponsiveStorage } from "@/utils/responsive";
+import { useVxeTable } from "@/plugins/vxeTable";
 
 import Table from "@pureadmin/table";
 // import PureDescriptions from "@pureadmin/descriptions";
@@ -50,6 +51,7 @@ app.component("Perms", Perms);
 import "tippy.js/dist/tippy.css";
 import "tippy.js/themes/light.css";
 import VueTippy from "vue-tippy";
+
 app.use(VueTippy);
 
 getPlatformConfig(app).then(async config => {
@@ -57,7 +59,7 @@ getPlatformConfig(app).then(async config => {
   app.use(router);
   await router.isReady();
   injectResponsiveStorage(app, config);
-  app.use(MotionPlugin).use(useElementPlus).use(Table);
+  app.use(MotionPlugin).use(useElementPlus).use(Table).use(useVxeTable);
   // .use(PureDescriptions)
   // .use(useEcharts);
   app.mount("#app");

@@ -10,6 +10,14 @@ export default {
   },
   children: [
     {
+      path: "/components/attrCheckbox",
+      name: "AttrCheckbox",
+      component: () => import("@/views/components/attrCheckbox/index.vue"),
+      meta: {
+        title: "属性选择器"
+      }
+    },
+    {
       path: "/components/dialog",
       name: "DialogPage",
       component: () => import("@/views/components/dialog/index.vue"),

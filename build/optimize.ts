@@ -7,17 +7,23 @@
 const include = [
   "qs",
   "mitt",
+  "xlsx",
   "dayjs",
   "axios",
   "pinia",
+  "swiper",
+  "vxe-table",
   "vue-types",
   "js-cookie",
   "vue-tippy",
   "pinyin-pro",
   "sortablejs",
   "@vueuse/core",
+  "swiper/modules",
   "@pureadmin/utils",
-  "responsive-storage"
+  "responsive-storage",
+  "plus-pro-components",
+  "@howdyjs/mouse-menu"
 ];
 
 /**

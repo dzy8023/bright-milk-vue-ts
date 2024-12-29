@@ -2,7 +2,6 @@ import { computed, Fragment, h, type Ref, ref, shallowRef } from "vue";
 // https://plus-pro-components.com/components/steps-form.html
 import { Edit, Medal, Sell, Finished } from "@element-plus/icons-vue";
 
-import { useRenderIcon } from "@/components/ReIcon/src/hooks";
 import { message } from "@/utils/message";
 import type {
   FieldValues,
@@ -11,9 +10,10 @@ import type {
 } from "plus-pro-components";
 import { getCategoryTreeApi } from "@/api/category";
 import ReUpload from "@/components/ReUpload";
+import AttrCheckbox from "@/views/components/attrCheckbox/utils/attr-checkbox.vue";
+
 import { ElButton } from "element-plus";
 import type { UploadUserFile } from "element-plus";
-
 import type { ReUploadInstance } from "@/components/ReUpload/src/ReUpload";
 /**
  * 图片自动上传，在系统管理里面内嵌一个minio后台管理系统，或者增加一个图片清理功能
@@ -27,13 +27,16 @@ export function useStepsForm() {
       image: [],
       mainImages: [],
       desc: ""
+    },
+    {
+      attr: {}
     }
   ]);
   const spu = ref({
     image: [] as UploadUserFile[],
-    mainImages: [] as UploadUserFile[]
+    mainImages: [] as UploadUserFile[],
+    attr: {}
   });
-
   const active = ref(0);
   const categoryOptions: Ref<OptionsRow[]> = ref([]);
   const getCategoryTreeData = async () => {
@@ -172,126 +175,118 @@ export function useStepsForm() {
               ]);
             }
           }
-        ],
-        rules: {
-          name: [
-            {
-              required: true,
-              message: "请输入商品名称",
-              trigger: "blur"
-            },
-            {
-              max: 64,
-              message: "名称最多64个字符",
-              trigger: "blur"
-            }
-          ],
-          catIds: [
-            {
-              type: "array",
-              required: true,
-              message: "请选择商品分类",
-              trigger: "blur"
-            }
-          ],
-          //价格要大于0, 且最多两位小数
-          price: [
-            { required: true, message: "请输入商品价格", trigger: "blur" },
-            {
-              type: "number",
-              min: 0.01,
-              message: "价格必须为大于0的数字",
-              trigger: "blur"
-            }
-          ],
-          image: [
-            { required: true, message: "请上传商品图片", trigger: "change" }
-          ]
-        }
+        ]
+        // rules: {
+        //   name: [
+        //     {
+        //       required: true,
+        //       message: "请输入商品名称",
+        //       trigger: "blur"
+        //     },
+        //     {
+        //       max: 64,
+        //       message: "名称最多64个字符",
+        //       trigger: "blur"
+        //     }
+        //   ],
+        //   catIds: [
+        //     {
+        //       type: "array",
+        //       required: true,
+        //       message: "请选择商品分类",
+        //       trigger: "blur"
+        //     }
+        //   ],
+        //   //价格要大于0, 且最多两位小数
+        //   price: [
+        //     { required: true, message: "请输入商品价格", trigger: "blur" },
+        //     {
+        //       type: "number",
+        //       min: 0.01,
+        //       message: "价格必须为大于0的数字",
+        //       trigger: "blur"
+        //     }
+        //   ],
+        //   image: [
+        //     { required: true, message: "请上传商品图片", trigger: "change" }
+        //   ]
+        // }
       }
     },
     {
       title: "规格参数",
       icon: Medal,
       form: {
-        modelValue: {},
+        modelValue: data.value[2],
         columns: [
           {
-            label: "标签",
-            width: 120,
-            prop: "tag"
-          },
-          {
-            label: "执行进度",
-            width: 200,
-            prop: "progress"
-          },
-          {
-            label: "评分",
-            width: 200,
-            prop: "rate",
-            valueType: "rate"
-          },
-          {
-            label: "是否显示",
-            width: 100,
-            prop: "switch",
-            valueType: "switch"
-          }
-        ]
-      }
-    },
-    {
-      title: "销售属性",
-      icon: useRenderIcon("ep:set-up"),
-      form: {
-        modelValue: {},
-        columns: [
-          {
-            label: "销售属性",
-            prop: "time",
-            valueType: "date-picker"
-          },
-          {
-            label: "要求",
-            prop: "demand",
-            valueType: "checkbox",
-            options: [
-              {
-                label: "四六级",
-                value: "0"
-              },
-              {
-                label: "计算机二级证书",
-                value: "1"
-              },
-              {
-                label: "普通话证书",
-                value: "2"
-              }
-            ]
-          },
-          {
-            label: "奖励",
-            prop: "price"
-          },
-          {
-            label: "提成",
-            prop: "percentage"
-          },
-          {
-            label: "说明",
-            prop: "desc",
-            valueType: "textarea",
-            fieldProps: {
-              maxlength: 10,
-              showWordLimit: true,
-              autosize: { minRows: 2, maxRows: 4 }
+            label: "商品规格属性",
+            prop: "image",
+            renderField: _ => {
+              return h(Fragment, [
+                h(AttrCheckbox, {
+                  modelValue: spu.value.attr,
+                  "onUpdate:modelValue": value => {
+                    spu.value.attr = value;
+                  }
+                })
+              ]);
             }
           }
         ]
       }
     },
+    // {
+    //   title: "销售属性",
+    //   icon: useRenderIcon("ep:set-up"),
+    //   form: {
+    //     modelValue: {},
+    //     columns: [
+    //       {
+    //         label: "销售属性",
+    //         prop: "time",
+    //         valueType: "date-picker"
+    //       },
+    //       {
+    //         label: "要求",
+    //         prop: "demand",
+    //         valueType: "checkbox",
+    //         options: [
+    //           {
+    //             label: "四六级",
+    //             value: "0"
+    //           },
+    //           {
+    //             label: "计算机二级证书",
+    //             value: "1"
+    //           },
+    //           {
+    //             label: "普通话证书",
+    //             value: "2"
+    //           }
+    //         ]
+    //       },
+    //       {
+    //         label: "奖励",
+    //         prop: "price"
+    //       },
+    //       {
+    //         label: "提成",
+    //         prop: "percentage"
+    //       },
+    //       {
+    //         label: "说明",
+    //         prop: "desc",
+    //         valueType: "textarea",
+    //         fieldProps: {
+    //           maxlength: 10,
+    //           showWordLimit: true,
+    //           autosize: { minRows: 2, maxRows: 4 }
+    //         }
+    //       }
+    //     ]
+    //   }
+    // },
     {
       title: "SKU信息",
       icon: Sell,
@@ -397,8 +392,9 @@ export function useStepsForm() {
   ]);
 
   const next = () => {
-    console.log(data.value[active.value]);
+    // console.log(data.value[active.value]);
     if (active.value <= stepForm.value.length) {
+      console.log(spu.value);
       active.value++;
       if (active.value === stepForm.value.length) {
         active.value++;

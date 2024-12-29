@@ -12,6 +12,8 @@ export type AttrItem = {
   desc: string;
   /**属性类型 */
   type: number;
+  /**单选、多选 */
+  select?: 0 | 1;
 };
 
 /**商品规格属性 */

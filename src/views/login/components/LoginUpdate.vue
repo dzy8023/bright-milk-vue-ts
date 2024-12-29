@@ -129,7 +129,7 @@ function onBack() {
           :loading="loading"
           @click="onUpdate(ruleFormRef)"
         >
-        确定
+          确定
         </el-button>
       </el-form-item>
     </Motion>
