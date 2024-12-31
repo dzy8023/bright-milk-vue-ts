@@ -11,38 +11,50 @@ import type {
 import { getCategoryTreeApi } from "@/api/category";
 import ReUpload from "@/components/ReUpload";
 import AttrCheckbox from "@/views/components/attrCheckbox/utils/attr-checkbox.vue";
-
 import { ElButton } from "element-plus";
 import type { UploadUserFile } from "element-plus";
 import type { ReUploadInstance } from "@/components/ReUpload/src/ReUpload";
+import type {
+  SkuAttr,
+  SupAttr
+} from "@/views/components/attrCheckbox/utils/types";
+import { useColumns } from "@/views/components/attrCheckbox/utils/hook";
+import Skutab from "../form/skutab.vue";
+
 /**
  * 图片自动上传，在系统管理里面内嵌一个minio后台管理系统，或者增加一个图片清理功能
  */
 export function useStepsForm() {
   const data = ref<FieldValues[]>([
     {
-      name: "jjj",
+      name: "鲜牛奶",
       catIds: [],
-      price: 3.8,
+      price: 5.8,
       image: [],
       mainImages: [],
-      desc: ""
+      desc: "好喝"
     },
     {
       attr: {}
     }
   ]);
   const spu = ref({
+    name: "",
+    category: [],
+    price: 0,
+    desc: "",
     image: [] as UploadUserFile[],
     mainImages: [] as UploadUserFile[],
-    attr: {}
+    attr: {},
+    skus: []
   });
   const active = ref(0);
   const categoryOptions: Ref<OptionsRow[]> = ref([]);
+  const { attrCheckboxRef, columns, tableData, handleSubmit } = useColumns();
+
   const getCategoryTreeData = async () => {
     categoryOptions.value = [];
     const res = await getCategoryTreeApi();
-    console.log(res);
     const convertCategory = items => {
       return items.map(item => ({
         name: item.name, // 将 name 改为 label
@@ -54,7 +66,16 @@ export function useStepsForm() {
     categoryOptions.value = convertCategory(res.result); // 转换并赋值
     console.log(categoryOptions.value);
   };
-
+  const getExtandData = () => {
+    return {
+      name: spu.value.name,
+      category: spu.value.category,
+      price: spu.value.price,
+      image: spu.value.image.map(f => f.url)[0],
+      desc: data.value[0].desc,
+      spuName: spu.value.name
+    };
+  };
   // getCategoryTreeData();
 
   const stepForm = shallowRef<PlusStepFromRow[]>([
@@ -222,12 +243,24 @@ export function useStepsForm() {
           {
             label: "商品规格属性",
             prop: "image",
-            renderField: _ => {
+            renderField: (_, onChange) => {
               return h(Fragment, [
                 h(AttrCheckbox, {
+                  ref: attrCheckboxRef,
                   modelValue: spu.value.attr,
                   "onUpdate:modelValue": value => {
                     spu.value.attr = value;
+                  },
+                  onSubmit: (
+                    data: {
+                      spuAttrs: (SupAttr & { quickShow: 0 | 1 })[];
+                      saleAttrs: SkuAttr[];
+                    },
+                    skus,
+                    extandData
+                  ) => {
+                    handleSubmit(data, skus, extandData);
+                    onChange({ skus, data });
                   }
                 })
               ]);
@@ -236,57 +269,6 @@ export function useStepsForm() {
         ]
       }
     },
-    // {
-    //   title: "销售属性",
-    //   icon: useRenderIcon("ep:set-up"),
-    //   form: {
-    //     modelValue: {},
-    //     columns: [
-    //       {
-    //         label: "销售属性",
-    //         prop: "time",
-    //         valueType: "date-picker"
-    //       },
-    //       {
-    //         label: "要求",
-    //         prop: "demand",
-    //         valueType: "checkbox",
-    //         options: [
-    //           {
-    //             label: "四六级",
-    //             value: "0"
-    //           },
-    //           {
-    //             label: "计算机二级证书",
-    //             value: "1"
-    //           },
-    //           {
-    //             label: "普通话证书",
-    //             value: "2"
-    //           }
-    //         ]
-    //       },
-    //       {
-    //         label: "奖励",
-    //         prop: "price"
-    //       },
-    //       {
-    //         label: "提成",
-    //         prop: "percentage"
-    //       },
-    //       {
-    //         label: "说明",
-    //         prop: "desc",
-    //         valueType: "textarea",
-    //         fieldProps: {
-    //           maxlength: 10,
-    //           showWordLimit: true,
-    //           autosize: { minRows: 2, maxRows: 4 }
-    //         }
-    //       }
-    //     ]
-    //   }
-    // },
     {
       title: "SKU信息",
       icon: Sell,
@@ -294,45 +276,13 @@ export function useStepsForm() {
         modelValue: {},
         columns: [
           {
+            hasLabel: false,
             label: "SKU信息",
             prop: "time",
-            valueType: "date-picker"
-          },
-          {
-            label: "要求",
-            prop: "demand",
-            valueType: "checkbox",
-            options: [
-              {
-                label: "四六级",
-                value: "0"
-              },
-              {
-                label: "计算机二级证书",
-                value: "1"
-              },
-              {
-                label: "普通话证书",
-                value: "2"
-              }
-            ]
-          },
-          {
-            label: "奖励",
-            prop: "price"
-          },
-          {
-            label: "提成",
-            prop: "percentage"
-          },
-          {
-            label: "说明",
-            prop: "desc",
-            valueType: "textarea",
-            fieldProps: {
-              maxlength: 10,
-              showWordLimit: true,
-              autosize: { minRows: 2, maxRows: 4 }
+            renderField: _ => {
+              return (
+                <Skutab tableData={tableData.value} columns={columns}></Skutab>
+              );
             }
           }
         ]
@@ -390,11 +340,37 @@ export function useStepsForm() {
       }
     }
   ]);
+  const preNext = (step: number) => {
+    switch (step) {
+      case 0:
+        spu.value["name"] = String(data.value[0]["name"]);
+        spu.value["category"] = data.value[0]["catIds"].toString().split(",");
+        spu.value["price"] = Number(data.value[0]["price"]);
+        spu.value["desc"] = String(data.value[0]["desc"]);
+        break;
+      case 1:
+        if (attrCheckboxRef.value) {
+          let extandData = getExtandData();
+          console.log("extandData", extandData);
+          attrCheckboxRef.value.submit(extandData);
+        } else {
+          console.warn("AttrCheckbox 实例未初始化");
+        }
+        break;
+      case 2:
+        break;
+      case 3:
+        break;
+      default:
+        console.warn("step 超出范围");
+        break;
+    }
+  };
 
   const next = () => {
-    // console.log(data.value[active.value]);
     if (active.value <= stepForm.value.length) {
-      console.log(spu.value);
+      preNext(active.value);
+      console.log("spu", spu.value, "data", data.value);
       active.value++;
       if (active.value === stepForm.value.length) {
         active.value++;
@@ -408,6 +384,7 @@ export function useStepsForm() {
     } else {
       message("已经是最后一步了");
     }
+    console.log("next", active.value);
   };
   const pre = () => {
     if (active.value == stepForm.value.length + 1) {
@@ -415,6 +392,7 @@ export function useStepsForm() {
     } else if (active.value > 0) {
       active.value--;
     }
+    console.log("pre", active.value);
   };
 
   return { stepForm, active, data, next, pre };

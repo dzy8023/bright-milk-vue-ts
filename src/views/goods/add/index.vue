@@ -8,7 +8,6 @@ defineOptions({
 });
 const { active, stepForm, next, pre } = useStepsForm();
 </script>
-<!-- :body-style="{ height: 'calc(100vh)' }" -->
 <template>
   <el-card shadow="never">
     <template #header>
@@ -36,7 +35,7 @@ const { active, stepForm, next, pre } = useStepsForm();
     <PlusStepsForm
       :active="active"
       simple
-      class="w-[800px] m-auto"
+      class="w-[900px] m-auto"
       :data="stepForm as any"
       @next="next"
       @pre="pre"

@@ -183,6 +183,7 @@ const {
           >
             <template #expand="{ row }: { row: TabItem }">
               <div class="m-4">
+                <el-input v-model="row.name" placeholder="请输入商品名称" />
                 <p class="mb-2">name: {{ row.name }}</p>
                 <p class="mb-2">catName: {{ row.catName }}</p>
                 <p class="mb-2">desc: {{ row.desc }}</p>

@@ -17,6 +17,7 @@
           style="width: 250px; margin-right: 20px"
           :multiple="item.select == 1"
           filterable
+          clearable
           allow-create
           default-first-option
           placeholder="请选择或输入值"
@@ -29,7 +30,7 @@
           />
         </el-select>
         <el-checkbox
-          v-model="tempData.spuAttrs[index].showStatus"
+          v-model="tempData.spuAttrs[index].quickShow"
           :true-value="1"
           :false-label="0"
           >快速展示</el-checkbox
@@ -86,12 +87,13 @@
       </el-form-item>
     </el-form>
   </div>
-  <el-button type="success" @click="submit">下一步：设置SKU信息</el-button>
 </template>
 
 <script lang="ts" setup>
 import { AttrItem } from "@/types/attr";
 import { ref, nextTick, computed } from "vue";
+import { SkuAttr, SupAttr } from "./types";
+import { filterEmptyArray } from "@/utils/utils";
 //默认值
 /**
  * 方案一：使用类型参数并手动设置默认值
@@ -99,7 +101,7 @@ import { ref, nextTick, computed } from "vue";
 modelValue值必须传入，因为它会被重置为默认值。
 const props = withDefaults(defineProps<{
   modelValue: {
-    spuAttrs: (SupAttr & { showStatus: 0 | 1 })[];
+    spuAttrs: (SupAttr & { quickShow: 0 | 1 })[];
     saleAttrs: SkuAttr[];
   };
 }>(), {
@@ -114,7 +116,7 @@ const props = withDefaults(defineProps<{
 const props = defineProps({
   modelValue: {
     type: Object as PropType<{
-      spuAttrs: (SupAttr & { showStatus: 0 | 1 })[];
+      spuAttrs: (SupAttr & { quickShow: 0 | 1 })[];
       saleAttrs: SkuAttr[];
     }>,
     default: () => ({
@@ -127,7 +129,7 @@ const props = defineProps({
 // const props = withDefaults(
 //   defineProps<{
 //     modelValue: {
-//       spuAttrs: (SupAttr & { showStatus: 0 | 1 })[];
+//       spuAttrs: (SupAttr & { quickShow: 0 | 1 })[];
 //       saleAttrs: SkuAttr[];
 //     };
 //   }>(),
@@ -141,7 +143,7 @@ const props = defineProps({
 const props = defineProps({
   modelValue: {
     type: Object as PropType<{
-      spuAttrs: (SupAttr & { showStatus: 0 | 1 })[];
+      spuAttrs: (SupAttr & { quickShow: 0 | 1 })[];
       saleAttrs: SkuAttr[];
       selfDefinedAttrs: SelfDefine[];
     }>,
@@ -158,13 +160,6 @@ interface SelfDefine {
 }
 const inputRefs = ref({});
 const inputVisible = ref<{ view: boolean; val: string }[]>([]);
-
-interface SupAttr extends Pick<AttrItem, "id" | "name"> {
-  value: string | string[];
-}
-interface SkuAttr extends Pick<AttrItem, "id" | "name"> {
-  value: string[];
-}
 
 const spu = ref<{
   spuAttrs: Omit<AttrItem, "type">[];
@@ -240,10 +235,9 @@ const tempData = computed({
     emits("update:modelValue", val);
   }
 });
-const emits = defineEmits(["update:modelValue"]);
-// 如果父组件没有传递 modelValue，将默认值同步给父组件
+const emits = defineEmits(["update:modelValue", "submit"]);
 const data = {
-  spuAttrs: [] as (SupAttr & { showStatus: 0 | 1 })[],
+  spuAttrs: [] as (SupAttr & { quickShow: 0 | 1 })[],
   saleAttrs: [] as SkuAttr[]
 };
 const initData = () => {
@@ -260,7 +254,7 @@ const initData = () => {
       id: item.id,
       name: item.name,
       value: "",
-      showStatus: 0
+      quickShow: 0
     }));
     tempData.value["saleAttrs"] = spu.value["saleAttrs"].map(item => ({
       id: item.id,
@@ -330,11 +324,14 @@ const generateSaleAttrs = () => {
   return result;
 };
 
-const submit = () => {
-  console.log("submit", tempData.value);
+const submit = (extandData?: any) => {
+  data.spuAttrs = [];
+  data.saleAttrs = [];
   // 过滤掉没有选择的属性，并重新赋值给 data.value
   tempData.value.spuAttrs.map(item => {
-    if (item.value !== "" && item.value.length !== 0) {
+    //item.value不为undefined
+    if (item.value && item.value.length !== 0) {
+      console.log(item);
       let value = item.value;
       if (value instanceof Array) {
         value = value.join(";");
@@ -343,17 +340,47 @@ const submit = () => {
         id: item.id,
         name: item.name,
         value: value,
-        showStatus: item.showStatus
+        quickShow: item.quickShow,
+        props: "spu-" + item.id
       });
     }
   });
-  console.log("sup", data.spuAttrs);
-  data.saleAttrs = tempData.value.saleAttrs.filter(
-    item => item.value.length !== 0
-  );
-  console.log("sale", data.saleAttrs);
+  tempData.value.saleAttrs.map(item => {
+    if (item.value.length !== 0) {
+      data.saleAttrs.push({
+        id: item.id,
+        name: item.name,
+        value: item.value,
+        props: "sku-" + item.id
+      });
+    }
+  });
   // 计算笛卡尔积
-  const cartesianProduct = generateSaleAttrs();
-  console.log("笛卡尔积", cartesianProduct);
+  const cartesianProduct = filterEmptyArray(generateSaleAttrs());
+  const skus = [];
+  cartesianProduct.forEach(item => {
+    let sku = {};
+    let spu = {};
+    item.map(attr => (sku = { ...sku, [`sku-${attr.id}`]: attr.value }));
+    data.spuAttrs.map(
+      attr =>
+        (spu = {
+          ...spu,
+          [`spu-${attr.id}`]: {
+            value: attr.value,
+            quickShow: attr.quickShow
+          }
+        })
+    );
+    skus.push({
+      ...sku,
+      ...spu
+    });
+  });
+  emits("submit", data, skus, extandData);
 };
+
+defineExpose({
+  submit
+});
 </script>
