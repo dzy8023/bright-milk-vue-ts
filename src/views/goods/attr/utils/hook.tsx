@@ -4,12 +4,23 @@ import { message } from "@/utils/message";
 import { addDialog } from "@/components/ReDialog";
 import type { PaginationProps } from "@pureadmin/table";
 import type { FormItemProps } from "../utils/types";
-import { getKeyList, deviceDetection } from "@pureadmin/utils";
-import { type Ref, h, ref, toRaw, computed, reactive, onMounted } from "vue";
+import { deviceDetection } from "@pureadmin/utils";
+import {
+  type Ref,
+  h,
+  ref,
+  toRaw,
+  reactive,
+  onMounted,
+  computed,
+  watch
+} from "vue";
 import { useRenderIcon } from "@/components/ReIcon/src/hooks";
-import { getAttrPageApi } from "@/api/attr";
+import { getAttrPageApi, getCatIdsByAttrIdApi } from "@/api/attr";
+import { getCategoryTreeApi } from "@/api/category";
+import type { TreeNodeData } from "element-plus/es/components/tree-v2/src/types.mjs";
 
-export function useUser(tableRef: Ref) {
+export function useUser(treeRef: Ref) {
   const form = reactive({
     name: "",
     type: ""
@@ -17,24 +28,43 @@ export function useUser(tableRef: Ref) {
   const formRef = ref();
   const dataList = ref<Required<Omit<FormItemProps, "title">>[]>([]);
   const loading = ref(true);
-  const selectedNum = ref(0);
+  const curRow = ref();
+
+  const treeIds = ref([]);
+  const treeData = ref([]);
+  const initData = [];
+  const isShow = ref(false);
+  const treeSearchValue = ref();
+
+  const isExpandAll = ref(false);
+  const isSelectAll = ref(false);
+  const isLinkage = ref(false);
+  const treeProps = {
+    value: "id",
+    label: "name",
+    children: "children",
+    disabled: "status"
+  };
+  const buttonClass = computed(() => {
+    return [
+      "!h-[20px]",
+      "reset-margin",
+      "!text-gray-500",
+      "dark:!text-white",
+      "dark:hover:!text-primary"
+    ];
+  });
   const pagination = reactive<PaginationProps>({
     total: 0,
     pageSize: 10,
     currentPage: 1,
     background: true
   });
+
   const columns: TableColumnList = [
     {
-      label: "勾选列", // 如果需要表格多选，此处label必须设置
-      type: "selection",
-      fixed: "left",
-      reserveSelection: true // 数据刷新后保留选项
-    },
-    {
       label: "属性编号",
-      prop: "id",
-      width: 90
+      prop: "id"
     },
     {
       label: "属性名称",
@@ -86,22 +116,10 @@ export function useUser(tableRef: Ref) {
     {
       label: "操作",
       fixed: "right",
-      width: 180,
+      width: 210,
       slot: "operation"
     }
   ];
-  const buttonClass = computed(() => {
-    return [
-      "!h-[20px]",
-      "reset-margin",
-      "!text-gray-500",
-      "dark:!text-white",
-      "dark:hover:!text-primary"
-    ];
-  });
-  function handleUpdate(row) {
-    console.log(row);
-  }
 
   function handleDelete(row) {
     message(`您删除了属性编号为${row.id}的这条数据`, { type: "success" });
@@ -118,28 +136,7 @@ export function useUser(tableRef: Ref) {
 
   /** 当CheckBox选择项发生变化时会触发该事件 */
   function handleSelectionChange(val) {
-    selectedNum.value = val.length;
-    // 重置表格高度
-    tableRef.value.setAdaptive();
-  }
-
-  /** 取消选择 */
-  function onSelectionCancel() {
-    selectedNum.value = 0;
-    // 用于多选表格，清空用户的选择
-    tableRef.value.getTableRef().clearSelection();
-  }
-
-  /** 批量删除 */
-  function onbatchDel() {
-    // 返回当前选中的行
-    const curSelected = tableRef.value.getTableRef().getSelectionRows();
-    // 接下来根据实际业务，通过选中行的某项数据，比如下面的id，调用接口进行批量删除
-    message(`已删除属性编号为 ${getKeyList(curSelected, "id")} 的数据`, {
-      type: "success"
-    });
-    tableRef.value.getTableRef().clearSelection();
-    onSearch();
+    console.log("handleSelectionChange", val);
   }
 
   async function onSearch() {
@@ -211,29 +208,121 @@ export function useUser(tableRef: Ref) {
       }
     });
   }
+  /** 高亮当前权限选中行 */
+  function rowStyle({ row: { id } }) {
+    return {
+      cursor: "pointer",
+      background: id === curRow.value?.id ? "var(--el-fill-color-light)" : ""
+    };
+  }
 
+  /** 菜单权限-保存 */
+  function handleSave() {
+    const { id, name } = curRow.value;
+    // 根据用户 id 调用实际项目中菜单权限修改接口
+    console.log(id, treeRef.value.getCheckedKeys());
+    message(`角色名称为${name}的菜单权限修改成功`, {
+      type: "success"
+    });
+  }
+  const onQueryChanged = (query: string) => {
+    treeRef.value!.filter(query);
+  };
+  const forEachTree = (data: any, cb: (item: any) => void) => {
+    if (Array.isArray(data)) {
+      data.forEach(item => {
+        cb(item);
+        forEachTree(item.children, cb);
+      });
+    }
+  };
+
+  const filterMethod = (query: string, node) => {
+    return node.title!.includes(query);
+  };
   onMounted(async () => {
     onSearch();
+    // const res = await getCategoryListApi();
+    // treeIds.value = getKeyList(res.result, "id");
+    // treeData.value = handleTree(res.result);
+    const res = await getCategoryTreeApi();
+    treeIds.value = [];
+    initData.push(...res.result);
+    treeData.value = initData;
+    forEachTree(res.result, item => {
+      treeIds.value.push(item.id);
+    });
+    console.log(treeIds.value, initData);
+  });
+  watch(isExpandAll, val => {
+    val
+      ? treeRef.value.setExpandedKeys(treeIds.value)
+      : treeRef.value.setExpandedKeys([]);
   });
 
+  watch(isSelectAll, val => {
+    val
+      ? treeRef.value.setCheckedKeys(treeIds.value)
+      : treeRef.value.setCheckedKeys([]);
+  });
+  /**属性关联分类 */
+  const handleRelated = async (row: any) => {
+    const { id } = row;
+    if (id) {
+      //初始化数据,深拷贝
+      // treeData.value = JSON.parse(JSON.stringify(initData));
+      curRow.value = row;
+      isShow.value = true;
+      const res = await getCatIdsByAttrIdApi(id);
+      //遍历树，给选中的节点添加select属性
+      forEachTree(treeData.value, item => {
+        let index = res.result.findIndex(item1 => item1.catId === item.id);
+        if (index !== -1) {
+          item.select = res.result[index].select;
+        }
+      });
+      treeRef.value.setCheckedKeys(res.result.map(item => item.catId));
+      console.log(row, res.result, treeData.value, initData);
+    } else {
+      curRow.value = null;
+      isShow.value = false;
+    }
+  };
+  const handleCheckChange = (data: TreeNodeData, checked: boolean) => {
+    if (checked) {
+      data.select = 0;
+    } else {
+      data.select = undefined;
+    }
+  };
   return {
+    isShow,
+    curRow,
+    treeData,
+    treeProps,
+    isLinkage,
+    isExpandAll,
+    isSelectAll,
+    treeSearchValue,
+    buttonClass,
     form,
     loading,
     columns,
     dataList,
-    selectedNum,
     pagination,
-    buttonClass,
+    handleSave,
+    onQueryChanged,
+    filterMethod,
+    rowStyle,
     deviceDetection,
     onSearch,
     resetForm,
-    onbatchDel,
     openDialog,
-    handleUpdate,
     handleDelete,
     handleSizeChange,
-    onSelectionCancel,
     handleCurrentChange,
-    handleSelectionChange
+    handleSelectionChange,
+    handleRelated,
+    handleCheckChange
   };
 }

@@ -145,18 +145,40 @@ export function useColumns() {
     if (tableData.value.length > 0) {
       tableData.value.map((item, index) => {
         //获取item中以sku开头的属性，获取它们的值，并赋值给name
-        const name =
-          (extandData?.name ?? "商品名称") +
-          Object.keys(item)
-            .filter(key => key.startsWith("sku"))
-            .map(key => item[key])
-            .join("");
-        Object.assign(item, {
-          id: index,
-          ...extandData,
-          name: name,
-          price: extandData?.price ?? 3.8
-        });
+        //TODO:根据销售属性id保留更改的数据
+        if (extandData instanceof Array) {
+          if (extandData.length > index) {
+            Object.assign(item, {
+              id: index,
+              ...extandData[index]
+            });
+          } else {
+            const name =
+              (extandData[extandData.length - 1]?.name ?? "商品名称") +
+              Object.keys(item)
+                .filter(key => key.startsWith("sku"))
+                .map(key => item[key])
+                .join("");
+            Object.assign(item, {
+              id: index,
+              ...extandData[extandData.length - 1],
+              name: name
+            });
+          }
+        } else {
+          const name =
+            (extandData?.name ?? "商品名称") +
+            Object.keys(item)
+              .filter(key => key.startsWith("sku"))
+              .map(key => item[key])
+              .join("");
+          Object.assign(item, {
+            id: index,
+            ...extandData,
+            name: name,
+            price: extandData?.price ?? 3.8
+          });
+        }
       });
     }
     console.log("columns", getColumns(data));

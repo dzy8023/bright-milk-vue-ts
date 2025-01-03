@@ -8,8 +8,17 @@ import { addDialog } from "@/components/ReDialog";
 import type { FormItemProps } from "../utils/types";
 import type { PaginationProps } from "@pureadmin/table";
 import { getKeyList, deviceDetection } from "@pureadmin/utils";
-import { type Ref, reactive, ref, onMounted, h, toRaw, watch } from "vue";
-import { getRoleList, getRoleMenu, getRoleMenuIds } from "@/api/system";
+import {
+  type Ref,
+  reactive,
+  ref,
+  onMounted,
+  h,
+  toRaw,
+  watch,
+  computed
+} from "vue";
+import { getRolePageApi, getRoleMenu, getRoleMenuIds } from "@/api/system";
 
 export function useRole(treeRef: Ref) {
   const form = reactive({
@@ -74,7 +83,7 @@ export function useRole(treeRef: Ref) {
     },
     {
       label: "备注",
-      prop: "remark",
+      prop: "note",
       minWidth: 160
     },
     {
@@ -91,15 +100,15 @@ export function useRole(treeRef: Ref) {
       slot: "operation"
     }
   ];
-  // const buttonClass = computed(() => {
-  //   return [
-  //     "!h-[20px]",
-  //     "reset-margin",
-  //     "!text-gray-500",
-  //     "dark:!text-white",
-  //     "dark:hover:!text-primary"
-  //   ];
-  // });
+  const buttonClass = computed(() => {
+    return [
+      "!h-[20px]",
+      "reset-margin",
+      "!text-gray-500",
+      "dark:!text-white",
+      "dark:hover:!text-primary"
+    ];
+  });
 
   function onChange({ row, index }) {
     ElMessageBox.confirm(
@@ -162,11 +171,11 @@ export function useRole(treeRef: Ref) {
 
   async function onSearch() {
     loading.value = true;
-    const { data } = await getRoleList(toRaw(form));
-    dataList.value = data.list;
-    pagination.total = data.total;
-    pagination.pageSize = data.pageSize;
-    pagination.currentPage = data.currentPage;
+    const res = await getRolePageApi(toRaw(form));
+    dataList.value = res.result.items;
+    pagination.total = res.result.total;
+    pagination.pageSize = res.result.pageSize;
+    pagination.currentPage = res.result.currentPage;
 
     setTimeout(() => {
       loading.value = false;
@@ -299,7 +308,7 @@ export function useRole(treeRef: Ref) {
     isExpandAll,
     isSelectAll,
     treeSearchValue,
-    // buttonClass,
+    buttonClass,
     onSearch,
     resetForm,
     openDialog,

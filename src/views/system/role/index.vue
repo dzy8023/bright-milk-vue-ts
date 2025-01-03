@@ -259,7 +259,6 @@ onMounted(() => {
           </pure-table>
         </template>
       </PureTableBar>
-
       <div
         v-if="isShow"
         class="!min-w-[calc(100vw-60vw-268px)] w-full mt-2 px-2 pb-2 bg-bg_color ml-2 overflow-auto"

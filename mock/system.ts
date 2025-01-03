@@ -881,5 +881,358 @@ export default defineFakeRoute([
         ]
       };
     }
+  }, // 用户管理
+  {
+    url: "/user",
+    method: "post",
+    response: ({ body }) => {
+      let list = [
+        {
+          avatar: "https://avatars.githubusercontent.com/u/44761321",
+          username: "admin",
+          nickname: "小铭",
+          phone: "15888886789",
+          email: faker.internet.email(),
+          sex: 0,
+          id: 1,
+          status: 1,
+          createTime: 1605456000000
+        },
+        {
+          avatar: "https://avatars.githubusercontent.com/u/52823142",
+          username: "common",
+          nickname: "小林",
+          phone: "18288882345",
+          email: faker.internet.email(),
+          sex: 1,
+          id: 2,
+          status: 1,
+          createTime: 1605456000000
+        }
+      ];
+      list = list.filter(item => item.username.includes(body?.username));
+      list = list.filter(item =>
+        String(item.status).includes(String(body?.status))
+      );
+      if (body.phone) list = list.filter(item => item.phone === body.phone);
+      if (body.deptId) list = list.filter(item => item.dept.id === body.deptId);
+      return {
+        success: true,
+        data: {
+          list,
+          total: list.length, // 总条目数
+          pageSize: 10, // 每页显示条目个数
+          currentPage: 1 // 当前页数
+        }
+      };
+    }
+  },
+  // 用户管理-获取所有角色列表
+  {
+    url: "/list-all-role",
+    method: "get",
+    response: () => {
+      return {
+        success: true,
+        data: [
+          { id: 1, name: "超级管理员" },
+          { id: 2, name: "普通角色" }
+        ]
+      };
+    }
+  },
+  // 用户管理-根据 userId 获取对应角色 id 列表（userId：用户id）
+  {
+    url: "/list-role-ids",
+    method: "post",
+    response: ({ body }) => {
+      if (body.userId) {
+        if (body.userId == 1) {
+          return {
+            success: true,
+            data: [1]
+          };
+        } else if (body.userId == 2) {
+          return {
+            success: true,
+            data: [2]
+          };
+        }
+      } else {
+        return {
+          success: false,
+          data: []
+        };
+      }
+    }
+  },
+  // 角色管理
+  {
+    url: "/role",
+    method: "post",
+    response: ({ body }) => {
+      let list = [
+        {
+          createTime: 1605456000000, // 时间戳（毫秒ms）
+          updateTime: 1684512000000,
+          id: 1,
+          name: "超级管理员",
+          code: "admin",
+          status: 1, // 状态 1 启用 0 停用
+          remark: "超级管理员拥有最高权限"
+        },
+        {
+          createTime: 1605456000000,
+          updateTime: 1684512000000,
+          id: 2,
+          name: "普通角色",
+          code: "common",
+          status: 1,
+          remark: "普通角色拥有部分权限"
+        }
+      ];
+      list = list.filter(item => item.name.includes(body?.name));
+      list = list.filter(item =>
+        String(item.status).includes(String(body?.status))
+      );
+      if (body.code) list = list.filter(item => item.code === body.code);
+      return {
+        success: true,
+        data: {
+          list,
+          total: list.length, // 总条目数
+          pageSize: 10, // 每页显示条目个数
+          currentPage: 1 // 当前页数
+        }
+      };
+    }
+  },
+  // 角色管理-权限-菜单权限
+  {
+    url: "/role-menu",
+    method: "post",
+    response: () => {
+      return {
+        success: true,
+        data: [
+          // 外部页面
+          {
+            parentId: 0,
+            id: 100,
+            menuType: 0, // 菜单类型（0代表菜单、1代表iframe、2代表外链、3代表按钮）
+            title: "menus.pureExternalPage"
+          },
+          {
+            parentId: 100,
+            id: 101,
+            menuType: 0,
+            title: "menus.pureExternalDoc"
+          },
+          {
+            parentId: 101,
+            id: 102,
+            menuType: 2,
+            title: "menus.pureExternalLink"
+          },
+          {
+            parentId: 101,
+            id: 103,
+            menuType: 2,
+            title: "menus.pureUtilsLink"
+          },
+          {
+            parentId: 100,
+            id: 104,
+            menuType: 1,
+            title: "menus.pureEmbeddedDoc"
+          },
+          {
+            parentId: 104,
+            id: 105,
+            menuType: 1,
+            title: "menus.pureEpDoc"
+          },
+          {
+            parentId: 104,
+            id: 106,
+            menuType: 1,
+            title: "menus.pureTailwindcssDoc"
+          },
+          {
+            parentId: 104,
+            id: 107,
+            menuType: 1,
+            title: "menus.pureVueDoc"
+          },
+          {
+            parentId: 104,
+            id: 108,
+            menuType: 1,
+            title: "menus.pureViteDoc"
+          },
+          {
+            parentId: 104,
+            id: 109,
+            menuType: 1,
+            title: "menus.purePiniaDoc"
+          },
+          {
+            parentId: 104,
+            id: 110,
+            menuType: 1,
+            title: "menus.pureRouterDoc"
+          },
+          // 权限管理
+          {
+            parentId: 0,
+            id: 200,
+            menuType: 0,
+            title: "menus.purePermission"
+          },
+          {
+            parentId: 200,
+            id: 201,
+            menuType: 0,
+            title: "menus.purePermissionPage"
+          },
+          {
+            parentId: 200,
+            id: 202,
+            menuType: 0,
+            title: "menus.purePermissionButton"
+          },
+          {
+            parentId: 202,
+            id: 203,
+            menuType: 3,
+            title: "添加"
+          },
+          {
+            parentId: 202,
+            id: 204,
+            menuType: 3,
+            title: "修改"
+          },
+          {
+            parentId: 202,
+            id: 205,
+            menuType: 3,
+            title: "删除"
+          },
+          // 系统管理
+          {
+            parentId: 0,
+            id: 300,
+            menuType: 0,
+            title: "menus.pureSysManagement"
+          },
+          {
+            parentId: 300,
+            id: 301,
+            menuType: 0,
+            title: "menus.pureUser"
+          },
+          {
+            parentId: 300,
+            id: 302,
+            menuType: 0,
+            title: "menus.pureRole"
+          },
+          {
+            parentId: 300,
+            id: 303,
+            menuType: 0,
+            title: "menus.pureSystemMenu"
+          },
+          {
+            parentId: 300,
+            id: 304,
+            menuType: 0,
+            title: "menus.pureDept"
+          },
+          // 系统监控
+          {
+            parentId: 0,
+            id: 400,
+            menuType: 0,
+            title: "menus.pureSysMonitor"
+          },
+          {
+            parentId: 400,
+            id: 401,
+            menuType: 0,
+            title: "menus.pureOnlineUser"
+          },
+          {
+            parentId: 400,
+            id: 402,
+            menuType: 0,
+            title: "menus.pureLoginLog"
+          },
+          {
+            parentId: 400,
+            id: 403,
+            menuType: 0,
+            title: "menus.pureOperationLog"
+          },
+          {
+            parentId: 400,
+            id: 404,
+            menuType: 0,
+            title: "menus.pureSystemLog"
+          },
+          // 标签页操作
+          {
+            parentId: 0,
+            id: 500,
+            menuType: 0,
+            title: "menus.pureTabs"
+          },
+          {
+            parentId: 500,
+            id: 501,
+            menuType: 0,
+            title: "menus.pureTabs"
+          },
+          {
+            parentId: 500,
+            id: 502,
+            menuType: 0,
+            title: "query传参模式"
+          },
+          {
+            parentId: 500,
+            id: 503,
+            menuType: 0,
+            title: "params传参模式"
+          }
+        ]
+      };
+    }
+  },
+  // 角色管理-权限-菜单权限-根据角色 id 查对应菜单
+  {
+    url: "/role-menu-ids",
+    method: "post",
+    response: ({ body }) => {
+      if (body.id == 1) {
+        return {
+          success: true,
+          data: [
+            100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 200, 201,
+            202, 203, 204, 205, 300, 301, 302, 303, 304, 400, 401, 402, 403,
+            404, 500, 501, 502, 503
+          ]
+        };
+      } else if (body.id == 2) {
+        return {
+          success: true,
+          data: [
+            100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 404, 500,
+            501, 502, 503
+          ]
+        };
+      }
+    }
   }
 ]);

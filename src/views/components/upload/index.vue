@@ -11,6 +11,7 @@ import { getKeyList, extractFields, downloadByData } from "@pureadmin/utils";
 import Add from "@iconify-icons/ep/plus";
 import Eye from "@iconify-icons/ri/eye-line";
 import Delete from "@iconify-icons/ri/delete-bin-7-line";
+import Upload from "@/components/ReUpload/src/upload.vue";
 
 defineOptions({
   name: "PureUpload"
@@ -98,6 +99,7 @@ const onDownload = () => {
       });
   });
 };
+const imageUrl = ref("");
 </script>
 
 <template>
@@ -251,7 +253,8 @@ const onDownload = () => {
       </div>
     </div>
     <el-divider />
-
+    <Upload v-model="imageUrl" />
+    <el-divider />
     <div class="flex flex-wrap">
       <p>
         裁剪、上传头像请参考

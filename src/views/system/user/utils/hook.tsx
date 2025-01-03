@@ -16,7 +16,7 @@ import {
   hideTextAtIndex,
   deviceDetection
 } from "@pureadmin/utils";
-import { getRoleIds, getUserList, getAllRoleList } from "@/api/system";
+import { getRoleIds, getEmployeePageApi, getAllRoleList } from "@/api/system";
 import {
   ElForm,
   ElInput,
@@ -77,7 +77,7 @@ export function useUser(tableRef: Ref) {
           preview-teleported={true}
           src={row.avatar || userAvatar}
           preview-src-list={Array.of(row.avatar || userAvatar)}
-          class="w-[24px] h-[24px] rounded-full align-middle"
+          class="w-[80px] h-[80px] rounded-full align-middle"
         />
       ),
       width: 90
@@ -99,10 +99,10 @@ export function useUser(tableRef: Ref) {
       cellRenderer: ({ row, props }) => (
         <el-tag
           size={props.size}
-          type={row.sex === 1 ? "danger" : null}
+          type={row.gender === 1 ? "danger" : null}
           effect="plain"
         >
-          {row.sex === 1 ? "女" : "男"}
+          {row.gender === 1 ? "女" : "男"}
         </el-tag>
       )
     },
@@ -256,11 +256,12 @@ export function useUser(tableRef: Ref) {
 
   async function onSearch() {
     loading.value = true;
-    const { data } = await getUserList(toRaw(form));
-    dataList.value = data.list;
-    pagination.total = data.total;
-    pagination.pageSize = data.pageSize;
-    pagination.currentPage = data.currentPage;
+    const res = await getEmployeePageApi(toRaw(form));
+    console.log("res", res.result);
+    dataList.value = res.result.items;
+    pagination.total = res.result.total;
+    pagination.pageSize = res.result.pageSize;
+    pagination.currentPage = res.result.currentPage;
 
     setTimeout(() => {
       loading.value = false;

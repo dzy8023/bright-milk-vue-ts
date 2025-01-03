@@ -91,7 +91,7 @@
 
 <script lang="ts" setup>
 import { AttrItem } from "@/types/attr";
-import { ref, nextTick, computed } from "vue";
+import { ref, nextTick, computed, onMounted } from "vue";
 import { SkuAttr, SupAttr } from "./types";
 import { filterEmptyArray } from "@/utils/utils";
 //默认值
@@ -327,11 +327,11 @@ const generateSaleAttrs = () => {
 const submit = (extandData?: any) => {
   data.spuAttrs = [];
   data.saleAttrs = [];
+  console.log("submit", tempData.value);
   // 过滤掉没有选择的属性，并重新赋值给 data.value
   tempData.value.spuAttrs.map(item => {
     //item.value不为undefined
     if (item.value && item.value.length !== 0) {
-      console.log(item);
       let value = item.value;
       if (value instanceof Array) {
         value = value.join(";");

@@ -1,4 +1,8 @@
+import type { EmployeeItem } from "@/types/employee";
+import type { PageQuery, PageResult } from "@/types/pageQuery";
+import type { RoleItem } from "@/types/Role";
 import { http } from "@/utils/http";
+import { apiHttp } from "@/utils/http";
 
 type Result = {
   data?: Array<any>;
@@ -17,17 +21,44 @@ type ResultTable = {
   };
 };
 
-/** 获取系统管理-用户管理列表 */
-export const getUserList = (data?: object) => {
-  return http.request<ResultTable>("post", "/user", { data });
+type EmployeeParam = PageQuery & {
+  status?: string;
+  username?: string;
+  phone?: string;
 };
-
-/** 系统管理-用户管理-获取所有角色列表 */
+type RoleParam = PageQuery & {
+  name?: string;
+  code?: string;
+  status?: string;
+};
+/** 获取系统管理-员工管理分页 */
+export const getEmployeePageApi = (
+  data: EmployeeParam = {
+    page: 1,
+    pageSize: 6
+  }
+) => {
+  return apiHttp.request<PageResult<EmployeeItem>>("get", "/employee/page", {
+    data
+  });
+};
+/** 获取系统管理-角色管理分页 */
+export const getRolePageApi = (
+  data: RoleParam = {
+    page: 1,
+    pageSize: 6
+  }
+) => {
+  return apiHttp.request<PageResult<RoleItem>>("get", "/role/page", {
+    data
+  });
+};
+/** 系统管理-员工管理-获取所有角色列表 */
 export const getAllRoleList = () => {
   return http.request<Result>("get", "/list-all-role");
 };
 
-/** 系统管理-用户管理-根据userId，获取对应角色id列表（userId：用户id） */
+/** 系统管理-管理-根据userId，获取对应角色id列表（userId：用户id） */
 export const getRoleIds = (data?: object) => {
   return http.request<Result>("post", "/list-role-ids", { data });
 };

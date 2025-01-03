@@ -1,6 +1,5 @@
 import "./reset.css";
 import dayjs from "dayjs";
-import { handleTree } from "@/utils/tree";
 import { message } from "@/utils/message";
 import noImg from "@/assets/img/noImg.png";
 import { usePublicHooks } from "../../hooks";
@@ -10,7 +9,7 @@ import { getKeyList, deviceDetection } from "@pureadmin/utils";
 import { getGoodsListApi } from "@/api/goods";
 import { ElMessageBox } from "element-plus";
 import { type Ref, ref, toRaw, computed, reactive, onMounted } from "vue";
-import { getCategoryListApi } from "@/api/category";
+import { getCategoryTreeApi } from "@/api/category";
 import { GOOD_STATUS_0, GOOD_STATUS_1 } from "@/constant/status";
 import type { TabItem } from "./types";
 
@@ -25,7 +24,6 @@ export function useGoods(tableRef: Ref, treeRef: Ref) {
 
   const dataList = ref<TabItem[]>([]);
   const loading = ref(true);
-  // 上传头像信息
   const switchLoadMap = ref({});
   const { switchStyle } = usePublicHooks();
   const higherCatOptions = ref();
@@ -323,9 +321,12 @@ export function useGoods(tableRef: Ref, treeRef: Ref) {
   onMounted(async () => {
     treeLoading.value = true;
     onSearch();
-    const res = await getCategoryListApi();
-    higherCatOptions.value = handleTree(res.result);
-    treeData.value = handleTree(res.result);
+    // const res = await getCategoryListApi();
+    // higherCatOptions.value = handleTree(res.result);
+    // treeData.value = handleTree(res.result);
+    const res = await getCategoryTreeApi();
+    treeData.value = res.result;
+    higherCatOptions.value = res.result;
     treeLoading.value = false;
   });
 

@@ -71,13 +71,35 @@ export function useStepsForm() {
       name: spu.value.name,
       category: spu.value.category,
       price: spu.value.price,
-      image: spu.value.image.map(f => f.url)[0],
-      desc: data.value[0].desc,
+      image: spu.value.image[0] ?? "",
+      desc: spu.value.desc,
       spuName: spu.value.name
     };
   };
   // getCategoryTreeData();
-
+  const getCategory = (catIds: any[]) => {
+    const category = [];
+    if (catIds.length !== 0 && catIds[0] !== "") {
+      let temp = categoryOptions.value;
+      let idx = 1;
+      catIds.map(id => {
+        idx = temp.findIndex(
+          item =>
+            item.id.toString() === id &&
+            category.push({
+              id: item.id,
+              name: item.name
+            })
+        );
+        if (idx === -1) {
+          console.warn("找不到分类", id);
+          return;
+        }
+        temp = temp[idx].children;
+      });
+    }
+    return category;
+  };
   const stepForm = shallowRef<PlusStepFromRow[]>([
     {
       title: "基本信息",
@@ -344,7 +366,9 @@ export function useStepsForm() {
     switch (step) {
       case 0:
         spu.value["name"] = String(data.value[0]["name"]);
-        spu.value["category"] = data.value[0]["catIds"].toString().split(",");
+        spu.value["category"] = getCategory(
+          data.value[0]["catIds"].toString().split(",")
+        );
         spu.value["price"] = Number(data.value[0]["price"]);
         spu.value["desc"] = String(data.value[0]["desc"]);
         break;
@@ -353,6 +377,7 @@ export function useStepsForm() {
           let extandData = getExtandData();
           console.log("extandData", extandData);
           attrCheckboxRef.value.submit(extandData);
+          console.log("tableData", tableData.value);
         } else {
           console.warn("AttrCheckbox 实例未初始化");
         }
@@ -366,7 +391,6 @@ export function useStepsForm() {
         break;
     }
   };
-
   const next = () => {
     if (active.value <= stepForm.value.length) {
       preNext(active.value);
@@ -384,7 +408,6 @@ export function useStepsForm() {
     } else {
       message("已经是最后一步了");
     }
-    console.log("next", active.value);
   };
   const pre = () => {
     if (active.value == stepForm.value.length + 1) {
@@ -392,7 +415,6 @@ export function useStepsForm() {
     } else if (active.value > 0) {
       active.value--;
     }
-    console.log("pre", active.value);
   };
 
   return { stepForm, active, data, next, pre };
