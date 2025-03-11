@@ -1,6 +1,7 @@
 import type { VNode } from "vue";
 import { isFunction } from "@pureadmin/utils";
-import { type MessageHandler, ElMessage } from "element-plus";
+import { type MessageHandler, ElMessage, ElMessageBox } from "element-plus";
+import type { Data } from "@/utils/http/types";
 
 type messageStyle = "el" | "antd";
 type messageTypes = "info" | "success" | "warning" | "error";
@@ -76,10 +77,55 @@ const message = (
     });
   }
 };
+/**
+ * 仓库消息展示
+ * @param result
+ */
+const storeMessage = (result: Data<any>) => {
+  if (result.code !== 200) {
+    return false;
+  }
+  message(result.msg, { type: "success", duration: 3666 });
+  return true;
+};
+
+const defaultBoxOption: any = {
+  showMessage: false,
+  message: "",
+  title: "",
+  confirmMessage: undefined,
+  cancelMessage: undefined
+};
+
+/**
+ * 消息弹窗确认
+ * @param type
+ * @param option
+ */
+const messageBox = async (
+  option: any = defaultBoxOption,
+  type: any = "warning"
+) => {
+  return ElMessageBox.confirm(option.message, option.title, {
+    confirmButtonText: "确认",
+    cancelButtonText: "返回",
+    type,
+    draggable: true,
+    overflow: true
+  })
+    .then(() => {
+      option.showMessage && message(option.cancelMessage, { type: "success" });
+      return true;
+    })
+    .catch(() => {
+      message(option.cancelMessage, { type: "info" });
+      return false;
+    });
+};
 
 /**
  * 关闭所有 `Message` 消息提示函数
  */
 const closeAllMessage = (): void => ElMessage.closeAll();
 
-export { message, closeAllMessage };
+export { message, closeAllMessage, storeMessage, messageBox };

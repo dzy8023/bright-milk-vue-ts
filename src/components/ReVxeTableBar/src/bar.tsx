@@ -1,5 +1,5 @@
 import Sortable from "sortablejs";
-import { useEpThemeStoreHook } from "@/store/modules/epTheme";
+import { useEpThemeStoreHook } from "@/store/epTheme";
 import { delay, cloneDeep, getKeyList } from "@pureadmin/utils";
 import {
   type PropType,

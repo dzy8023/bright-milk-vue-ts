@@ -1,6 +1,6 @@
 import type { OrderState } from "@/services/constants";
 import type { AddressItem } from "./address";
-import type { PageQuery, PageResult } from "./pageQuery";
+import type { PageQuery, PageResult } from "./result";
 
 /** 获取预付订单 返回信息 */
 export type OrderPreResult = {

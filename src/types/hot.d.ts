@@ -1,5 +1,5 @@
 import type { GoodItem } from "./good";
-import type { PageResult } from "./pageQuery";
+import type { PageResult } from "./result";
 
 export type HotItem = {
   id: number;

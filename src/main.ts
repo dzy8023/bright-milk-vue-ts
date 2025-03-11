@@ -8,6 +8,8 @@ import { createApp, type Directive } from "vue";
 import { useElementPlus } from "@/plugins/elementPlus";
 import { injectResponsiveStorage } from "@/utils/responsive";
 import { useVxeTable } from "@/plugins/vxeTable";
+import * as echarts from "echarts";
+import { useEcharts } from "@/plugins/echarts";
 
 import Table from "@pureadmin/table";
 // import PureDescriptions from "@pureadmin/descriptions";
@@ -47,6 +49,8 @@ import { Perms } from "@/components/RePerms";
 app.component("Auth", Auth);
 app.component("Perms", Perms);
 
+app.config.globalProperties.$echarts = echarts;
+
 // 全局注册vue-tippy
 import "tippy.js/dist/tippy.css";
 import "tippy.js/themes/light.css";
@@ -59,8 +63,12 @@ getPlatformConfig(app).then(async config => {
   app.use(router);
   await router.isReady();
   injectResponsiveStorage(app, config);
-  app.use(MotionPlugin).use(useElementPlus).use(Table).use(useVxeTable);
-  // .use(PureDescriptions)
-  // .use(useEcharts);
+  app
+    .use(MotionPlugin)
+    .use(useElementPlus)
+    .use(Table)
+    .use(useVxeTable)
+    // .use(PureDescriptions)
+    .use(useEcharts);
   app.mount("#app");
 });

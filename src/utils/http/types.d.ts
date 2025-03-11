@@ -46,7 +46,7 @@ export default class PureHttp {
   ): Promise<T>;
 }
 export type Data<T> = {
-  code: string;
+  code: number;
   msg: string;
   result: T;
 };
