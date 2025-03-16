@@ -41,7 +41,8 @@ const props = defineProps({
     required: true
   }
 });
-const emits = defineEmits(["update:modelValue"]);
+
+const emits = defineEmits(["update:modelValue", "upload"]);
 const imageUrl = computed({
   get() {
     return props.modelValue;
@@ -77,14 +78,16 @@ const startLoading = () => {
   );
 };
 
-const handleFileChange = (event: Event) => {
+const handleFileChange = async (event: Event) => {
   const target = event.target as HTMLInputElement;
   const file = target.files?.[0];
-  console.log(file);
   if (file && file.type.startsWith("image/")) {
     loading.value = true;
     progress.value = 0;
     startLoading();
+    //上传文件
+    emits("upload", file);
+    loading.value = false;
     reader.readAsDataURL(file);
   } else {
     ElMessage.error("请上传图片格式的文件");
@@ -94,6 +97,7 @@ const handleImageLoad = () => {
   loading.value = false;
 };
 const removeImage = () => {
+  imageUrl.value = "";
   emits("update:modelValue", "");
 };
 onMounted(() => {

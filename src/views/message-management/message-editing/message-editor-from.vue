@@ -22,7 +22,7 @@ import { useMessageTypeStore } from "@/store/message/messageType";
 import { message } from "@/utils/message";
 import { useMessageSendStore } from "@/store/message/messageSend";
 import { Plus } from "@element-plus/icons-vue";
-import ImageLoading from "@/components/Upload/ImageLoading.vue";
+import ImageLoading from "@/components/ReImage/index.vue";
 import { hasAuth } from "@/router/utils";
 import { auth } from "@/views/message-management/message-editing/utils/auth";
 import { encode } from "js-base64";

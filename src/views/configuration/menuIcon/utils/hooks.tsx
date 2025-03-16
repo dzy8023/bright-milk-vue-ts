@@ -5,7 +5,7 @@ import { h, ref } from "vue";
 import { message, messageBox } from "@/utils/message";
 import type { FormItemProps } from "@/views/configuration/menuIcon/utils/types";
 
-import DeleteBatchDialog from "@/components/Table/DeleteBatchDialog.vue";
+import DeleteBatchDialog from "@/components/ReTable/DeleteBatchDialog.vue";
 
 export const formRef = ref();
 const menuIconStore = useMenuIconStore();

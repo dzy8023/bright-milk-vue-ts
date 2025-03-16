@@ -8,7 +8,6 @@ import type {
   OptionsRow,
   PlusStepFromRow
 } from "plus-pro-components";
-import { getCategoryTreeApi } from "@/api/bm/goods/category";
 import ReUpload from "@/components/ReUpload";
 import AttrCheckbox from "@/views/components/attrCheckbox/utils/attr-checkbox.vue";
 import { ElButton } from "element-plus";
@@ -20,11 +19,13 @@ import type {
 } from "@/views/components/attrCheckbox/utils/types";
 import { useColumns } from "@/views/components/attrCheckbox/utils/hook";
 import Skutab from "../form/skutab.vue";
+import { useCategoryStore } from "@/store/bm/goods/category";
 
 /**
  * 图片自动上传，在系统管理里面内嵌一个minio后台管理系统，或者增加一个图片清理功能
  */
 export function useStepsForm() {
+  const categoryStore = useCategoryStore();
   const data = ref<FieldValues[]>([
     {
       name: "鲜牛奶",
@@ -54,16 +55,15 @@ export function useStepsForm() {
 
   const getCategoryTreeData = async () => {
     categoryOptions.value = [];
-    const res = await getCategoryTreeApi();
+    await categoryStore.getCategoryTree();
     const convertCategory = items => {
       return items.map(item => ({
-        name: item.name, // 将 name 改为 label
-        id: item.id,
+        ...item,
         status: item.status == 0, // 将 status 改为 disabled
         children: item.children ? convertCategory(item.children) : [] // 递归处理子分类
       }));
     };
-    categoryOptions.value = convertCategory(res.result); // 转换并赋值
+    categoryOptions.value = convertCategory(categoryStore.treeData); // 转换并赋值
     console.log(categoryOptions.value);
   };
   const getExtandData = () => {
@@ -129,6 +129,7 @@ export function useStepsForm() {
                 label: "name",
                 disabled: "status"
               },
+
               filterable: true,
               clearable: true,
               onFocus: () => {
@@ -136,6 +137,13 @@ export function useStepsForm() {
                   getCategoryTreeData();
                 }
               }
+            },
+            fieldSlots: {
+              default: ({ node, data }) =>
+                h("span", null, [
+                  h("span", null, data.name),
+                  !node.isLeaf && h("span", null, ` (${data.children.length})`)
+                ])
             },
             options: computed(() => categoryOptions.value),
             colProps: {

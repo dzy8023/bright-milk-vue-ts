@@ -21,7 +21,7 @@ const sendSecond = ref(60);
 const timer = ref(null);
 
 const ruleForm = reactive({
-  username: "1319900154@qq.com",
+  username: "2890716703@qq.com",
   password: "admin123",
   emailCode: "1",
   type: currentPage.value

@@ -86,7 +86,7 @@ onBeforeMount(() => {
 
 <style lang="scss">
 .pure-account-settings {
-  background: $menuBg;
+  background: var(--pure-theme-menu-bg) !important;
 }
 
 .pure-account-settings-menu {
@@ -95,12 +95,12 @@ onBeforeMount(() => {
 
   .el-menu-item {
     height: 48px !important;
-    color: $menuText;
+    color: var(--pure-theme-menu-text);
     background-color: transparent !important;
     transition: color 0.2s;
 
     &:hover {
-      color: $menuTitleHover !important;
+      color: var(--pure-theme-menu-title-hover) !important;
     }
 
     &.is-active {

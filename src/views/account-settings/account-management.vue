@@ -3,7 +3,7 @@ import { reactive, ref } from "vue";
 import { deviceDetection } from "@pureadmin/utils";
 import { addDialog } from "@/components/ReDialog/index";
 import { useAdminUserStore } from "@/store/system/adminUser";
-import ResetPasswordDialog from "@/components/Table/ResetPasswords.vue";
+import ResetPasswordDialog from "@/components/ReTable/ResetPasswords.vue";
 import { removeToken } from "@/utils/auth";
 import { useRouter } from "vue-router";
 

@@ -24,6 +24,8 @@ import { selectUserinfo } from "@/components/ReTable/Userinfo/columns";
 
 import { useRoleStore } from "@/store/system/role";
 import { useRenderIcon } from "@/components/ReIcon/src/hooks";
+import More from "@iconify-icons/ep/more-filled";
+
 import { deviceDetection } from "@pureadmin/utils";
 import Menu from "@iconify-icons/ep/menu";
 import AssignPowersToRole from "@/views/system/role/assign-powers-to-role.vue";
@@ -226,18 +228,33 @@ onMounted(() => {
                   </el-button>
                 </template>
               </el-popconfirm>
-
-              <el-button
-                v-if="hasAuth(auth.assignPowersToRole)"
-                :icon="useRenderIcon(Menu)"
-                :size="size"
-                class="reset-margin"
-                link
-                type="primary"
-                @click="onMenuPowerClick(row)"
-              >
-                权限设置
-              </el-button>
+              <!-- 更多操作 -->
+              <el-dropdown>
+                <el-button
+                  :icon="useRenderIcon(More)"
+                  :size="size"
+                  class="ml-3 mt-[2px]"
+                  link
+                  type="primary"
+                />
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <!-- 上传头像 -->
+                    <el-dropdown-item v-if="hasAuth(auth.assignPowersToRole)">
+                      <el-button
+                        :icon="useRenderIcon(Menu)"
+                        :size="size"
+                        class="reset-margin"
+                        link
+                        type="primary"
+                        @click="onMenuPowerClick(row)"
+                      >
+                        权限设置
+                      </el-button>
+                    </el-dropdown-item>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
             </template>
           </pure-table>
         </template>

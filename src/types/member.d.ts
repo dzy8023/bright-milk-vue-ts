@@ -10,8 +10,6 @@ export type LoginResult = {
   phone: string;
   /**昵称 */
   nickname?: string;
-  /**登录凭证 */
-  token: string;
   /**余额 */
   balance?: number;
   /**积分 */

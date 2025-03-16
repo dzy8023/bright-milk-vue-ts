@@ -6,13 +6,13 @@ import { message, messageBox } from "@/utils/message";
 import type { FormItemProps } from "@/views/system/adminUser/utils/types";
 
 import { isAddUserinfo } from "@/views/system/adminUser/utils/columns";
-import ResetPasswordDialog from "@/components/Table/ResetPasswords.vue";
+import ResetPasswordDialog from "@/components/ReTable/ResetPasswords.vue";
 import { deviceDetection } from "@pureadmin/utils";
 import CropperPreview from "@/components/ReCropperPreview";
 import AssignUserToRole from "@/views/system/adminUser/assign-roles-to-user.vue";
 import { fetchUploadAvatarByAdmin } from "@/api/system/adminUser";
 import { useUserStore } from "@/store/system/user";
-import DeleteBatchDialog from "@/components/Table/DeleteBatchDialog.vue";
+import DeleteBatchDialog from "@/components/ReTable/DeleteBatchDialog.vue";
 import { UserAvatar } from "@/enums/baseConstant";
 
 const adminUserStore = useAdminUserStore();
@@ -159,7 +159,8 @@ export const onDeleteBatch = async () => {
     draggable: true,
     fullscreenIcon: true,
     closeOnClickModal: false,
-    contentRenderer: () => h(DeleteBatchDialog, { ref: formDeletedBatchRef }),
+    contentRenderer: () =>
+      h(DeleteBatchDialog, { ref: formDeletedBatchRef, formInline: null }),
     beforeSure: (done, { options }) => {
       formDeletedBatchRef.value.formDeletedBatchRef.validate(
         async (valid: any) => {
@@ -339,32 +340,4 @@ export const onForcedOffline = async (row: any) => {
   if (!confirm) return;
 
   adminUserStore.forcedOffline(id);
-};
-
-/**
- * * 当树形结构选择时
- * 搜索当前用户属于哪个部门
- * @param dept
- */
-export const onTreeSelect = async (dept: any) => {
-  /** 递归查找子级Id*/
-  function findChildIds(node: any, ids: string[]) {
-    ids.push(node.id);
-    if (!node.children) return ids;
-
-    // 递归查找子节点的 ID
-    for (const child of node.children) {
-      ids.push(child.id);
-      findChildIds(child, ids);
-    }
-
-    return ids;
-  }
-
-  // 查询属于这个部门下的用户
-  const list = findChildIds(dept, []);
-  const deptIds = new Set(list);
-
-  adminUserStore.form.deptIds = Array.from(deptIds);
-  await onSearch();
 };

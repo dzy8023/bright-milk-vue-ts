@@ -97,12 +97,8 @@ onMounted(() => {
           :xs="24"
           class="mb-[18px]"
         >
-          <el-card class="h-[1178px] overflow-y-auto" shadow="never">
-            <el-tabs
-              v-model="activeName"
-              class="demo-tabs"
-              @tab-click="onTabClick"
-            >
+          <el-card style="overflow-y: auto" class="h-[1178px]" shadow="never">
+            <el-tabs v-model="activeName" @tab-click="onTabClick">
               <el-tab-pane label="前端文档" name="web">
                 <web-read-me class="mt-3 h-[100%]" />
               </el-tab-pane>

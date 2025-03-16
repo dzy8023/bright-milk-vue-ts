@@ -2,7 +2,7 @@ import { addDialog } from "@/components/ReDialog/index";
 import { h, ref } from "vue";
 import { message, messageBox } from "@/utils/message";
 
-import DeleteBatchDialog from "@/components/Table/DeleteBatchDialog.vue";
+import DeleteBatchDialog from "@/components/ReTable/DeleteBatchDialog.vue";
 import { useMessageReceivedStore } from "@/store/message/messageReceived";
 
 // 删除ids

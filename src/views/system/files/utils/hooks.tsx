@@ -8,7 +8,7 @@ import type { FormItemProps } from "@/views/system/files/utils/types";
 import { downloadFilesByFileId } from "@/api/files";
 import { download } from "@/utils/sso";
 import type { UploadFiles } from "element-plus";
-import DeleteBatchDialog from "@/components/Table/DeleteBatchDialog.vue";
+import DeleteBatchDialog from "@/components/ReTable/DeleteBatchDialog.vue";
 
 // 选择的row列表
 export const selectRows = ref([]);
@@ -135,7 +135,8 @@ export const onDeleteBatch = async () => {
     draggable: true,
     fullscreenIcon: true,
     closeOnClickModal: false,
-    contentRenderer: () => h(DeleteBatchDialog, { ref: formDeletedBatchRef }),
+    contentRenderer: () =>
+      h(DeleteBatchDialog, { ref: formDeletedBatchRef, formInline: null }),
     beforeSure: (done, { options }) => {
       formDeletedBatchRef.value.formDeletedBatchRef.validate(
         async (valid: any) => {

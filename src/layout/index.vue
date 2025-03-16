@@ -30,6 +30,7 @@ import LaySetting from "./components/lay-setting/index.vue";
 import NavVertical from "./components/lay-sidebar/NavVertical.vue";
 import NavHorizontal from "./components/lay-sidebar/NavHorizontal.vue";
 import BackTopIcon from "@/assets/svg/back_top.svg?component";
+import { useUserStore } from "@/store/system/user";
 
 const appWrapperRef = ref();
 const { isDark } = useDark();
@@ -37,6 +38,7 @@ const { layout } = useLayout();
 const isMobile = deviceDetection();
 const pureSetting = useSettingStoreHook();
 const { $storage } = useGlobal<GlobalPropertiesApi>();
+const userStore = useUserStore();
 
 const set: setType = reactive({
   sidebar: computed(() => {
@@ -118,6 +120,8 @@ onMounted(() => {
   if (isMobile) {
     toggle("mobile", false);
   }
+  // 获取用户信息
+  userStore.getUserinfo();
 });
 
 onBeforeMount(() => {

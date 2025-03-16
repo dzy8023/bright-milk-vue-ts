@@ -4,7 +4,7 @@ import { useUserLoginLogStore } from "@/store/monitor/userLoginLog";
 import { h, ref } from "vue";
 import { message, messageBox } from "@/utils/message";
 
-import DeleteBatchDialog from "@/components/Table/DeleteBatchDialog.vue";
+import DeleteBatchDialog from "@/components/ReTable/DeleteBatchDialog.vue";
 
 export const formRef = ref();
 // 删除ids

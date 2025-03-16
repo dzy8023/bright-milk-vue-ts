@@ -25,6 +25,7 @@ import { columns } from "@/views/system/menu/utils/columns";
 import { userMenuStore } from "@/store/system/menu";
 import { useRenderIcon } from "@/components/ReIcon/src/hooks";
 import { selectUserinfo } from "@/components/ReTable/Userinfo/columns";
+import More from "@iconify-icons/ep/more-filled";
 import Upload from "@iconify-icons/ri/upload-line";
 import { FormInstance } from "element-plus";
 import { usePublicHooks } from "@/views/hooks";
@@ -229,40 +230,55 @@ onMounted(() => {
                 新增
               </el-button>
             </Auth>
-
-            <!-- 删除操作 -->
-            <el-popconfirm
-              v-if="hasAuth(auth.deleted)"
-              :title="`删除 ${row.title}?`"
-              @confirm="onDelete(row)"
-            >
-              <template #reference>
-                <el-button
-                  :icon="useRenderIcon(Delete)"
-                  :size="size"
-                  class="reset-margin"
-                  link
-                  type="primary"
-                >
-                  删除
-                </el-button>
-              </template>
-            </el-popconfirm>
-
-            <!-- 分配角色 -->
-            <Auth :value="auth.assignRolesToRouter">
+            <!-- 更多操作 -->
+            <el-dropdown>
               <el-button
-                v-show="row.menuType !== 3"
-                :icon="useRenderIcon(Upload)"
+                :icon="useRenderIcon(More)"
                 :size="size"
-                class="reset-margin"
+                class="ml-3 mt-[2px]"
                 link
                 type="primary"
-                @click="assignRolesToRouter(row)"
-              >
-                分配角色
-              </el-button>
-            </Auth>
+              />
+              <template #dropdown>
+                <el-dropdown-menu>
+                  <el-dropdown-item v-if="hasAuth(auth.deleted)">
+                    <!-- 删除操作 -->
+                    <el-popconfirm
+                      :title="`删除 ${row.title}?`"
+                      @confirm="onDelete(row)"
+                    >
+                      <template #reference>
+                        <el-button
+                          :icon="useRenderIcon(Delete)"
+                          :size="size"
+                          class="reset-margin"
+                          link
+                          type="primary"
+                        >
+                          删除
+                        </el-button>
+                      </template>
+                    </el-popconfirm>
+                  </el-dropdown-item>
+                  <el-dropdown-item>
+                    <!-- 分配角色 -->
+                    <Auth :value="auth.assignRolesToRouter">
+                      <el-button
+                        v-show="row.menuType !== 3"
+                        :icon="useRenderIcon(Upload)"
+                        :size="size"
+                        class="reset-margin"
+                        link
+                        type="primary"
+                        @click="assignRolesToRouter(row)"
+                      >
+                        分配角色
+                      </el-button>
+                    </Auth>
+                  </el-dropdown-item>
+                </el-dropdown-menu>
+              </template>
+            </el-dropdown>
           </template>
         </pure-table>
       </template>

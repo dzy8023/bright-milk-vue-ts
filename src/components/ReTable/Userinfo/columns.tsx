@@ -1,5 +1,5 @@
-import UserinfoDialog from "@/components/Table/Userinfo/UserinfoDialog.vue";
-import { addDialog } from "@/components/BaseDialog/index";
+import UserinfoDialog from "@/components/ReTable/Userinfo/UserinfoDialog.vue";
+import { addDialog } from "@/components/ReDialog/index";
 
 /**
  * * 查看用户信息

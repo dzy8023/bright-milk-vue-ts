@@ -4,7 +4,6 @@ import { message } from "@/utils/message";
 import { createFormData } from "@pureadmin/utils";
 import type { UploadFile, UploadUserFile } from "element-plus";
 import UploadIcon from "@iconify-icons/ri/upload-2-line";
-import { formUpload } from "@/api/mock";
 import { Delete, Download, ZoomIn } from "@element-plus/icons-vue";
 
 const formRef = ref();
@@ -41,17 +40,6 @@ const submitForm = formEl => {
         files: validateForm.fileList.map(file => ({ raw: file.raw })), // file 文件
         date: validateForm.date // 别的字段
       });
-      formUpload(formData)
-        .then(({ success }) => {
-          if (success) {
-            message("提交成功", { type: "success" });
-          } else {
-            message("提交失败");
-          }
-        })
-        .catch(error => {
-          message(`提交异常 ${error}`, { type: "error" });
-        });
     } else {
       return false;
     }

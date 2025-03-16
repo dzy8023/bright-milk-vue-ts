@@ -19,7 +19,7 @@ const ruleFormRef = ref<FormInstance>();
 const loading = ref(false);
 
 const ruleForm = reactive({
-  username: "bunny",
+  username: "admin",
   password: "admin123",
   type: currentPage.value
 });

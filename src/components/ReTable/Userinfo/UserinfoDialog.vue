@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { onMounted, ref } from "vue";
-import { fetchGetUserinfoById } from "@/api/v1/system/adminUser";
+import { fetchGetUserinfoById } from "@/api/system/adminUser";
 import userAvatarIcon from "@/assets/svg/user_avatar.svg?component";
 
 const props = defineProps({
@@ -23,7 +23,7 @@ const getUserInfo = async () => {
   // 判断是否是web端
   const result = await fetchGetUserinfoById({ id: props.userId });
   if (result.code === 200) {
-    userinfo.value = result.data;
+    userinfo.value = result.result;
   }
 
   loading.value = false;
@@ -43,53 +43,46 @@ onMounted(() => {
           <div class="list-card-item_detail--logo">
             <userAvatarIcon />
           </div>
-          <h1 class="list-card-item_detail--name">{{ $t("user_details") }}</h1>
+          <h1 class="list-card-item_detail--name">用户信息</h1>
         </div>
         <el-tag
           :color="userinfo.status ? '#F67676' : '#00a870'"
           class="mx-1 list-card-item_detail--operation--tag"
           effect="dark"
         >
-          {{ $t("user_status") }}：{{
-            userinfo.status ? $t("disable") : $t("normal")
-          }}
+          状态：{{ userinfo.status ? "禁用" : "正常" }}
         </el-tag>
       </el-row>
 
       <!-- 用户详情 -->
       <el-descriptions border>
-        <el-descriptions-item :label="$t('avatar')" :width="100" align="center">
+        <el-descriptions-item label="头像" :width="100" align="center">
           <el-image
             :src="userinfo.avatar"
             style="width: 100px; height: 100px"
           />
         </el-descriptions-item>
-        <el-descriptions-item :label="$t('username')" :width="100">{{
+        <el-descriptions-item label="用户名" :width="100">{{
           userinfo.username
         }}</el-descriptions-item>
-        <el-descriptions-item :label="$t('nickname')" :width="100">{{
+        <el-descriptions-item label="昵称" :width="100">{{
           userinfo.nickname
         }}</el-descriptions-item>
 
-        <el-descriptions-item :label="$t('email')">
+        <el-descriptions-item label="邮箱">
           {{ userinfo.email }}</el-descriptions-item
         >
-        <el-descriptions-item :label="$t('phone')">{{
+        <el-descriptions-item label="手机号">{{
           userinfo.phone
         }}</el-descriptions-item>
-        <el-descriptions-item :label="$t('sex')">
-          <el-tag v-if="userinfo.sex === 1">男</el-tag>
-          <el-tag v-if="userinfo.sex === 0" type="danger">女</el-tag>
+        <el-descriptions-item label="性别">
+          <el-tag v-if="userinfo.gender === 1">男</el-tag>
+          <el-tag v-if="userinfo.gender === 0" type="danger">女</el-tag>
         </el-descriptions-item>
-
-        <el-descriptions-item :label="$t('personDescription')" span="3">
-          {{ userinfo.personDescription }}
-        </el-descriptions-item>
-
-        <el-descriptions-item :label="$t('table.createTime')" span="1.5"
+        <el-descriptions-item label="创建时间" :span="1.5"
           >{{ userinfo.createTime }}
         </el-descriptions-item>
-        <el-descriptions-item :label="更新时间" span="1.5"
+        <el-descriptions-item label="更新时间" :span="1.5"
           >{{ userinfo.updateTime }}
         </el-descriptions-item>
       </el-descriptions>
@@ -103,7 +96,7 @@ onMounted(() => {
           <div class="list-card-item_detail--logo">
             <userAvatarIcon />
           </div>
-          <h1 class="list-card-item_detail--name">{{ $t("user_details") }}</h1>
+          <h1 class="list-card-item_detail--name">用户详情</h1>
         </div>
         <el-tag
           class="mx-1 list-card-item_detail--operation--tag"
@@ -116,7 +109,7 @@ onMounted(() => {
 
       <!-- 用户详情 -->
       <el-descriptions border>
-        <el-descriptions-item :label="$t('avatar')" :width="100" align="center">
+        <el-descriptions-item label="头像" :width="100" align="center">
           <el-skeleton animated class="flex justify-center">
             <template #template>
               <el-skeleton-item
@@ -126,31 +119,26 @@ onMounted(() => {
             </template>
           </el-skeleton>
         </el-descriptions-item>
-        <el-descriptions-item :label="$t('username')" :width="100">
+        <el-descriptions-item label="用户名" :width="100">
           <el-skeleton :rows="1" animated />
         </el-descriptions-item>
-        <el-descriptions-item :label="$t('nickname')" :width="100">
-          <el-skeleton :rows="1" animated />
-        </el-descriptions-item>
-
-        <el-descriptions-item :label="$t('email')">
-          <el-skeleton :rows="1" animated />
-        </el-descriptions-item>
-        <el-descriptions-item :label="$t('phone')">
-          <el-skeleton :rows="1" animated />
-        </el-descriptions-item>
-        <el-descriptions-item :label="$t('sex')">
+        <el-descriptions-item label="昵称" :width="100">
           <el-skeleton :rows="1" animated />
         </el-descriptions-item>
 
-        <el-descriptions-item :label="$t('personDescription')" span="3">
+        <el-descriptions-item label="邮箱">
           <el-skeleton :rows="1" animated />
         </el-descriptions-item>
-
-        <el-descriptions-item :label="$t('table.createTime')" span="1.5">
+        <el-descriptions-item label="手机号">
           <el-skeleton :rows="1" animated />
         </el-descriptions-item>
-        <el-descriptions-item :label="更新时间" span="1.5">
+        <el-descriptions-item label="性别">
+          <el-skeleton :rows="1" animated />
+        </el-descriptions-item>
+        <el-descriptions-item label="创建时间" :span="1.5">
+          <el-skeleton :rows="1" animated />
+        </el-descriptions-item>
+        <el-descriptions-item label="更新时间" :span="1.5">
           <el-skeleton :rows="1" animated />
         </el-descriptions-item>
       </el-descriptions>
@@ -159,7 +147,7 @@ onMounted(() => {
     <!-- 数据为空 -->
     <el-empty
       v-if="(!userId || !userinfo) && !loading"
-      :description="$t('no_data')"
+      description="没有数据"
     />
   </div>
 </template>

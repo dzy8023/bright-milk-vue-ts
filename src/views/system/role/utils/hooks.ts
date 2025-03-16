@@ -7,7 +7,7 @@ import type { FormItemProps } from "@/views/system/role/utils/types";
 
 import { fetchGetPowerListByRoleId } from "@/api/system/power";
 import { isAllEmpty } from "@pureadmin/utils";
-import DeleteBatchDialog from "@/components/Table/DeleteBatchDialog.vue";
+import DeleteBatchDialog from "@/components/ReTable/DeleteBatchDialog.vue";
 
 // 表格ref
 export const tableRef = ref();

@@ -64,11 +64,9 @@ export const fetchGetUserinfo = () => {
 
 /** 用户信息---获取用户信息列表 */
 export const fetchGetAdminUserList = (data: any) => {
-  return apiHttp.request<PageResult<any>>(
-    "get",
-    `user/getAdminUserList/${data.currentPage}/${data.pageSize}`,
-    { params: data }
-  );
+  return apiHttp.request<PageResult<any>>("get", "user/getAdminUserList", {
+    params: data
+  });
 };
 
 /** 用户信息---查询用户 */

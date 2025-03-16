@@ -8,7 +8,7 @@ import type { FormItemProps } from "@/views/system/power/utils/types";
 import { handleTree } from "@pureadmin/utils";
 import { powerCascadeProps } from "@/views/system/power/utils/columns";
 import { ElCascader, ElForm, ElFormItem } from "element-plus";
-import DeleteBatchDialog from "@/components/Table/DeleteBatchDialog.vue";
+import DeleteBatchDialog from "@/components/ReTable/DeleteBatchDialog.vue";
 
 export const formRef = ref();
 // 批量点击id列表
@@ -117,7 +117,8 @@ export const onDeleteBatch = async () => {
     draggable: true,
     fullscreenIcon: true,
     closeOnClickModal: false,
-    contentRenderer: () => h(DeleteBatchDialog, { ref: formDeletedBatchRef }),
+    contentRenderer: () =>
+      h(DeleteBatchDialog, { ref: formDeletedBatchRef, formInline: null }),
     beforeSure: (done, { options }) => {
       formDeletedBatchRef.value.formDeletedBatchRef.validate(
         async (valid: any) => {

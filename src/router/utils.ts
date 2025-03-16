@@ -64,13 +64,14 @@ function filterTree(data: RouteComponent[]) {
 }
 
 /** 过滤children长度为0的的目录，当目录下没有菜单时，会过滤此目录，目录没有赋予roles权限，当目录下只要有一个菜单有显示权限，那么此目录就会显示 */
-function filterChildrenTree(data: RouteComponent[]) {
-  const newTree = cloneDeep(data).filter((v: any) => v?.children?.length !== 0);
-  newTree.forEach(
-    (v: { children }) => v.children && (v.children = filterTree(v.children))
-  );
-  return newTree;
-}
+// function filterChildrenTree(data: RouteComponent[]) {
+//   const newTree = cloneDeep(data).filter((v: any) => v?.children?.length !== 0);
+//   newTree.forEach(
+//     (v: { children }) => v.children && (v.children = filterTree(v.children))
+//   );
+//   console.log("newTree2", data, newTree);
+//   return newTree;
+// }
 
 /** 判断两个数组彼此是否存在相同值 */
 function isOneOfArray(a: Array<string>, b: Array<string>) {
@@ -91,7 +92,8 @@ function filterNoPermissionTree(data: RouteComponent[]) {
   newTree.forEach(
     (v: any) => v.children && (v.children = filterNoPermissionTree(v.children))
   );
-  return filterChildrenTree(newTree);
+  // return filterChildrenTree(newTree);
+  return newTree;
 }
 
 /** 通过指定 `key` 获取父级路径集合，默认 `key` 为 `path` */
@@ -361,9 +363,20 @@ function hasAuth(value: string | Array<string>): boolean {
   /** 从当前路由的`meta`字段里获取按钮级别的所有自定义`code`值 */
   const metaAuths = getAuths();
   if (!metaAuths) return false;
+
+  // 管理员权限
+  if (
+    metaAuths.includes("*::*::*") ||
+    metaAuths.includes("*::*") ||
+    metaAuths.includes("*")
+  ) {
+    return true;
+  }
+
   const isAuths = isString(value)
     ? metaAuths.includes(value)
     : isIncludeAllChildren(value, metaAuths);
+
   return isAuths ? true : false;
 }
 

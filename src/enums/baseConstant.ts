@@ -49,3 +49,21 @@ export const tableSelectButtonClass = computed(() => [
 // export const UserAvatar = 'http://116.196.101.14:9000/auth-admin/avatar/user.jpg';
 export const UserAvatar =
   "https://thirdwx.qlogo.cn/mmopen/vi_32/DYAIOgq83eoj0hHXhgJNOTSOFsS4uZs8x1ConecaVOB8eIl115xmJZcT4oCicvia7wMEufibKtTLqiaJeanU2Lpg3w/132";
+
+export const iconClass = computed(() => {
+  return [
+    "w-[22px]",
+    "h-[22px]",
+    "flex",
+    "justify-center",
+    "items-center",
+    "outline-none",
+    "rounded-[4px]",
+    "cursor-pointer",
+    "transition-colors",
+    "hover:bg-[#0000000f]",
+    "dark:hover:bg-[#ffffff1f]",
+    "dark:hover:text-[#ffffffd9]"
+  ];
+});
+export const MaxCategoryLayer = 3;

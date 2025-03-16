@@ -89,6 +89,15 @@ const storeMessage = (result: Data<any>) => {
   return true;
 };
 
+const returnMessage = (result: Data<any>, defaultData: any = []) => {
+  if (result.code == 200) {
+    return result.result;
+  } else {
+    message(result.msg, { type: "error", duration: 3666 });
+    return defaultData;
+  }
+};
+
 const defaultBoxOption: any = {
   showMessage: false,
   message: "",
@@ -128,4 +137,4 @@ const messageBox = async (
  */
 const closeAllMessage = (): void => ElMessage.closeAll();
 
-export { message, closeAllMessage, storeMessage, messageBox };
+export { message, closeAllMessage, storeMessage, messageBox, returnMessage };

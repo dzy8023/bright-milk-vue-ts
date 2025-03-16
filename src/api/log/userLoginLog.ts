@@ -5,7 +5,7 @@ import { apiHttp } from "@/utils/http";
 export const fetchGetUserLoginLogList = (data: any) => {
   return apiHttp.request<PageResult<any>>(
     "get",
-    `userLoginLog/getUserLoginLogList/${data.currentPage}/${data.pageSize}`,
+    `userLoginLog/getUserLoginLogList`,
     { params: data }
   );
 };
@@ -14,7 +14,8 @@ export const fetchGetUserLoginLogList = (data: any) => {
 export const fetchGetUserLoginLogListByLocalUser = (data: any) => {
   return apiHttp.request<PageResult<any>>(
     "get",
-    `userLoginLog/noManage/getUserLoginLogListByLocalUser/${data.currentPage}/${data.pageSize}`
+    "userLoginLog/noManage/getUserLoginLogPageByLocalUser",
+    { params: data }
   );
 };
 

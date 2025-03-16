@@ -2,7 +2,7 @@
 import { ref } from "vue";
 import ReCol from "@/components/ReCol";
 import { formRules } from "@/views/system/menu/utils/columns";
-import IconSelect from "@/components/SelectIcon/Select.vue";
+import { IconSelect } from "@/components/ReIcon";
 import Segmented from "@/components/ReSegmented";
 import { menuTypeOptions } from "@/enums/index";
 import { FormProps } from "@/views/system/menu/utils/types";
@@ -26,6 +26,7 @@ const props = withDefaults(defineProps<FormProps>(), {
 
 const ruleFormRef = ref();
 const newFormInline = ref(props.formInline);
+console.log(newFormInline.value);
 defineExpose({ menuFormRef: ruleFormRef });
 </script>
 
@@ -127,7 +128,7 @@ defineExpose({ menuFormRef: ruleFormRef });
 
       <re-col :sm="24" :value="12" :xs="24">
         <el-form-item label="菜单图标" prop="icon">
-          <IconSelect :form-inline="newFormInline" class="w-full" />
+          <IconSelect v-model="newFormInline.icon" auto-close class="w-full" />
         </el-form-item>
       </re-col>
 

@@ -12,8 +12,7 @@ import {
 } from "./utils";
 import { useMultiTagsStoreHook } from "./multiTags";
 
-export const usePermissionStore = defineStore({
-  id: "pure-permission",
+export const usePermissionStore = defineStore("pure-permission", {
   state: () => ({
     // 静态路由生成的菜单
     constantMenus,
@@ -33,6 +32,7 @@ export const usePermissionStore = defineStore({
       this.flatteningRoutes = formatFlatteningRoutes(
         this.constantMenus.concat(routes)
       );
+      console.log("菜单", this.wholeMenus);
     },
     cacheOperate({ mode, name }: cacheType) {
       const delIndex = this.cachePageList.findIndex(v => v === name);

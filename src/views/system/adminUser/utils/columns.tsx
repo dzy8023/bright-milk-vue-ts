@@ -1,5 +1,4 @@
-import { computed, reactive, ref } from "vue";
-
+import { computed, ref } from "vue";
 import type { FormRules } from "element-plus";
 import { REGEXP_PWD } from "@/views/login/utils/rule";
 
@@ -37,11 +36,11 @@ export const columns: TableColumnList = [
   { label: "创建时间", prop: "createTime", sortable: true, minWidth: 160 },
   { label: "创建用户", prop: "createUser", slot: "createUser", minWidth: 130 },
   { label: "更新用户", prop: "updateUser", slot: "updateUser", minWidth: 130 },
-  { label: "操作", fixed: "right", minWidth: 210, slot: "operation" }
+  { label: "操作", fixed: "right", width: 180, slot: "operation" }
 ];
 
 // 添加规则
-export const rules: any = reactive<FormRules>({
+export const rules: any = computed<FormRules>(() => ({
   // 用户名
   username: [{ required: true, message: "输入用户名", trigger: "blur" }],
   // 密码
@@ -79,19 +78,10 @@ export const rules: any = reactive<FormRules>({
   ],
   // 状态
   status: [{ required: true, message: "输入状态", trigger: "blur" }]
-});
+}));
 
 export const defaultProps = {
   children: "children",
   value: "id",
   label: "deptName"
 };
-
-export const buttonClass = computed(() => [
-  "!h-[20px]",
-  "!text-sm",
-  "reset-margin",
-  "!text-[var(--el-text-color-regular)]",
-  "dark:!text-white",
-  "dark:hover:!text-primary"
-]);

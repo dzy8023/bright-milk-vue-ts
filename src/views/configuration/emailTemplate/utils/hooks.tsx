@@ -4,7 +4,7 @@ import { useEmailTemplateStore } from "@/store/configuration/emailTemplate";
 import { h, ref } from "vue";
 import { message, messageBox } from "@/utils/message";
 import type { FormItemProps } from "@/views/configuration/emailTemplate/utils/types";
-import DeleteBatchDialog from "@/components/Table/DeleteBatchDialog.vue";
+import DeleteBatchDialog from "@/components/ReTable/DeleteBatchDialog.vue";
 
 // 选择的row列表
 export const selectRows = ref([]);

@@ -2,11 +2,9 @@ import type { PageResult } from "@/types/result";
 import { apiHttp } from "@/utils/http";
 /** 权限---获取权限列表 */
 export const fetchGetPowerList = (data: any) => {
-  return apiHttp.request<PageResult<any>>(
-    "get",
-    `power/getPowerList/${data.currentPage}/${data.pageSize}`,
-    { params: data }
-  );
+  return apiHttp.request<PageResult<any>>("get", "power/getPowerList", {
+    params: data
+  });
 };
 
 /** 权限---根据角色id获取权限内容 */

@@ -13,6 +13,8 @@ import {
   onUpdateBatchParent,
   powerIds
 } from "@/views/system/power/utils/hooks";
+import More from "@iconify-icons/ep/more-filled";
+
 import Delete from "@iconify-icons/ep/delete";
 import EditPen from "@iconify-icons/ep/edit-pen";
 import Refresh from "@iconify-icons/ep/refresh";
@@ -239,24 +241,39 @@ onMounted(() => {
             >
               新增
             </el-button>
-            <!-- 删除 -->
-            <el-popconfirm
-              v-if="hasAuth(auth.deleted)"
-              :title="`删除${row.powerName}?`"
-              @confirm="onDelete(row)"
-            >
-              <template #reference>
-                <el-button
-                  :icon="useRenderIcon(Delete)"
-                  :size="size"
-                  class="reset-margin"
-                  link
-                  type="primary"
-                >
-                  删除
-                </el-button>
+            <!-- 更多操作 -->
+            <el-dropdown>
+              <el-button
+                :icon="useRenderIcon(More)"
+                :size="size"
+                class="ml-3 mt-[2px]"
+                link
+                type="primary"
+              />
+              <template #dropdown>
+                <el-dropdown-menu>
+                  <el-dropdown-item v-if="hasAuth(auth.deleted)">
+                    <!-- 删除 -->
+                    <el-popconfirm
+                      :title="`删除${row.powerName}?`"
+                      @confirm="onDelete(row)"
+                    >
+                      <template #reference>
+                        <el-button
+                          :icon="useRenderIcon(Delete)"
+                          :size="size"
+                          class="reset-margin"
+                          link
+                          type="primary"
+                        >
+                          删除
+                        </el-button>
+                      </template>
+                    </el-popconfirm>
+                  </el-dropdown-item>
+                </el-dropdown-menu>
               </template>
-            </el-popconfirm>
+            </el-dropdown>
           </template>
         </pure-table>
       </template>

@@ -11,7 +11,14 @@ defineOptions({
 });
 
 const inputValue = defineModel({ type: String });
+const { autoClose } = defineProps({
+  autoClose: {
+    type: Boolean,
+    default: false
+  }
+});
 
+const popoverRef = ref(null);
 const iconList = ref(IconJson);
 const icon = ref();
 const currentActiveType = ref("ep:");
@@ -40,14 +47,14 @@ const tabsList = [
   }
 ];
 
-const pageList = computed(() =>
-  copyIconList[currentActiveType.value]
+const pageList = computed(() => {
+  return copyIconList[currentActiveType.value]
     .filter(i => i.includes(filterValue.value))
     .slice(
       (currentPage.value - 1) * pageSize.value,
       currentPage.value * pageSize.value
-    )
-);
+    );
+});
 
 const iconItemStyle = computed((): ParameterCSSProperties => {
   return item => {
@@ -61,20 +68,20 @@ const iconItemStyle = computed((): ParameterCSSProperties => {
 });
 
 function setVal() {
-  currentActiveType.value = inputValue.value.substring(
-    0,
-    inputValue.value.indexOf(":") + 1
-  );
-  icon.value = inputValue.value.substring(inputValue.value.indexOf(":") + 1);
+  const type = inputValue.value.substring(0, inputValue.value.indexOf(":") + 1);
+  icon.value = currentActiveType.value = copyIconList[type] ? type : "ep:";
 }
 
 function onBeforeEnter() {
   if (isAllEmpty(icon.value)) return;
   setVal();
   // 寻找当前图标在第几页
-  const curIconIndex = copyIconList[currentActiveType.value].findIndex(
-    i => i === icon.value
-  );
+  let curIconIndex =
+    copyIconList[currentActiveType.value]?.findIndex(i => i === icon.value) ||
+    1;
+  if (curIconIndex === -1) {
+    return;
+  }
   currentPage.value = Math.ceil((curIconIndex + 1) / pageSize.value);
 }
 
@@ -88,6 +95,9 @@ function handleClick({ props }) {
 }
 
 function onChangeIcon(item) {
+  if (autoClose) {
+    popoverRef.value.hide();
+  }
   icon.value = item;
   inputValue.value = currentActiveType.value + item;
 }
@@ -104,9 +114,10 @@ function onClear() {
 watch(
   () => pageList.value,
   () =>
-    (totalPage.value = copyIconList[currentActiveType.value].filter(i =>
-      i.includes(filterValue.value)
-    ).length),
+    (totalPage.value =
+      copyIconList[currentActiveType.value]?.filter(i =>
+        i.includes(filterValue.value)
+      ).length || copyIconList["ep:"].length),
   { immediate: true }
 );
 watch(
@@ -125,6 +136,7 @@ watch(
     <el-input v-model="inputValue" disabled>
       <template #append>
         <el-popover
+          ref="popoverRef"
           :width="350"
           trigger="click"
           popper-class="pure-popper"

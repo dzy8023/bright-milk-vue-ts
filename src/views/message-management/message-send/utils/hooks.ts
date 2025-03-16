@@ -3,7 +3,7 @@ import MessageDialog from "@/views/message-management/message-send/message-dialo
 import { h, reactive, ref, toRaw } from "vue";
 import { message, messageBox } from "@/utils/message";
 
-import DeleteBatchDialog from "@/components/Table/DeleteBatchDialog.vue";
+import DeleteBatchDialog from "@/components/ReTable/DeleteBatchDialog.vue";
 import { useAdminUserStore } from "@/store/system/adminUser";
 import { decode, encode } from "js-base64";
 import type { UploadRequestOptions } from "element-plus";

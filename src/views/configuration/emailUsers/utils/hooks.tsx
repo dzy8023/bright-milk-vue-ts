@@ -5,7 +5,7 @@ import { h, ref } from "vue";
 import { message, messageBox } from "@/utils/message";
 import type { FormItemProps } from "@/views/configuration/emailUsers/utils/types";
 
-import DeleteBatchDialog from "@/components/Table/DeleteBatchDialog.vue";
+import DeleteBatchDialog from "@/components/ReTable/DeleteBatchDialog.vue";
 
 export const formRef = ref();
 // 用户是否停用加载集合

@@ -13,7 +13,6 @@ import {
   onForcedOffline,
   onResetPassword,
   onSearch,
-  onTreeSelect,
   onUpdate,
   onUploadAvatar,
   switchLoadMap,

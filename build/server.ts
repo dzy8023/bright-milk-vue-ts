@@ -7,13 +7,13 @@ export const serverOptions = (mode: string) => {
   const options: ServerOptions = {
     port: VITE_PORT, // ? 端口号
     host: "0.0.0.0",
-    open: true,
+    open: true, //自动打开浏览器
     cors: true,
     proxy: {
       "/api": {
         target: VITE_APP_URL,
         changeOrigin: true,
-        rewrite: (path: string) => path.replace(/^\/admin/, "/api")
+        rewrite: (path: string) => path.replace(/^\/api/, "/admin")
       },
       "/mock": {
         target: VITE_APP_URL,

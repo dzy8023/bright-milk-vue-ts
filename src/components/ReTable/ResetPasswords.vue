@@ -15,8 +15,7 @@ const rules = {
   password: [
     { required: true, message: "请输入新密码", trigger: "blur" },
     {
-      type: "pattern",
-      message: $t("login.purePassWordRuleReg"),
+      message: "密码格式应为8-18位数字、字母、符号的任意两种组合",
       trigger: ["change", "blur"],
       pattern: REGEXP_PWD
     }
@@ -52,10 +51,10 @@ defineExpose({ ruleFormRef });
 <template>
   <div>
     <el-form ref="ruleFormRef" :model="form" :rules="rules">
-      <el-form-item :label="$t('adminUser_password')" prop="password">
+      <el-form-item label="密码" prop="password">
         <el-input
           v-model="form.password!"
-          :placeholder="$t('adminUser_password')"
+          placeholder="密码"
           clearable
           show-password
           type="password"

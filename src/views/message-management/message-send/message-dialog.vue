@@ -25,7 +25,7 @@ import { beforeUpload } from "@/views/message-management/message-editing/utils/h
 import SplitPane from "@/components/ReSplitPane";
 import RichEditor from "@/views/message-management/message-send/rich-editor.vue";
 import MarkdownEditor from "@/views/message-management/message-send/markdown-editor.vue";
-import ImageLoading from "@/components/Upload/ImageLoading.vue";
+import ImageLoading from "@/components/ReImage/index.vue";
 import { usePublicHooks } from "@/views/hooks";
 
 // 用户是否停用样式

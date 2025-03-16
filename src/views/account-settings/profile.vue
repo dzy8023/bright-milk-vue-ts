@@ -14,7 +14,7 @@ import {
   uploadAvatarSrc,
   userInfos
 } from "@/views/account-settings/utils/hooks";
-import { sexConstant } from "@/enums/baseConstant";
+import { genderConstant } from "@/enums/baseConstant";
 import { useAdminUserStore } from "@/store/system/adminUser";
 
 const userInfoFormRef = ref<FormInstance>();
@@ -153,7 +153,7 @@ onMounted(() => {
           filterable
         >
           <el-option
-            v-for="(item, index) in sexConstant"
+            v-for="(item, index) in genderConstant"
             :key="index"
             label="item.label"
             :navigationBar="false"

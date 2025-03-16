@@ -2,11 +2,9 @@ import type { PageResult } from "@/types/result";
 import { apiHttp } from "@/utils/http";
 /** 角色---获取角色列表 */
 export const fetchGetRoleList = (data: any) => {
-  return apiHttp.request<PageResult<any>>(
-    "get",
-    `role/getRoleList/${data.currentPage}/${data.pageSize}`,
-    { params: data }
-  );
+  return apiHttp.request<PageResult<any>>("get", "role/getRoleList", {
+    params: data
+  });
 };
 
 /** 角色---获取所有角色 */

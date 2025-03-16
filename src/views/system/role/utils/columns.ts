@@ -17,7 +17,7 @@ export const columns: TableColumnList = [
   { label: "创建时间", prop: "createTime", sortable: true },
   { label: "创建用户", prop: "createUser", slot: "createUser", width: 130 },
   { label: "更新用户", prop: "updateUser", slot: "updateUser", width: 130 },
-  { label: "操作", fixed: "right", width: 240, slot: "operation" }
+  { label: "操作", fixed: "right", width: 180, slot: "operation" }
 ];
 
 // 添加规则

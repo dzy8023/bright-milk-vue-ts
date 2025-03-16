@@ -1,128 +1,34 @@
-import "./reset.css";
 import editForm from "../form/index.vue";
 import { message } from "@/utils/message";
 import { addDialog } from "@/components/ReDialog";
-import type { PaginationProps } from "@pureadmin/table";
 import type { FormItemProps } from "./types";
-import { deviceDetection } from "@pureadmin/utils";
-import {
-  type Ref,
-  h,
-  ref,
-  toRaw,
-  reactive,
-  onMounted,
-  computed,
-  watch
-} from "vue";
-import { useRenderIcon } from "@/components/ReIcon/src/hooks";
-import { getAttrPageApi, getCatIdsByAttrIdApi } from "@/api/bm/goods/attr";
-import { getCategoryTreeApi } from "@/api/bm/goods/category";
+import { deviceDetection, getKeyList } from "@pureadmin/utils";
+import { type Ref, h, ref, onMounted, watch } from "vue";
 import type { TreeNodeData } from "element-plus/es/components/tree-v2/src/types.mjs";
+import { treeProps } from "./columns";
+import { useAttrStore } from "@/store/bm/goods/attr";
+import { useCategoryStore } from "@/store/bm/goods/category";
 
-export function useUser(treeRef: Ref) {
-  const form = reactive({
-    name: "",
-    type: ""
-  });
+export function useAttr(tableRef: any, treeRef: Ref) {
+  const attrStore = useAttrStore();
+  const categoryStore = useCategoryStore();
+
   const formRef = ref();
-  const dataList = ref<Required<Omit<FormItemProps, "title">>[]>([]);
-  const loading = ref(true);
   const curRow = ref();
+  const selectedNum = ref(0);
 
   const treeIds = ref([]);
-  const treeData = ref([]);
-  const initData = [];
+  const initData = ref([]);
   const isShow = ref(false);
   const treeSearchValue = ref();
 
   const isExpandAll = ref(false);
   const isSelectAll = ref(false);
   const isLinkage = ref(false);
-  const treeProps = {
-    value: "id",
-    label: "name",
-    children: "children",
-    disabled: "status"
-  };
-  const buttonClass = computed(() => {
-    return [
-      "!h-[20px]",
-      "reset-margin",
-      "!text-gray-500",
-      "dark:!text-white",
-      "dark:hover:!text-primary"
-    ];
-  });
-  const pagination = reactive<PaginationProps>({
-    total: 0,
-    pageSize: 10,
-    currentPage: 1,
-    background: true
-  });
-
-  const columns: TableColumnList = [
-    {
-      label: "属性编号",
-      prop: "id"
-    },
-    {
-      label: "属性名称",
-      prop: "name",
-      cellRenderer: ({ row }) => (
-        <>
-          <span class="inline-block mr-1">
-            {h(useRenderIcon(row.icon), {
-              style: { paddingTop: "1px" }
-            })}
-          </span>
-          <span>{row.name}</span>
-        </>
-      ),
-      minWidth: 90
-    },
-    {
-      label: "属性值",
-      prop: "value",
-      minWidth: 120,
-      cellRenderer: ({ row }) => (
-        <>
-          {row.value.map((item, i) => (
-            <el-tag size="small" type="info" key={i}>
-              {item}
-            </el-tag>
-          ))}
-        </>
-      )
-    },
-    {
-      label: "属性描述",
-      prop: "desc",
-      minWidth: 90
-    },
-    {
-      label: "属性类型",
-      prop: "type",
-      sortable: true,
-      minWidth: 90,
-      cellRenderer: ({ row }) => (
-        <>
-          <el-tag size="small" type={row.type === 0 ? "primary" : "success"}>
-            {row.type === 0 ? "规格参数" : "销售属性"}
-          </el-tag>
-        </>
-      )
-    },
-    {
-      label: "操作",
-      fixed: "right",
-      width: 210,
-      slot: "operation"
-    }
-  ];
 
   function handleDelete(row) {
-    message(`您删除了属性编号为${row.id}的这条数据`, { type: "success" });
+    console.log(row);
+    attrStore.deleteAttr([row.id]);
     onSearch();
   }
 
@@ -133,27 +39,38 @@ export function useUser(treeRef: Ref) {
   function handleCurrentChange(val: number) {
     console.log(`current page: ${val}`);
   }
-
   /** 当CheckBox选择项发生变化时会触发该事件 */
   function handleSelectionChange(val) {
-    console.log("handleSelectionChange", val);
+    selectedNum.value = val.length;
+    // 重置表格高度
+    tableRef.value.setAdaptive();
+  }
+  /** 取消选择 */
+  function onSelectionCancel() {
+    selectedNum.value = 0;
+    // 用于多选表格，清空用户的选择
+    tableRef.value.getTableRef().clearSelection();
+  }
+  /** 批量删除 */
+  function onbatchDel() {
+    // 返回当前选中的行
+    const curSelected = tableRef.value.getTableRef().getSelectionRows();
+    if (curSelected.length > 0) {
+      attrStore.deleteAttr(getKeyList(curSelected, "id"));
+    }
+    // 接下来根据实际业务，通过选中行的某项数据，比如下面的id，调用接口进行批量删除
+    message(`已删除商品编号为 ${getKeyList(curSelected, "id")} 的数据`, {
+      type: "success"
+    });
+    tableRef.value.getTableRef().clearSelection();
+    selectedNum.value = 0;
+    onSearch();
   }
 
   async function onSearch() {
-    loading.value = true;
-    const res = await getAttrPageApi(toRaw(form));
-    res.result.items.map(item => {
-      dataList.value.push({
-        ...item,
-        value: item.value.split(",")
-      });
-    });
-    pagination.total = res.result.total;
-    pagination.pageSize = res.result.pageSize;
-    pagination.currentPage = res.result.currentPage;
-    setTimeout(() => {
-      loading.value = false;
-    }, 500);
+    attrStore.loading = true;
+    await attrStore.getAttrPage();
+    attrStore.loading = false;
   }
 
   const resetForm = (formEl: { resetFields: () => void }) => {
@@ -162,12 +79,13 @@ export function useUser(treeRef: Ref) {
     onSearch();
   };
 
-  function openDialog(title = "新增", row?: FormItemProps) {
+  function openDialog(isAdd: boolean, row?: FormItemProps) {
+    const title = isAdd ? "新增" : "修改";
     addDialog({
       title: `${title}属性`,
       props: {
         formInline: {
-          title,
+          title: title,
           id: row?.id ?? "",
           name: row?.name ?? "",
           value: row?.value ?? [],
@@ -183,27 +101,20 @@ export function useUser(treeRef: Ref) {
       closeOnClickModal: false,
       contentRenderer: () => h(editForm, { ref: formRef, formInline: null }),
       beforeSure: (done, { options }) => {
-        const FormRef = formRef.value.getRef();
-        const curData = options.props.formInline as FormItemProps;
-        function chores() {
-          message(`您${title}了属性名称为${curData.name}的这条数据`, {
-            type: "success"
-          });
-          done(); // 关闭弹框
-          onSearch(); // 刷新表格数据
-        }
-        FormRef.validate(valid => {
-          if (valid) {
-            console.log("curData", curData);
-            // 表单规则校验通过
-            if (title === "新增") {
-              // 实际开发先调用新增接口，再进行下面操作
-              chores();
-            } else {
-              // 实际开发先调用修改接口，再进行下面操作
-              chores();
-            }
+        const form = options.props.formInline as FormItemProps;
+        formRef.value.getRef().validate(async valid => {
+          if (!valid) return;
+          let result;
+          const data = { ...form, value: form.value.join(";") };
+          if (isAdd) {
+            result = await attrStore.addAttr(data);
+          } else {
+            result = await attrStore.updateAttr(data);
           }
+
+          if (!result) return;
+          done();
+          await onSearch();
         });
       }
     });
@@ -242,17 +153,13 @@ export function useUser(treeRef: Ref) {
   };
   onMounted(async () => {
     onSearch();
-    // const res = await getCategoryListApi();
-    // treeIds.value = getKeyList(res.result, "id");
-    // treeData.value = handleTree(res.result);
-    const res = await getCategoryTreeApi();
+    await categoryStore.getCategoryTree();
     treeIds.value = [];
-    initData.push(...res.result);
-    treeData.value = initData;
-    forEachTree(res.result, item => {
+    initData.value.push(...categoryStore.treeData);
+    forEachTree(initData.value, item => {
       treeIds.value.push(item.id);
     });
-    console.log(treeIds.value, initData);
+    console.log(treeIds.value, initData.value);
   });
   watch(isExpandAll, val => {
     val
@@ -273,16 +180,16 @@ export function useUser(treeRef: Ref) {
       // treeData.value = JSON.parse(JSON.stringify(initData));
       curRow.value = row;
       isShow.value = true;
-      const res = await getCatIdsByAttrIdApi(id);
+      const res = await attrStore.getCatIdsByAttrId(id);
       //遍历树，给选中的节点添加select属性
-      forEachTree(treeData.value, item => {
+      forEachTree(initData.value, item => {
         let index = res.result.findIndex(item1 => item1.catId === item.id);
         if (index !== -1) {
           item.select = res.result[index].select;
         }
       });
       treeRef.value.setCheckedKeys(res.result.map(item => item.catId));
-      console.log(row, res.result, treeData.value, initData);
+      console.log(row, res.result, categoryStore.treeData, initData.value);
     } else {
       curRow.value = null;
       isShow.value = false;
@@ -298,18 +205,15 @@ export function useUser(treeRef: Ref) {
   return {
     isShow,
     curRow,
-    treeData,
+    initData,
     treeProps,
+    selectedNum,
     isLinkage,
     isExpandAll,
     isSelectAll,
     treeSearchValue,
-    buttonClass,
-    form,
-    loading,
-    columns,
-    dataList,
-    pagination,
+    onSelectionCancel,
+    onbatchDel,
     handleSave,
     onQueryChanged,
     filterMethod,

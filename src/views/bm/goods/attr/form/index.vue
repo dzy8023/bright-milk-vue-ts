@@ -2,7 +2,7 @@
 import { ref } from "vue";
 import ReCol from "@/components/ReCol";
 import { FormProps } from "../utils/types";
-import { formRules } from "../utils/rule";
+import { rules } from "../utils/columns";
 import { IconSelect } from "@/components/ReIcon";
 
 const props = withDefaults(defineProps<FormProps>(), {
@@ -33,7 +33,7 @@ defineExpose({ getRef });
   <el-form
     ref="ruleFormRef"
     :model="newFormInline"
-    :rules="formRules"
+    :rules="rules"
     label-width="82px"
   >
     <el-row :gutter="30">
@@ -59,7 +59,7 @@ defineExpose({ getRef });
 
       <re-col :value="12" :xs="24" :sm="24">
         <el-form-item label="属性图标" prop="icon">
-          <IconSelect v-model="newFormInline.icon" class="w-full" />
+          <IconSelect v-model="newFormInline.icon" auto-close class="w-full" />
         </el-form-item>
       </re-col>
       <re-col :value="12" :xs="24" :sm="24">
