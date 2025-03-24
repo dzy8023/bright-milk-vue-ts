@@ -1,21 +1,28 @@
 <template>
-  <div class="clearfix">
-    <span>选择商品属性</span>
-    <el-form ref="form" v-model="tempData.spuAttrs">
+  <!-- 商品属性选择 -->
+  <div v-if="localFormData?.spuAttrs?.length" class="attr-section">
+    <div class="section-title">选择规格参数</div>
+    <el-form
+      ref="spuFormRef"
+      label-width="auto"
+      :model="localFormData.spuAttrs"
+    >
       <el-form-item
-        v-for="(item, index) in spu.spuAttrs"
+        v-for="(item, index) in localFormData.spuAttrs"
         :key="item.id"
-        :label="item.name"
       >
-        <el-input
-          v-show="false"
-          v-model="tempData.spuAttrs[index].id"
-          type="hidden"
-        />
+        <template #label>
+          <span v-tippy="item.desc"
+            >{{ item.name }}
+            <el-tag v-if="item.choose === 1" type="success" size="small"
+              >多选</el-tag
+            ></span
+          >
+        </template>
         <el-select
-          v-model="tempData.spuAttrs[index].value"
-          style="width: 250px; margin-right: 20px"
-          :multiple="item.select == 1"
+          v-model="localFormData.spuAttrs[index].value"
+          class="attr-select"
+          :multiple="item.choose === 1"
           filterable
           clearable
           allow-create
@@ -23,364 +30,323 @@
           placeholder="请选择或输入值"
         >
           <el-option
-            v-for="(val, vidx) in item.value.split(';')"
-            :key="vidx"
+            v-for="val in item.options"
+            :key="val"
             :label="val"
             :value="val"
           />
         </el-select>
         <el-checkbox
-          v-model="tempData.spuAttrs[index].quickShow"
+          v-model="localFormData.spuAttrs[index].quickShow"
           :true-value="1"
-          :false-label="0"
-          >快速展示</el-checkbox
+          :false-value="0"
         >
+          快速展示
+        </el-checkbox>
       </el-form-item>
     </el-form>
   </div>
+  <div v-else>
+    <el-empty description="该分类没有关联规格参数" />
+  </div>
+
   <el-divider />
-  <div class="clearfix">
-    <span>选择销售属性</span>
-    <el-form ref="saleform" :model="tempData.saleAttrs">
+
+  <!-- 销售属性选择 -->
+  <div v-if="localFormData?.saleAttrs?.length" class="attr-section">
+    <div class="section-title">选择销售属性</div>
+    <el-form ref="saleFormRef" :model="localFormData.saleAttrs">
       <el-form-item
-        v-for="(item, index) in spu.saleAttrs"
+        v-for="(item, index) in localFormData.saleAttrs"
         :key="item.id"
         :label="item.name"
       >
-        <el-input
-          v-show="false"
-          v-model="tempData.saleAttrs[index].id"
-          type="hidden"
-        />
-        <el-checkbox-group v-model="tempData.saleAttrs[index].value">
-          <span v-if="item.value != ''">
-            <el-checkbox
-              v-for="val in item.value.split(';')"
-              :key="val"
-              :label="val"
-              :value="val"
-            />
-          </span>
-          <div style="display: inline; margin-left: 20px">
-            <el-button
-              v-show="!inputVisible[index].view"
-              class="button-new-tag"
-              size="small"
-              @click="showInput(index)"
-              >+自定义</el-button
-            >
-            <el-input
-              v-show="inputVisible[index].view"
-              :ref="
-                el => {
-                  inputRefs[`saveTagInput${index}`] = el;
-                }
-              "
-              v-model="inputVisible[index].val"
-              size="small"
-              style="width: 150px"
-              @keyup.enter="handleInputConfirm(index)"
-              @blur="handleInputConfirm(index)"
-            />
-          </div>
+        <template #label>
+          <span v-tippy="item.desc"
+            >{{ item.name }}
+            <el-tag v-if="item.choose === 1" type="success" size="small"
+              >多选</el-tag
+            ></span
+          >
+        </template>
+        <el-checkbox-group
+          v-model="item.value"
+          :max="item.choose === 0 ? 1 : Number.MAX_SAFE_INTEGER"
+        >
+          <el-checkbox
+            v-for="(val, index) in item.options"
+            :key="index"
+            :label="val"
+            :value="val"
+          />
         </el-checkbox-group>
+
+        <!-- 自定义属性输入 -->
+        <div class="custom-attr-input">
+          <el-button
+            v-show="!inputStates[index].visible"
+            class="button-new-tag"
+            size="small"
+            @click="showCustomInput(index)"
+          >
+            +自定义
+          </el-button>
+          <el-input
+            v-show="inputStates[index].visible"
+            :ref="el => setInputRef(el, index)"
+            v-model="inputStates[index].value"
+            size="small"
+            class="custom-input"
+            @keyup.enter="handleCustomAttrConfirm(index)"
+            @blur="handleCustomAttrConfirm(index)"
+          />
+        </div>
       </el-form-item>
     </el-form>
   </div>
+  <div v-else>
+    <el-empty description="该分类没有关联销售属性" />
+  </div>
 </template>
 
-<script lang="ts" setup>
-import { AttrItem } from "@/types/attr";
-import { ref, nextTick, computed, onMounted } from "vue";
-import { SkuAttr, SupAttr } from "./types";
-import { filterEmptyArray } from "@/utils/utils";
-//默认值
-/**
- * 方案一：使用类型参数并手动设置默认值
-你可以只使用类型参数，然后在组件内部手动设置默认值。
-modelValue值必须传入，因为它会被重置为默认值。
-const props = withDefaults(defineProps<{
-  modelValue: {
-    spuAttrs: (SupAttr & { quickShow: 0 | 1 })[];
-    saleAttrs: SkuAttr[];
-  };
-}>(), {
-  modelValue: () => ({
-    spuAttrs: [],
-    saleAttrs: []
-  })
+<script lang="ts">
+import { defineComponent } from "vue";
+import type { AttrFormInLine } from "./types";
+
+export default defineComponent({
+  name: "AttrCheckbox"
 });
-方案二：使用默认值参数并手动定义类型
-你可以只使用默认值参数，然后手动定义 props 的类型。
-可以不传入 modelValue，因为它会被重置为默认值。
-const props = defineProps({
-  modelValue: {
-    type: Object as PropType<{
-      spuAttrs: (SupAttr & { quickShow: 0 | 1 })[];
-      saleAttrs: SkuAttr[];
-    }>,
-    default: () => ({
-      spuAttrs: [],
-      saleAttrs: []
-    })
-  }
-});
- */
-// const props = withDefaults(
-//   defineProps<{
-//     modelValue: {
-//       spuAttrs: (SupAttr & { quickShow: 0 | 1 })[];
-//       saleAttrs: SkuAttr[];
-//     };
-//   }>(),
-//   {
-//     modelValue: () => ({
-//       spuAttrs: [],
-//       saleAttrs: []
-//     })
-//   }
-// );
-const props = defineProps({
-  modelValue: {
-    type: Object as PropType<{
-      spuAttrs: (SupAttr & { quickShow: 0 | 1 })[];
-      saleAttrs: SkuAttr[];
-      selfDefinedAttrs: SelfDefine[];
-    }>,
-    default: () => ({
-      spuAttrs: [],
-      saleAttrs: [],
-      selfDefinedAttrs: []
-    })
-  }
-});
-interface SelfDefine {
+</script>
+
+<script setup lang="ts">
+import { ref, computed, nextTick, onMounted, watch } from "vue";
+import type { PropType } from "vue";
+
+// 类型定义
+interface InputState {
+  visible: boolean;
+  value: string;
+}
+
+interface CustomAttr {
   index: number;
   value: string;
 }
-const inputRefs = ref({});
-const inputVisible = ref<{ view: boolean; val: string }[]>([]);
 
-const spu = ref<{
-  spuAttrs: Omit<AttrItem, "type">[];
-  saleAttrs: Omit<AttrItem, "type">[];
-}>({
-  spuAttrs: [
-    {
-      id: 1,
-      name: "颜色",
-      icon: "el-icon-color",
-      value: "黑色;白色;红色;蓝色",
-      desc: "颜色",
-      select: 0
-    },
-    {
-      id: 2,
-      name: "尺寸",
-      icon: "el-icon-s-grid",
-      value: "S;M;L;XL",
-      desc: "尺寸",
-      select: 1
-    },
-    {
-      id: 3,
-      name: "材质",
-      icon: "el-icon-suitcase",
-      value: "棉;棉麻;聚酯纤维;聚乙烯;其他",
-      desc: "材质",
-      select: 1
-    },
-    {
-      id: 4,
-      name: "包装",
-      icon: "el-icon-box",
-      value: "纸盒;纸箱;塑料盒;塑料箱;其他",
-      desc: "包装",
-      select: 1
-    },
-    {
-      id: 5,
-      name: "产地",
-      icon: "el-icon-international",
-      desc: "产地",
-      select: 0,
-      value: "江西;湖南;湖北;广东;四川;河南;河北;山东"
-    }
-  ],
-  saleAttrs: [
-    {
-      id: 1,
-      name: "规格",
-      icon: "el-icon-color",
-      value: "180ml;200ml;250ml;300ml",
-      desc: "规格",
-      select: 0
-    },
-    {
-      id: 2,
-      name: "包装",
-      icon: "el-icon-s-grid",
-      value: "袋装;盒装;瓶装;桶装",
-      desc: "包装",
-      select: 1
-    }
-  ]
+// Props 定义
+const props = defineProps({
+  modelValue: {
+    type: Object as PropType<AttrFormInLine>,
+    required: true
+  }
 });
 
-const tempData = computed({
-  get() {
-    return props.modelValue;
+// Emits 定义
+const emits = defineEmits<{
+  (e: "update:modelValue", value: AttrFormInLine): void;
+  (e: "submit", data: any, skus: any[], extendData?: any): void;
+}>();
+
+// 本地状态
+const spuFormRef = ref();
+const saleFormRef = ref();
+const inputRefs = ref<Record<string, HTMLInputElement>>({});
+const inputStates = ref<InputState[]>([]);
+
+// 初始化 inputStates
+const initInputStates = () => {
+  if (props.modelValue?.saleAttrs) {
+    inputStates.value = props.modelValue.saleAttrs.map(() => ({
+      visible: false,
+      value: ""
+    }));
+  }
+};
+
+// 监听 modelValue 变化，重新初始化 inputStates
+watch(
+  () => props.modelValue?.saleAttrs,
+  () => {
+    initInputStates();
   },
-  set(val) {
-    emits("update:modelValue", val);
-  }
+  { immediate: true }
+);
+
+// 计算属性
+const localFormData = computed({
+  get: () => props.modelValue,
+  set: val => emits("update:modelValue", val)
 });
-const emits = defineEmits(["update:modelValue", "submit"]);
-const data = {
-  spuAttrs: [] as (SupAttr & { quickShow: 0 | 1 })[],
-  saleAttrs: [] as SkuAttr[]
-};
-const initData = () => {
-  inputVisible.value = Array.from(
-    { length: spu.value.saleAttrs.length },
-    () => ({
-      view: false,
-      val: ""
-    })
-  );
-  if (!tempData.value.spuAttrs) {
-    console.log("initData", tempData.value);
-    tempData.value.spuAttrs = spu.value.spuAttrs.map(item => ({
-      id: item.id,
-      name: item.name,
-      value: "",
-      quickShow: 0
-    }));
-    tempData.value["saleAttrs"] = spu.value["saleAttrs"].map(item => ({
-      id: item.id,
-      name: item.name,
-      value: []
-    }));
-    tempData.value["selfDefinedAttrs"] = [];
-  } else if (tempData.value.selfDefinedAttrs) {
-    console.log("不初始化", tempData.value);
-    tempData.value.selfDefinedAttrs.forEach(item => {
-      spu.value.saleAttrs[item.index].value += ";" + item.value;
-    });
+
+const setInputRef = (el: any, index: number) => {
+  if (el) {
+    inputRefs.value[`input-${index}`] = el;
   }
 };
-initData();
 
-const showInput = (index: number) => {
-  // 显示输入框并隐藏按钮
-  inputVisible.value[index].view = true;
-  // 让输入框自动聚焦
-  nextTick(() => {
-    const inputRef = inputRefs.value[
-      `saveTagInput${index}`
-    ] as HTMLInputElement;
-    if (inputRef) {
-      inputRef.focus();
-    }
-  });
+// 自定义属性相关方法
+const showCustomInput = async (index: number) => {
+  inputStates.value[index].visible = true;
+  await nextTick();
+  inputRefs.value[`input-${index}`]?.focus();
 };
 
-const handleInputConfirm = (index: number) => {
-  // 隐藏输入框并显示按钮
-  inputVisible.value[index].view = false;
-  // 处理输入的值（例如保存到数据中）
-  const inputValue = inputVisible.value[index].val.trim().replaceAll(";", "");
-  if (inputValue) {
-    // 这里可以添加处理输入值的逻辑
-    spu.value.saleAttrs[index].value += ";" + inputValue;
-    tempData.value.selfDefinedAttrs.push({ index, value: inputValue });
+const handleCustomAttrConfirm = (index: number) => {
+  const value = inputStates.value[index].value.trim().replaceAll(";", "");
+  if (value) {
+    localFormData.value.saleAttrs[index].options.push(value);
   }
-  // 清空输入框
-  inputVisible.value[index].val = "";
+  inputStates.value[index].visible = false;
+  inputStates.value[index].value = "";
 };
 
-const generateSaleAttrs = () => {
-  const result: any[] = []; // 用于存储最终的笛卡尔积结果
-  let temp: any[] = []; // 用于临时存储当前组合
-  // 递归函数，用于生成笛卡尔积
-  const cartesianProduct = (index: number) => {
-    if (index === data.saleAttrs.length) {
-      // 如果已经遍历完所有属性集合，将当前组合加入结果
-      result.push([...temp]);
+// 生成SKU属性组合
+const generateSkuCombinations = (attrs: any[]) => {
+  const results: any[] = [];
+  const temp: any[] = [];
+
+  const cartesian = (index: number) => {
+    if (index === attrs.length) {
+      results.push([...temp]);
       return;
     }
-    // 遍历当前属性集合的每个元素
-    for (let i = 0; i < data.saleAttrs[index].value.length; i++) {
+    for (const value of attrs[index].value) {
       temp.push({
-        id: data.saleAttrs[index].id,
-        name: data.saleAttrs[index].name,
-        value: data.saleAttrs[index].value[i]
-      }); // 将当前元素加入临时组合
-      cartesianProduct(index + 1); // 递归处理下一个属性集合
-      temp.pop(); // 回溯，移除当前元素
+        id: attrs[index].id,
+        name: attrs[index].name,
+        value
+      });
+      cartesian(index + 1);
+      temp.pop();
     }
   };
-  cartesianProduct(0); // 从第一个属性集合开始
-  return result;
+
+  cartesian(0);
+  return results;
 };
 
-const submit = (extandData?: any) => {
-  data.spuAttrs = [];
-  data.saleAttrs = [];
-  console.log("submit", tempData.value);
-  // 过滤掉没有选择的属性，并重新赋值给 data.value
-  tempData.value.spuAttrs.map(item => {
-    //item.value不为undefined
-    if (item.value && item.value.length !== 0) {
-      let value = item.value;
-      if (value instanceof Array) {
-        value = value.join(";");
-      }
-      data.spuAttrs.push({
+// 提交方法
+const submit = (extendData?: any) => {
+  const processedData = {
+    spuAttrs: localFormData.value.spuAttrs
+      .filter(item => item.value && item.value.length > 0)
+      .map(item => ({
         id: item.id,
         name: item.name,
-        value: value,
+        value: Array.isArray(item.value) ? item.value.join(";") : item.value,
         quickShow: item.quickShow,
-        props: "spu-" + item.id
-      });
-    }
-  });
-  tempData.value.saleAttrs.map(item => {
-    if (item.value.length !== 0) {
-      data.saleAttrs.push({
+        props: `spu-${item.id}`
+      })),
+    saleAttrs: localFormData.value.saleAttrs
+      .filter(item => item.value.length > 0)
+      .map(item => ({
         id: item.id,
         name: item.name,
         value: item.value,
-        props: "sku-" + item.id
-      });
-    }
-  });
-  // 计算笛卡尔积
-  const cartesianProduct = filterEmptyArray(generateSaleAttrs());
-  const skus = [];
-  cartesianProduct.forEach(item => {
-    let sku = {};
-    let spu = {};
-    item.map(attr => (sku = { ...sku, [`sku-${attr.id}`]: attr.value }));
-    data.spuAttrs.map(
-      attr =>
-        (spu = {
-          ...spu,
-          [`spu-${attr.id}`]: {
-            value: attr.value,
-            quickShow: attr.quickShow
-          }
-        })
+        props: `sku-${item.id}`
+      }))
+  };
+
+  const skuCombinations = generateSkuCombinations(processedData.saleAttrs);
+  const skus = skuCombinations.map(combination => {
+    const skuProps = combination.reduce(
+      (acc: any, curr: any) => ({
+        ...acc,
+        [`sku-${curr.id}`]: curr.value
+      }),
+      {}
     );
-    skus.push({
-      ...sku,
-      ...spu
-    });
+
+    const spuProps = processedData.spuAttrs.reduce(
+      (acc: any, curr: any) => ({
+        ...acc,
+        [`spu-${curr.id}`]: {
+          value: curr.value.split(";"),
+          quickShow: curr.quickShow
+        }
+      }),
+      {}
+    );
+
+    return { ...skuProps, ...spuProps };
   });
-  emits("submit", data, skus, extandData);
+
+  emits("submit", processedData, skus, extendData);
 };
 
+onMounted(() => {
+  initInputStates();
+});
+
+// 暴露方法
 defineExpose({
   submit
 });
 </script>
+
+<style scoped>
+.attr-section {
+  margin: 12px 0;
+}
+
+.section-title {
+  margin-bottom: 12px;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+:deep(.el-form) {
+  width: 100%;
+}
+
+:deep(.el-form-item) {
+  margin-bottom: 12px;
+}
+
+:deep(.el-form-item__label) {
+  padding-right: 8px;
+  line-height: 32px;
+
+  /* width: auto; */
+  text-align: right;
+}
+
+:deep(.el-form-item__content) {
+  display: flex;
+  align-items: center;
+  min-height: 32px;
+}
+
+.attr-select {
+  width: 280px;
+  margin-right: 12px;
+}
+
+.custom-attr-input {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 12px;
+}
+
+.custom-input {
+  width: 150px;
+}
+
+:deep(.el-checkbox) {
+  display: flex;
+  align-items: center;
+  height: 32px;
+  margin-right: 8px;
+}
+
+:deep(.el-checkbox-group) {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+:deep(.el-divider) {
+  margin: 12px 0;
+}
+</style>

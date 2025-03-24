@@ -17,7 +17,7 @@ import { isAllEmpty } from "@pureadmin/utils";
 export const userMenuStore = defineStore("menuStore", {
   state() {
     return {
-      datalist: [],
+      dataList: [],
       form: { title: undefined },
       loading: false
     };
@@ -35,7 +35,7 @@ export const userMenuStore = defineStore("menuStore", {
       if (!isAllEmpty(title)) {
         newData = newData.filter(item => item.title.includes(title));
       }
-      this.datalist = handleTree(newData);
+      this.dataList = handleTree(newData);
       return true;
     },
 

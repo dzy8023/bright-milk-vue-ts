@@ -18,7 +18,7 @@ export const useFilesStore = defineStore("filesStore", {
   state() {
     return {
       // 系统文件表列表
-      datalist: [],
+      dataList: [],
       // 所有文件类型
       allMediaTypes: [],
       // 所有文件存储路径

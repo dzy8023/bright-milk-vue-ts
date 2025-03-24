@@ -18,7 +18,7 @@ export const usePowerStore = defineStore("powerStore", {
   state() {
     return {
       // 权限列表
-      datalist: [],
+      dataList: [],
       // 权限树形结构
       allPowerList: [],
       // 查询表单

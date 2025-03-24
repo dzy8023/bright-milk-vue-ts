@@ -17,7 +17,7 @@ export const useSchedulersGroupStore = defineStore("schedulersGroupStore", {
   state() {
     return {
       // 任务调度分组列表
-      datalist: [],
+      dataList: [],
       // 所有任务分组
       allSchedulersGroup: [],
       // 查询表单

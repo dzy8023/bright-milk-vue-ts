@@ -18,7 +18,7 @@ export const useRoleStore = defineStore("roleStore", {
   state() {
     return {
       // 角色列表
-      datalist: [],
+      dataList: [],
       // 所有角色列表
       allRoleList: [],
       // 查询表单

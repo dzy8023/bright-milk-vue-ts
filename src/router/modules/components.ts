@@ -121,6 +121,14 @@ export default {
       meta: {
         title: "指令"
       }
+    },
+    {
+      path: "/components/check-card",
+      name: "CheckCard",
+      component: () => import("@/views/components/check-card.vue"),
+      meta: {
+        title: "卡片选择器"
+      }
     }
   ]
 } satisfies RouteConfigsTable;

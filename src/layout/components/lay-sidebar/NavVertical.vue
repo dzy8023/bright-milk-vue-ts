@@ -42,7 +42,7 @@ const loading = computed(() =>
 );
 
 const defaultActive = computed(() =>
-  !isAllEmpty(route.meta?.activePath) ? route.meta.activePath : route.path
+  isAllEmpty(route.meta?.activePath) ? route.path : route.meta.activePath
 );
 
 function getSubMenuData() {

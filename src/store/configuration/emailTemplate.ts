@@ -18,7 +18,7 @@ export const useEmailTemplateStore = defineStore("emailTemplateStore", {
   state() {
     return {
       // 邮件模板表列表
-      datalist: [],
+      dataList: [],
       // 邮件模板用户列表
       emailUserList: [],
       // 邮件类型枚举

@@ -22,7 +22,7 @@ export const useAdminUserStore = defineStore("adminUserStore", {
   state() {
     return {
       // 用户信息列表
-      datalist: [],
+      dataList: [],
       // 查询表单
       form: {
         // 用户名

@@ -134,7 +134,7 @@ onMounted(() => {
             adaptive
             :row-style="rowStyle"
             :adaptiveConfig="{ offsetBottom: 108 }"
-            :data="attrStore.datalist"
+            :data="attrStore.dataList"
             :columns="dynamicColumns"
             :pagination="{ ...attrStore.pagination, size }"
             :header-cell-style="{

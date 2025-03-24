@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ref, nextTick } from "vue";
+import { ref, nextTick, computed } from "vue";
 import { cloneDeep, isAllEmpty } from "@pureadmin/utils";
-
+import myTagGroup from "./attrCheckbox/utils/my-tag-group.vue";
 defineOptions({
   name: "PureTag"
 });
@@ -169,6 +169,9 @@ const handleInputConfirm = () => {
     >
       新建标签
     </el-button>
+    <el-divider />
+    <p class="mb-2">动态编辑标签组</p>
+    <myTagGroup v-model="dynamicTags" :inputable="true" />
   </el-card>
 </template>
 

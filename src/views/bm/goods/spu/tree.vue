@@ -7,8 +7,8 @@ import Dept from "@iconify-icons/ri/git-branch-line";
 import More2Fill from "@iconify-icons/ri/more-2-fill";
 import OfficeBuilding from "@iconify-icons/ep/office-building";
 import LocationCompany from "@iconify-icons/ep/add-location";
-import ExpandIcon from "./svg/expand.svg?component";
-import UnExpandIcon from "./svg/unexpand.svg?component";
+import ExpandIcon from "@/assets/svg/expand.svg";
+import UnExpandIcon from "@/assets/svg/unexpand.svg";
 
 interface Tree {
   id: number;
@@ -69,7 +69,7 @@ function toggleRowExpansionAll(status) {
   }
 }
 
-/** 重置部门树状态（选中状态、搜索框值、树初始化） */
+/** 重置树状态（选中状态、搜索框值、树初始化） */
 function onTreeReset() {
   highlightMap.value = {};
   searchValue.value = "";
@@ -142,7 +142,7 @@ defineExpose({ onTreeReset });
     </div>
     <el-divider />
     <el-scrollbar height="calc(90vh - 88px)">
-      <el-tree-v2
+      <el-tree
         ref="treeRef"
         :height="400"
         :data="treeData"
@@ -150,7 +150,6 @@ defineExpose({ onTreeReset });
         size="small"
         :props="defaultProps"
         default-expand-all
-        show-checkbox
         :expand-on-click-node="false"
         :filter-method="filterNode"
         @node-click="nodeClick"
@@ -191,7 +190,7 @@ defineExpose({ onTreeReset });
             </span>
           </div>
         </template>
-      </el-tree-v2>
+      </el-tree>
     </el-scrollbar>
   </div>
 </template>

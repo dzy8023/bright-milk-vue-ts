@@ -17,7 +17,7 @@ export const useEmailUsersStore = defineStore("emailUsersStore", {
   state() {
     return {
       // 邮箱用户发送配置列表
-      datalist: [],
+      dataList: [],
       // 查询表单
       form: {
         // 邮箱

@@ -19,7 +19,7 @@ export const useMemberStore = defineStore("MemberStore", {
   state() {
     return {
       // 会员信息列表
-      datalist: [],
+      dataList: [],
       // 查询表单
       form: {
         // 会员名

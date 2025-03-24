@@ -36,7 +36,7 @@ const treeSearchValue = ref();
 // 选择的树形id列表
 const treeIds = ref([]);
 // 树形结构权限列表
-const datalist = computed(() => handleTree(powerStore.allPowerList));
+const dataList = computed(() => handleTree(powerStore.allPowerList));
 
 /** 获取所有权限 */
 const getAllPowers = async () => {
@@ -146,7 +146,7 @@ onMounted(() => {
     <el-tree-v2
       ref="powerTreeRef"
       :check-strictly="!isLinkage"
-      :data="datalist"
+      :data="dataList"
       :filter-method="filterMethod"
       :height="treeHeight"
       :props="powerCascadeProps"

@@ -2,27 +2,28 @@
 import { computed, onMounted, ref } from "vue";
 import {
   genFileId,
+  UploadUserFile,
   type UploadFile,
   type UploadInstance,
   type UploadProps,
-  type UploadRawFile,
-  type UploadUserFile
+  type UploadRawFile
 } from "element-plus";
 import UploadIcon from "@iconify-icons/ri/upload-2-line";
 import { Delete, Download, ZoomIn } from "@element-plus/icons-vue";
-
+import noImg from "@/components/ReImage/noImg.vue";
 defineOptions({
   name: "ReUpload"
 });
 const props = defineProps({
   modelValue: {
-    type: Array as () => UploadUserFile[],
+    type: Array as PropType<UploadUserFile[]>,
     default: () => []
   },
   action: {
     type: String, // 使用 UploadUserFile 类型
     default: "#"
   },
+  //多选文件
   multiple: {
     type: Boolean,
     default: false
@@ -45,19 +46,16 @@ const fileList = computed({
     }
   }
 });
-
 const uploadRef = ref<UploadInstance>();
 const dialogImageUrl = ref("");
 const dialogVisible = ref(false);
 const disabled = ref(false);
 const handleRemove = (file: UploadFile) => {
-  console.log(file, uploadRef.value);
   const newFileList = props.modelValue.filter(
     (item: UploadFile) => item.uid !== file.uid
   );
   emits("update:modelValue", newFileList); // 触发update:modelValue事件
 };
-
 const handlePictureCardPreview = (file: UploadFile) => {
   reader.onload = e => {
     dialogImageUrl.value = e.target.result as string;
@@ -87,9 +85,30 @@ const reset = () => {
 const getFiles = () => {
   return fileList.value;
 };
+// 初始化图片数据
+const initImageData = (files: UploadUserFile[]) => {
+  if (!files?.length) return;
+  files.forEach(file => {
+    if (file.raw && file.url.startsWith("blob:")) {
+      const reader = new FileReader();
+      reader.onload = e => {
+        file.url = e.target?.result as string;
+      };
+      reader.readAsDataURL(file.raw);
+    }
+  });
+};
+
+// 组件挂载时初始化
+onMounted(() => {
+  if (props.modelValue?.length) {
+    initImageData(props.modelValue);
+  }
+});
 defineExpose({
   reset,
-  getFiles
+  getFiles,
+  initImageData
 });
 </script>
 
@@ -115,11 +134,8 @@ defineExpose({
     </div>
     <template #file="{ file }">
       <div>
-        <img
-          class="el-upload-list__item-thumbnail"
-          :src="file.url"
-          :alt="file.name"
-        />
+        <noImg :name="file.name" :url="file.url" />
+
         <span class="el-upload-list__item-actions">
           <span
             v-if="!disabled"

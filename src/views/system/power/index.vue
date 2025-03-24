@@ -30,7 +30,7 @@ import { hasAuth } from "@/router/utils";
 const tableRef = ref();
 const formRef = ref();
 const powerStore = usePowerStore();
-const datalist = computed(() => handleTree(powerStore.datalist));
+const dataList = computed(() => handleTree(powerStore.dataList));
 
 /**
  * * 当前页改变时
@@ -174,7 +174,7 @@ onMounted(() => {
           ref="tableRef"
           :adaptiveConfig="{ offsetBottom: 96 }"
           :columns="dynamicColumns"
-          :data="datalist"
+          :data="dataList"
           :header-cell-style="{
             background: 'var(--el-fill-color-light)',
             color: 'var(--el-text-color-primary)'

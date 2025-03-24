@@ -17,7 +17,7 @@ export const useMessageTypeStore = defineStore("messageTypeStore", {
   state() {
     return {
       // 系统消息类型列表
-      datalist: [],
+      dataList: [],
       // 所有消息类型
       allMessageTypeList: [],
       // 查询表单

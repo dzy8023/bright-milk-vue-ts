@@ -1,35 +1,15 @@
-import "./reset.css";
 import editForm from "../form/index.vue";
-import { message } from "@/utils/message";
 import { addDialog } from "@/components/ReDialog";
-import type { FormItemProps } from "./types";
+import { h, onMounted, ref } from "vue";
+import type { SkuFormItemProps, SkuInfoItem } from "./types";
+import { useSkuInfoStore } from "@/store/bm/goods/sku";
 import { deviceDetection } from "@pureadmin/utils";
-import { type Ref, h, ref, onMounted, watch } from "vue";
-import type { TreeNodeData } from "element-plus/es/components/tree-v2/src/types.mjs";
-import { treeProps } from "./columns";
-import { useAttrStore } from "@/store/bm/goods/attr";
-import { useCategoryStore } from "@/store/bm/goods/category";
+import { ElMessageBox, type FormInstance } from "element-plus";
+import SkuInfoDialog from "../form/skuinfo.vue";
 
-export function useAttr(treeRef: Ref) {
-  const attrStore = useAttrStore();
-  const categoryStore = useCategoryStore();
-
+export function useSkuInfo() {
+  const skuInfoStore = useSkuInfoStore();
   const formRef = ref();
-  const curRow = ref();
-
-  const treeIds = ref([]);
-  const initData = ref([]);
-  const isShow = ref(false);
-  const treeSearchValue = ref();
-
-  const isExpandAll = ref(false);
-  const isSelectAll = ref(false);
-  const isLinkage = ref(false);
-
-  function handleDelete(row) {
-    message(`您删除了属性编号为${row.id}的这条数据`, { type: "success" });
-    onSearch();
-  }
 
   function handleSizeChange(val: number) {
     console.log(`${val} items per page`);
@@ -45,31 +25,134 @@ export function useAttr(treeRef: Ref) {
   }
 
   async function onSearch() {
-    attrStore.loading = true;
-    await attrStore.getAttrPage();
-    attrStore.loading = false;
+    skuInfoStore.loading = true;
+    await skuInfoStore.getSkuInfoPage();
+    skuInfoStore.loading = false;
   }
-
-  const resetForm = (formEl: { resetFields: () => void }) => {
+  /** 重置表单 */
+  const resetForm = async (formEl: FormInstance) => {
     if (!formEl) return;
     formEl.resetFields();
-    onSearch();
+    await onSearch();
   };
 
-  function openDialog(isAdd: boolean, row?: FormItemProps) {
+  async function openDialog(isAdd: boolean, row?: SkuFormItemProps) {
     const title = isAdd ? "新增" : "修改";
+    console.log("add sku", row);
+    const res = await skuInfoStore.getSkuAttrWithOptionsListBySpuId({
+      spuId: row.id
+    });
     addDialog({
-      title: `${title}属性`,
+      title: `为【${row.name}】${title}sku`,
       props: {
         formInline: {
-          title: title,
-          id: row?.id ?? "",
-          name: row?.name ?? "",
-          value: row?.value ?? [],
-          icon: row?.icon ?? "",
-          desc: row?.desc ?? "",
-          type: row?.type ?? 0
-        }
+          spuId: row.id,
+          name: row.name,
+          status: row.status,
+          price: row.price,
+          discount: row.discount,
+          attrText: row.attrText,
+          desc: row.desc,
+          attrs: res.map(item => ({
+            ...item,
+            options: item.options.split(";")
+          }))
+        } as SkuFormItemProps
+      },
+      width: "45%",
+      draggable: true,
+      fullscreen: deviceDetection(),
+      fullscreenIcon: true,
+      closeOnClickModal: false,
+      contentRenderer: () =>
+        h(editForm, { ref: formRef, formInline: null, visible: false }),
+      beforeSure: (done, { options }) => {
+        const form = options.props.formInline as SkuFormItemProps;
+        formRef.value.getRef().validate(async valid => {
+          if (!valid) return;
+          const newSkuInfo = {
+            skuInfo: { ...form, skuAttrs: form.attrs },
+            image: form.image[0].raw
+          };
+          delete newSkuInfo.skuInfo.image;
+          delete newSkuInfo.skuInfo.attrs;
+          console.log("newSkuInfo", newSkuInfo);
+          skuInfoStore.createSkuInfo(newSkuInfo);
+          done();
+          await onSearch();
+        });
+      }
+    });
+  }
+
+  async function handleView(row) {
+    const skuInfoRef = ref();
+    if (!row.attrs || row.attrs.length === 0) {
+      const res = await skuInfoStore.getAttrListBySkuId(row.id);
+      row.attrs = res;
+    }
+    console.log(row);
+    addDialog({
+      title: "查看商品详情",
+      width: "50%",
+      draggable: true,
+      fullscreenIcon: true,
+      closeOnClickModal: true,
+      contentRenderer: (): JSX.Element => (
+        <SkuInfoDialog ref={skuInfoRef} skuInfo={row} />
+      )
+    });
+  }
+  async function handleDelete(row) {
+    ElMessageBox.confirm(
+      `确认要<strong>删除</strong><strong style='color:var(--el-color-primary)'>${
+        row.name
+      }</strong>sku信息吗?`,
+      "系统提示",
+      {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+        dangerouslyUseHTMLString: true,
+        draggable: true
+      }
+    ).then(async () => {
+      await skuInfoStore.deleteSkuInfo([row.id]);
+      await onSearch();
+    });
+  }
+  async function handleUpdate(row) {
+    console.log("update sku", row);
+    const res = await skuInfoStore.getSkuAttrWithOptionsListBySpuId({
+      skuId: row.id
+    });
+    const attrs = res.map(item => ({
+      ...item,
+      options: item.options.split(";")
+    }));
+    attrs.forEach(item => {
+      if (item.value && !item.options.includes(item.value)) {
+        //放在第一位
+        item.options.unshift(item.value);
+      }
+    });
+    console.log("res", res);
+    addDialog({
+      title: `修改【${row.name}】`,
+      props: {
+        formInline: {
+          id: row.id,
+          spuId: row.id,
+          name: row.name,
+          status: row.status,
+          price: row.price,
+          image: [{ url: row.image }],
+          discount: row.discount,
+          attrText: row.attrText,
+          desc: row.desc,
+          attrs: attrs,
+          enableOrder: row.enableOrder
+        } as SkuFormItemProps
       },
       width: "45%",
       draggable: true,
@@ -78,128 +161,44 @@ export function useAttr(treeRef: Ref) {
       closeOnClickModal: false,
       contentRenderer: () => h(editForm, { ref: formRef, formInline: null }),
       beforeSure: (done, { options }) => {
-        const form = options.props.formInline as FormItemProps;
+        const form = options.props.formInline as SkuFormItemProps;
         formRef.value.getRef().validate(async valid => {
           if (!valid) return;
-          let result;
-          if (isAdd) {
-            result = await attrStore.addAttr(form);
-          } else {
-            result = await attrStore.updateAttr(form);
-          }
-
-          if (!result) return;
+          const newSkuInfo = {
+            skuInfo: { ...form, skuAttrs: form.attrs },
+            image: form.image[0].raw
+          };
+          delete newSkuInfo.skuInfo.image;
+          delete newSkuInfo.skuInfo.attrs;
+          console.log("newSkuInfo", newSkuInfo);
+          await skuInfoStore.updateSkuInfo(newSkuInfo);
           done();
           await onSearch();
         });
       }
     });
   }
-  /** 高亮当前权限选中行 */
-  function rowStyle({ row: { id } }) {
-    return {
-      cursor: "pointer",
-      background: id === curRow.value?.id ? "var(--el-fill-color-light)" : ""
-    };
-  }
-
-  /** 菜单权限-保存 */
-  function handleSave() {
-    const { id, name } = curRow.value;
-    // 根据用户 id 调用实际项目中菜单权限修改接口
-    console.log(id, treeRef.value.getCheckedKeys());
-    message(`角色名称为${name}的菜单权限修改成功`, {
-      type: "success"
-    });
-  }
-  const onQueryChanged = (query: string) => {
-    treeRef.value!.filter(query);
-  };
-  const forEachTree = (data: any, cb: (item: any) => void) => {
-    if (Array.isArray(data)) {
-      data.forEach(item => {
-        cb(item);
-        forEachTree(item.children, cb);
-      });
+  async function handleChangeStatus(row: SkuInfoItem) {
+    const res = await skuInfoStore.changeSkuInfoStatus(row.id);
+    if (res) {
+      row.status = row.status === 0 ? 1 : 0;
     }
-  };
-
-  const filterMethod = (query: string, node) => {
-    return node.title!.includes(query);
-  };
+    return res;
+  }
   onMounted(async () => {
     onSearch();
-    await categoryStore.getCategoryTree();
-    treeIds.value = [];
-    initData.value.push(...categoryStore.treeData);
-    forEachTree(initData.value, item => {
-      treeIds.value.push(item.id);
-    });
-    console.log(treeIds.value, initData.value);
-  });
-  watch(isExpandAll, val => {
-    val
-      ? treeRef.value.setExpandedKeys(treeIds.value)
-      : treeRef.value.setExpandedKeys([]);
   });
 
-  watch(isSelectAll, val => {
-    val
-      ? treeRef.value.setCheckedKeys(treeIds.value)
-      : treeRef.value.setCheckedKeys([]);
-  });
-  /**属性关联分类 */
-  const handleRelated = async (row: any) => {
-    const { id } = row;
-    if (id) {
-      //初始化数据,深拷贝
-      // treeData.value = JSON.parse(JSON.stringify(initData));
-      curRow.value = row;
-      isShow.value = true;
-      const res = await attrStore.getCatIdsByAttrId(id);
-      //遍历树，给选中的节点添加select属性
-      forEachTree(initData.value, item => {
-        let index = res.result.findIndex(item1 => item1.catId === item.id);
-        if (index !== -1) {
-          item.select = res.result[index].select;
-        }
-      });
-      treeRef.value.setCheckedKeys(res.result.map(item => item.catId));
-      console.log(row, res.result, categoryStore.treeData, initData.value);
-    } else {
-      curRow.value = null;
-      isShow.value = false;
-    }
-  };
-  const handleCheckChange = (data: TreeNodeData, checked: boolean) => {
-    if (checked) {
-      data.select = 0;
-    } else {
-      data.select = undefined;
-    }
-  };
   return {
-    isShow,
-    curRow,
-    initData,
-    treeProps,
-    isLinkage,
-    isExpandAll,
-    isSelectAll,
-    treeSearchValue,
-    handleSave,
-    onQueryChanged,
-    filterMethod,
-    rowStyle,
-    deviceDetection,
     onSearch,
     resetForm,
     openDialog,
     handleDelete,
+    handleUpdate,
+    handleChangeStatus,
+    handleView,
     handleSizeChange,
     handleCurrentChange,
-    handleSelectionChange,
-    handleRelated,
-    handleCheckChange
+    handleSelectionChange
   };
 }

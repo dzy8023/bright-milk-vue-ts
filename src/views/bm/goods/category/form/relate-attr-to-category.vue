@@ -26,7 +26,7 @@ const init = async () => {
   const catId = props.catId;
   if (catId) {
     await attrStore.getAttrNotRelateList({ catId });
-    const res = await categoryStore.getAttrListByCatId({
+    const res = await attrStore.getAttrListByCatId({
       catId: catId
     });
     attrStore.attrList.push(...res);

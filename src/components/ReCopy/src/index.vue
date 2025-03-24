@@ -26,7 +26,7 @@ defineProps({
   <span
     v-else
     v-copy:click="value"
-    class="text-sky-500 underline decoration-text_color_regular decoration-dashed underline-offset-2 hover:cursor-pointer"
+    class="text-sky-500 underline decoration-text_color_regular decoration-dashed underline-offset-2 hover:cursor-pointer hover:decoration-sky-500"
   >
     {{ value }}
   </span>

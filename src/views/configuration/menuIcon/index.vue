@@ -128,7 +128,7 @@ onMounted(() => {
           ref="tableRef"
           :adaptiveConfig="{ offsetBottom: 96 }"
           :columns="dynamicColumns"
-          :data="menuIconStore.datalist"
+          :data="menuIconStore.dataList"
           :header-cell-style="{
             background: 'var(--el-fill-color-light)',
             color: 'var(--el-text-color-primary)'

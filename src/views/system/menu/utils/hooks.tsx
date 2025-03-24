@@ -35,7 +35,7 @@ export function onAdd(parentId: any = 0) {
       formInline: {
         menuType: 0,
         higherMenuOptions: formatHigherMenuOptions(
-          cloneDeep(menuStore.datalist)
+          cloneDeep(menuStore.dataList)
         ),
         parentId,
         title: "",
@@ -83,7 +83,7 @@ export const onUpdate = (row?: FormItemProps) => {
       formInline: {
         menuType: row?.menuType,
         higherMenuOptions: formatHigherMenuOptions(
-          cloneDeep(menuStore.datalist)
+          cloneDeep(menuStore.dataList)
         ),
         parentId: row?.parentId,
         title: row?.title,

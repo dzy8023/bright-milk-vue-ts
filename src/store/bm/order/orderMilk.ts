@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { pageSizes } from "@/enums/baseConstant";
-import { message, storeMessage } from "@/utils/message";
+import { storeMessage } from "@/utils/message";
 import {
   fetchQueryOrderMilk,
   fetchGetOrderMilkPage,
@@ -9,6 +9,7 @@ import {
   fetchDeleteOrderMilk,
   fetchChangeOrderMilkStatus
 } from "@/api/bm/order/orderMilk";
+import { storePagination } from "@/store/useStorePagination";
 
 /**
  * 订奶信息 Store
@@ -49,20 +50,9 @@ export const useOrderMilkStore = defineStore("OrderMilkStore", {
       delete data.background;
       // 获取订奶信息列表
       const res = await fetchGetOrderMilkPage(data);
-      if (res.code !== 200) {
-        message(res.msg, { type: "error", duration: 3000 });
-        return false;
-      }
-      res.result.items.map(item => {
-        this.dataList.push({
-          ...item,
-          value: item.value.split(",")
-        });
-      });
-      this.pagination.total = res.result.total;
-      this.pagination.pageSize = res.result.pageSize;
-      this.pagination.currentPage = res.result.currentPage;
-      return true;
+      // 公共页面函数hook
+      const pagination = storePagination.bind(this);
+      return pagination(res);
     },
 
     /** 查询订奶 */

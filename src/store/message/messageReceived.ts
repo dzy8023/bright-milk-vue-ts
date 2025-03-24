@@ -15,7 +15,7 @@ export const useMessageReceivedStore = defineStore("messageReceivedStore", {
   state() {
     return {
       // 系统消息列表
-      datalist: [],
+      dataList: [],
       // 查询表单
       form: {
         // 消息标题

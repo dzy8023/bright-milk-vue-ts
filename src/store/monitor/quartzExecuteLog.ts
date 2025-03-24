@@ -14,7 +14,7 @@ export const useQuartzExecuteLogStore = defineStore("quartzExecuteLogStore", {
   state() {
     return {
       // 调度任务执行日志列表
-      datalist: [],
+      dataList: [],
       // 查询表单
       form: {
         // 任务名称

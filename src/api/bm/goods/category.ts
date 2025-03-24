@@ -43,12 +43,6 @@ export const fetchUpdateCategory = (data: any) => {
     data
   });
 };
-/** 分类管理--- 获取关联的属性*/
-export const fetchGetAttrListByCatId = (data: any) => {
-  return apiHttp.request<any>("get", `categoryAttr/list`, {
-    params: data
-  });
-};
 /**批量更新分类 */
 export const fetchBatchUpdateCategory = (data: any) => {
   return apiHttp.request<any>("put", "category/updateBatch", {

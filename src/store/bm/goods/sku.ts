@@ -1,15 +1,18 @@
 import { defineStore } from "pinia";
 import { pageSizes } from "@/enums/baseConstant";
-import { message, storeMessage } from "@/utils/message";
+import { returnMessage, storeMessage } from "@/utils/message";
 import {
   fetchQuerySkuInfo,
   fetchGetSkuInfoPage,
-  fetchAddSkuInfo,
+  fetchCreateSkuInfoBatch,
   fetchUpdateSkuInfo,
   fetchDeleteSkuInfo,
   fetchChangeSkuInfoStatus,
-  fetchGetAttrListBySkuId
+  fetchGetAttrListBySkuId,
+  fetchGetSkuAttrWithOptionsListBySpuId,
+  fetchCreateSkuInfo
 } from "@/api/bm/goods/sku";
+import { storePagination } from "@/store/useStorePagination";
 
 /**
  * 商品信息 Store
@@ -21,8 +24,8 @@ export const useSkuInfoStore = defineStore("SkuInfoStore", {
       dataList: [],
       // 查询表单
       form: {
-        // 分类ID
-        catId: "",
+        // spuID
+        spuId: "",
         // 商品名称
         name: "",
         // 商品状态
@@ -31,7 +34,7 @@ export const useSkuInfoStore = defineStore("SkuInfoStore", {
       // 分页查询结果
       pagination: {
         currentPage: 1,
-        pageSize: 15,
+        pageSize: 20,
         total: 1,
         pageSizes
       },
@@ -50,20 +53,9 @@ export const useSkuInfoStore = defineStore("SkuInfoStore", {
       delete data.background;
       // 获取商品信息列表
       const res = await fetchGetSkuInfoPage(data);
-      if (res.code !== 200) {
-        message(res.msg, { type: "error", duration: 3000 });
-        return false;
-      }
-      res.result.items.map(item => {
-        this.dataList.push({
-          ...item,
-          value: item.value.split(",")
-        });
-      });
-      this.pagination.total = res.result.total;
-      this.pagination.pageSize = res.result.pageSize;
-      this.pagination.currentPage = res.result.currentPage;
-      return true;
+      // 公共页面函数hook
+      const pagination = storePagination.bind(this);
+      return pagination(res);
     },
 
     /** 查询商品 */
@@ -72,20 +64,24 @@ export const useSkuInfoStore = defineStore("SkuInfoStore", {
       if (result.code !== 200) return [];
       return result.result;
     },
-
     /** 添加商品信息 */
-    async addSkuInfo(data: any) {
-      const result = await fetchAddSkuInfo(data);
+    async createSkuInfo(data: { skuInfo: any; image: File }) {
+      const result = await fetchCreateSkuInfo(data);
+      return storeMessage(result);
+    },
+    /** 添加批量添加skuInfo */
+    async createSkuInfoBatch(data: any) {
+      const result = await fetchCreateSkuInfoBatch(data);
       return storeMessage(result);
     },
     /** 修改商品信息 */
-    async updateSkuInfo(data: any) {
+    async updateSkuInfo(data: { skuInfo: any; image?: File }) {
       const result = await fetchUpdateSkuInfo(data);
       return storeMessage(result);
     },
 
     /** 删除商品信息 */
-    async deleteSkuInfo(data: any) {
+    async deleteSkuInfo(data: string[]) {
       const result = await fetchDeleteSkuInfo(data);
       return storeMessage(result);
     },
@@ -97,8 +93,16 @@ export const useSkuInfoStore = defineStore("SkuInfoStore", {
     },
     /** 获取属性列表 */
     async getAttrListBySkuId(skuId: string) {
-      const result = await fetchGetAttrListBySkuId({ skuId });
-      return storeMessage(result);
+      const result = await fetchGetAttrListBySkuId(skuId);
+      return returnMessage(result);
+    },
+    /**获取skuAttrs列表 */
+    async getSkuAttrWithOptionsListBySpuId(data: {
+      spuId?: string;
+      skuId?: string;
+    }) {
+      const result = await fetchGetSkuAttrWithOptionsListBySpuId(data);
+      return returnMessage(result);
     }
   }
 });

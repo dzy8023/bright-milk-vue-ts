@@ -28,6 +28,7 @@ const getUserInfo = async () => {
 
   loading.value = false;
 };
+defineEmits(["close"]);
 
 onMounted(() => {
   getUserInfo();

@@ -10,6 +10,7 @@ import Delete from "@iconify-icons/ep/delete";
 import EditPen from "@iconify-icons/ep/edit-pen";
 import Refresh from "@iconify-icons/ep/refresh";
 import AddFill from "@iconify-icons/ri/add-circle-line";
+import View from "@iconify-icons/ep/view";
 import { GOOD_STATUS_0, GOOD_STATUS_1 } from "@/constant/status";
 import { ElMessage } from "element-plus";
 import type { TabItem } from "./utils/types";
@@ -19,34 +20,24 @@ import { useAttrStore } from "@/store/bm/goods/attr";
 import { useCategoryStore } from "@/store/bm/goods/category";
 import { auth } from "./utils/auth";
 import { hasAuth } from "@/router/utils";
+import { useRouter } from "vue-router";
 
 const { switchStyle } = usePublicHooks();
 const spuInfoStore = useSpuInfoStore();
 const categoryStore = useCategoryStore();
-const attrStore = useAttrStore();
+const router = useRouter();
 const treeRef = ref();
 const formRef = ref();
 const tableRef = ref();
-const onAddGood = () => {
-  ElMessage.success("新增商品成功");
-};
-const onEditGood = (title, row) => {
-  ElMessage.success(`编辑${title}成功`);
-  console.log(row);
-};
-const subMonted = (row: TabItem) => {
+const subMonted = async (row: TabItem) => {
   //如果subLoading为未定义，则说明是第一次加载，需要重新加载数据
   //如果subLoading为true，则说明已经加载过数据，不需要再次加载
   //如果subLoading为false，则说明已经加载过数据，不需要再次加载
   if (row.subLoading === undefined) {
     row.subLoading = true;
-    //模拟异步请求
-    setTimeout(async () => {
-      const res = await spuInfoStore.getAttrListBySpuId(row.id);
-      console.log(res);
-      row.attrs = res;
-      row.subLoading = false;
-    }, 1000);
+    const res = await spuInfoStore.getAttrListBySpuId(row.id);
+    row.attrs = res;
+    row.subLoading = false;
   }
 };
 const {
@@ -59,11 +50,13 @@ const {
   onbatchDel,
   onTreeSelect,
   handleUpdate,
+  handleAddSku,
   handleDelete,
   handleSizeChange,
   onSelectionCancel,
   handleCurrentChange,
-  handleSelectionChange
+  handleSelectionChange,
+  onViewSpuInfo
 } = useGoods(tableRef, treeRef);
 </script>
 
@@ -85,7 +78,7 @@ const {
         :model="spuInfoStore.form"
         class="search-form bg-bg_color w-[99/100] pl-8 pt-[12px] overflow-auto"
       >
-        <el-form-item label="商品名称：" prop="username">
+        <el-form-item label="商品名称：" prop="name">
           <el-input
             v-model="spuInfoStore.form.name"
             placeholder="请输入商品名称"
@@ -129,7 +122,7 @@ const {
           <el-button
             type="primary"
             :icon="useRenderIcon(AddFill)"
-            @click="onAddGood()"
+            @click="router.push('/goods/add')"
           >
             新增商品
           </el-button>
@@ -193,22 +186,30 @@ const {
                 @click="onChange(row, index)"
               />
             </template>
+            <template #name="{ row }">
+              <el-button
+                v-show="row.name"
+                link
+                type="primary"
+                @click="onViewSpuInfo(row)"
+              >
+                {{ row.name }}
+              </el-button>
+            </template>
             <template #expand="{ row }: { row: TabItem }">
-              <div class="m-4">
-                <el-input v-model="row.name" placeholder="请输入商品名称" />
-                <p class="mb-2">name: {{ row.name }}</p>
-                <p class="mb-2">catName: {{ row.catName }}</p>
-                <p class="mb-2">desc: {{ row.desc }}</p>
-                <p class="mb-4">catId: {{ row.catId }}</p>
+              <div class="m-1">
                 <pure-table
                   row-key="id"
                   adaptive
-                  :adaptiveConfig="{ offsetBottom: 50 }"
                   align-whole="center"
-                  table-layout="auto"
+                  table-layout="fixed"
                   border
                   :data="row.attrs"
                   :columns="childrenColumns"
+                  :header-cell-style="{
+                    background: 'var(--el-fill-color-light)',
+                    color: 'var(--el-text-color-primary)'
+                  }"
                   @vue:mounted="subMonted(row)"
                   ><template #status="{ row, index }">
                     <el-switch
@@ -232,27 +233,22 @@ const {
                 link
                 type="primary"
                 :size="size"
+                :icon="useRenderIcon(View)"
+                @click="onViewSpuInfo(row)"
+              >
+                查看
+              </el-button>
+              <el-button
+                class="reset-margin"
+                link
+                type="primary"
+                :size="size"
                 :icon="useRenderIcon(EditPen)"
-                @click="onEditGood('修改', row)"
+                @click="handleUpdate(false, row)"
               >
                 修改
               </el-button>
-              <el-popconfirm
-                :title="`是否确认删除用户编号为${row.id}的这条数据`"
-                @confirm="handleDelete(row)"
-              >
-                <template #reference>
-                  <el-button
-                    class="reset-margin"
-                    link
-                    type="primary"
-                    :size="size"
-                    :icon="useRenderIcon(Delete)"
-                  >
-                    删除
-                  </el-button>
-                </template>
-              </el-popconfirm>
+              <!-- 更多操作 -->
               <el-dropdown>
                 <el-button
                   class="ml-3 mt-[2px]"
@@ -260,8 +256,39 @@ const {
                   type="primary"
                   :size="size"
                   :icon="useRenderIcon(More)"
-                  @click="handleUpdate(row)"
                 />
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <el-dropdown-item>
+                      <el-button
+                        link
+                        type="primary"
+                        :icon="useRenderIcon(AddFill)"
+                        @click="handleAddSku(row)"
+                      >
+                        新增sku
+                      </el-button>
+                    </el-dropdown-item>
+                    <el-dropdown-item>
+                      <el-popconfirm
+                        :title="`是否确认删除商品编号为${row.id}的这条数据`"
+                        @confirm="handleDelete(row)"
+                      >
+                        <template #reference>
+                          <el-button
+                            class="reset-margin"
+                            link
+                            type="danger"
+                            :size="size"
+                            :icon="useRenderIcon(Delete)"
+                          >
+                            删除
+                          </el-button>
+                        </template>
+                      </el-popconfirm>
+                    </el-dropdown-item>
+                  </el-dropdown-menu>
+                </template>
               </el-dropdown>
             </template>
           </pure-table>

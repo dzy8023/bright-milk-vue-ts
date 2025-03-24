@@ -1,5 +1,7 @@
 import noImg from "@/assets/img/noImg.png";
 import dayjs from "dayjs";
+import { reactive } from "vue";
+import type { FormRules } from "element-plus";
 
 export const columns: TableColumnList = [
   {
@@ -34,23 +36,24 @@ export const columns: TableColumnList = [
   {
     label: "商品名称",
     prop: "name",
-    minWidth: 130
+    slot: "name",
+    width: 140
   },
   {
     label: "分类名称",
     prop: "catName",
-    minWidth: 90
+    width: 100
   },
   {
     label: "状态",
     prop: "status",
-    minWidth: 90,
+    width: 90,
     slot: "status"
   },
   {
     label: "商品快速展示属性",
     prop: "attrText",
-    minWidth: 90,
+    width: 120,
     cellRenderer: ({ row, props }) => (
       <el-tag size={props.size} type="info">
         {row.attrText}
@@ -60,7 +63,7 @@ export const columns: TableColumnList = [
   {
     label: "商品展示价格",
     prop: "price",
-    minWidth: 90,
+    width: 90,
     sortable: true,
     cellRenderer: ({ row, props }) => (
       <el-tag size={props.size} type="danger">
@@ -71,7 +74,7 @@ export const columns: TableColumnList = [
   {
     label: "商品折扣",
     prop: "discount",
-    minWidth: 90,
+    width: 90,
     sortable: true,
     cellRenderer: ({ row, props }) => (
       <el-tag size={props.size} type="success">
@@ -82,7 +85,7 @@ export const columns: TableColumnList = [
   {
     label: "商品销量",
     prop: "sales",
-    minWidth: 90,
+    width: 90,
     sortable: true,
     cellRenderer: ({ row, props }) => (
       <el-tag size={props.size} type="warning">
@@ -91,8 +94,13 @@ export const columns: TableColumnList = [
     )
   },
   {
+    label: "商品描述",
+    prop: "desc",
+    width: 180
+  },
+  {
     label: "创建时间",
-    minWidth: 90,
+    width: 120,
     prop: "createTime",
     sortable: true,
     formatter: ({ createTime }) =>
@@ -100,7 +108,7 @@ export const columns: TableColumnList = [
   },
   {
     label: "更新时间",
-    minWidth: 90,
+    width: 120,
     prop: "updateTime",
     sortable: true,
     formatter: ({ updateTime }) =>
@@ -117,22 +125,77 @@ export const childrenColumns: TableColumnList = [
   {
     label: "属性id",
     prop: "attrId",
-    minWidth: 40
+    width: 140
   },
   {
     label: "属性名称",
-    prop: "name",
-    minWidth: 50
+    prop: "attrName",
+    width: 140
   },
   {
     label: "属性值",
     prop: "value",
-    minWidth: 90
+    width: 140
   },
   {
     label: "快速展示",
     prop: "quickShow",
-    minWidth: 50,
+    width: 140,
     slot: "quickShow"
   }
 ];
+const validateImage = (rule: any, value: any, callback: any) => {
+  if (value && value.length > 0) {
+    callback();
+  } else {
+    callback(new Error("请上传商品图片"));
+  }
+};
+export const rules: any = reactive<FormRules>({
+  name: [
+    {
+      required: true,
+      message: "请输入商品名称",
+      trigger: "blur"
+    },
+    {
+      max: 64,
+      message: "名称最多64个字符",
+      trigger: "blur"
+    }
+  ],
+  catIds: [
+    {
+      type: "array",
+      required: true,
+      message: "请选择商品分类",
+      trigger: "blur"
+    }
+  ],
+  //价格要大于0, 且最多两位小数
+  price: [
+    { required: true, message: "请输入商品价格", trigger: "blur" },
+    {
+      type: "number",
+      min: 0.01,
+      message: "价格必须为大于0的数字",
+      trigger: "blur"
+    }
+  ],
+  discount: [
+    { required: true, message: "请输入商品折扣", trigger: "blur" },
+    {
+      type: "number",
+      min: 0.01,
+      message: "折扣必须为大于0的数字",
+      trigger: "blur"
+    }
+  ],
+  image: [
+    {
+      required: true,
+      validator: validateImage,
+      trigger: "change"
+    }
+  ]
+});

@@ -14,7 +14,7 @@ export const useMessageSendStore = defineStore("messageSendStore", {
   state() {
     return {
       // 系统消息列表
-      datalist: [],
+      dataList: [],
       // 消息接受用戶信息列表
       receivedUserinfoList: [],
       // 查询表单

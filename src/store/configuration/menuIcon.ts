@@ -17,7 +17,7 @@ export const useMenuIconStore = defineStore("menuIconStore", {
   state() {
     return {
       // 系统菜单图标列表
-      datalist: [],
+      dataList: [],
       // 图标名称列表
       iconNameList: [],
       // 查询表单

@@ -8,7 +8,7 @@ import type { Data } from "@/utils/http/types";
 export function storePagination(response: Data<PageResult<any>>) {
   // 返回成功为其赋值
   if (response.code === 200) {
-    this.datalist = response.result.items;
+    this.dataList = response.result.items;
     this.pagination.currentPage = response.result.currentPage;
     this.pagination.pageSize = response.result.pageSize;
     this.pagination.total = response.result.total;

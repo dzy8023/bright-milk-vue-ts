@@ -1,15 +1,20 @@
 import { defineStore } from "pinia";
 import { pageSizes } from "@/enums/baseConstant";
-import { message, returnMessage, storeMessage } from "@/utils/message";
+import { returnMessage, storeMessage } from "@/utils/message";
 import {
   fetchQuerySpuInfo,
   fetchGetSpuInfoPage,
-  fetchAddSpuInfo,
+  fetchCreateSpuInfo,
   fetchUpdateSpuInfo,
   fetchDeleteSpuInfo,
   fetchChangeSpuInfoStatus,
-  fetchGetAttrListBySpuId
+  fetchGetAttrListBySpuId,
+  fetchGetSpuInfoMainImage,
+  fetchGetAttrWithOptionsList,
+  fetchUpdateSpuInfoImage,
+  fetchUpdateSpuInfoAttr
 } from "@/api/bm/goods/spu";
+import { storePagination } from "@/store/useStorePagination";
 
 /**
  * 商品信息 Store
@@ -22,7 +27,7 @@ export const useSpuInfoStore = defineStore("SpuInfoStore", {
       // 查询表单
       form: {
         // 分类ID
-        catId: "",
+        catIds: [],
         // 商品名称
         name: "",
         // 商品状态
@@ -50,20 +55,9 @@ export const useSpuInfoStore = defineStore("SpuInfoStore", {
       delete data.background;
       // 获取商品信息列表
       const res = await fetchGetSpuInfoPage(data);
-      if (res.code !== 200) {
-        message(res.msg, { type: "error", duration: 3000 });
-        return false;
-      }
-      res.result.items.map(item => {
-        this.dataList.push({
-          ...item,
-          value: item.value.split(",")
-        });
-      });
-      this.pagination.total = res.result.total;
-      this.pagination.pageSize = res.result.pageSize;
-      this.pagination.currentPage = res.result.currentPage;
-      return true;
+      // 公共页面函数hook
+      const pagination = storePagination.bind(this);
+      return pagination(res);
     },
 
     /** 查询商品 */
@@ -73,10 +67,10 @@ export const useSpuInfoStore = defineStore("SpuInfoStore", {
       return result.result;
     },
 
-    /** 添加商品信息 */
-    async addSpuInfo(data: any) {
-      const result = await fetchAddSpuInfo(data);
-      return storeMessage(result);
+    /** 发布商品信息 */
+    async createSpuInfo(data: any) {
+      const result = await fetchCreateSpuInfo(data);
+      return returnMessage(result);
     },
     /** 修改商品信息 */
     async updateSpuInfo(data: any) {
@@ -97,8 +91,37 @@ export const useSpuInfoStore = defineStore("SpuInfoStore", {
     },
     /** 商品管理--- 根据spuInfoId获取规格列表 */
     async getAttrListBySpuId(spuId: string) {
-      const result = await fetchGetAttrListBySpuId({ spuId: spuId });
+      const result = await fetchGetAttrListBySpuId(spuId);
       return returnMessage(result);
+    },
+    /**根据spuId与catId获取规格及选项列表 */
+    async getAttrWithOptionsList(data: { spuId: string; catId: number }) {
+      const result = await fetchGetAttrWithOptionsList(data);
+      return returnMessage(result);
+    },
+    /**根据spuId获取图集 */
+    async getSpuInfoMainImage(spuId: string) {
+      const result = await fetchGetSpuInfoMainImage(spuId);
+      return returnMessage(result);
+    },
+    /**修改spu图片 */
+    async updateSpuInfoImage(data: {
+      deleted: any[];
+      new: File[];
+      spuId: string;
+    }) {
+      const result = await fetchUpdateSpuInfoImage(data);
+      return returnMessage(result);
+    },
+    /**修改spuAttrs */
+    async updateSpuInfoAttr(data: {
+      spuId: string;
+      deleted: any[];
+      added: any[];
+      updated: any[];
+    }) {
+      const result = await fetchUpdateSpuInfoAttr(data);
+      return storeMessage(result);
     }
   }
 });

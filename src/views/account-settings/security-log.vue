@@ -8,7 +8,7 @@ import { useUserLoginLogStore } from "@/store/monitor/userLoginLog";
 const userLoginLogStore = useUserLoginLogStore();
 const userLoginLogs = reactive({
   loading: false,
-  datalist: [],
+  dataList: [],
   currentPage: 1,
   pageSize: 15,
   total: 0,
@@ -22,7 +22,7 @@ const onSearchByLoginLog = async () => {
 
   const data =
     await userLoginLogStore.getUserLoginLogListByLocalUser(userLoginLogs);
-  userLoginLogs.datalist = data.items;
+  userLoginLogs.dataList = data.items;
   userLoginLogs.currentPage = data.currentPage;
   userLoginLogs.pageSize = data.pageSize;
   userLoginLogs.total = data.total;
@@ -51,7 +51,7 @@ onMounted(() => {
     <h3 class="my-8">安全日志</h3>
     <pure-table
       :columns="columns"
-      :data="userLoginLogs.datalist"
+      :data="userLoginLogs.dataList"
       :loading="userLoginLogs.loading"
       :pagination="userLoginLogs"
       row-key="id"

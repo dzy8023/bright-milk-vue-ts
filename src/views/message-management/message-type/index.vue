@@ -167,7 +167,7 @@ onMounted(() => {
           ref="tableRef"
           :adaptiveConfig="{ offsetBottom: 96 }"
           :columns="dynamicColumns"
-          :data="messageTypeStore.datalist"
+          :data="messageTypeStore.dataList"
           :header-cell-style="{
             background: 'var(--el-fill-color-light)',
             color: 'var(--el-text-color-primary)'

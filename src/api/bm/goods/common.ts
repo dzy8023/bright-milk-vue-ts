@@ -1,8 +1,8 @@
 import { apiHttp } from "@/utils/http";
 
-export const fetchUploadFile = (data: File) => {
+export const fetchUploadFile = (data: File[]) => {
   const formData = new FormData();
-  formData.append("file", data);
+  data.forEach(file => formData.append("files", file));
   return apiHttp.request<any>(
     "post",
     "common/upload",

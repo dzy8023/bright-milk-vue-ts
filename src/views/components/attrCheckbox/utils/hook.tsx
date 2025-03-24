@@ -1,9 +1,8 @@
-import { message } from "@/utils/message";
-import type { SkuAttr, SupAttr } from "./types";
 import type { TableColumns } from "@pureadmin/table";
 import { ref } from "vue";
 import { filterEmptyArray } from "@/utils/utils";
 import type AttrCheckbox from "./attr-checkbox.vue";
+import type { SupAttr, SkuAttr } from "./types";
 
 // 如果您不习惯tsx写法，可以传slot，然后在template里写
 // 需是hooks写法（函数中有return），避免失去响应性
@@ -11,22 +10,17 @@ export function useColumns() {
   const columns: TableColumnList = [
     {
       type: "expand",
-      slot: "expand",
-      fixed: "left"
+      slot: "expand"
+    },
+    {
+      label: "勾选列", // 如果需要表格多选，此处label必须设置
+      type: "selection",
+      fixed: "left",
+      reserveSelection: true // 数据刷新后保留选项
     }
   ];
   const tableData = ref([]);
   const attrCheckboxRef = ref<InstanceType<typeof AttrCheckbox>>();
-
-  const handleEdit = (index: number, row) => {
-    message(`您修改了第 ${index} 行，数据为：${JSON.stringify(row)}`, {
-      type: "success"
-    });
-  };
-
-  const handleDelete = (index: number, row) => {
-    message(`您删除了第 ${index} 行，数据为：${JSON.stringify(row)}`);
-  };
 
   const comCloumns = (cloumns: TableColumnList) => {
     return cloumns.push(
@@ -38,28 +32,21 @@ export function useColumns() {
       },
       {
         label: "商品价格",
-        prop: "name",
+        prop: "price",
         slot: "price",
+        width: "200"
+      },
+      {
+        label: "商品折扣",
+        prop: "discount",
+        slot: "discount",
         width: "200"
       },
       {
         label: "操作",
         width: "180",
         fixed: "right",
-        cellRenderer: ({ index, row }) => (
-          <>
-            <el-button size="small" onClick={() => handleEdit(index + 1, row)}>
-              Edit
-            </el-button>
-            <el-button
-              size="small"
-              type="danger"
-              onClick={() => handleDelete(index + 1, row)}
-            >
-              Delete
-            </el-button>
-          </>
-        )
+        slot: "operation"
       }
     );
   };
@@ -67,8 +54,8 @@ export function useColumns() {
     spuAttrs: (SupAttr & { showStatus: 0 | 1 })[];
     saleAttrs: SkuAttr[];
   }) => {
-    //保留原来的columns
-    columns.splice(1, columns.length);
+    //保留原来的columns,初始有2列，后面添加的属性列
+    columns.splice(2, columns.length);
     const spuAttrColumns = {
       label: "商品属性",
       prop: "spuAttrs",
@@ -79,29 +66,7 @@ export function useColumns() {
         label: item.name,
         prop: item.props,
         width: 60 * (item.value as string).split(";").length + 100,
-        cellRenderer: ({ row, column }) => (
-          <div class="flex flex-wrap">
-            {row[column.property].value
-              .split(";")
-              .map((value: string, index: number) => (
-                <el-tag class="mr-2 mb-2" type="info" key={index}>
-                  {value}
-                </el-tag>
-              ))}
-            {/* 小圆点和文本 */}
-            <div class="flex items-center">
-              {/* 动态设置小圆点颜色 */}
-              <div
-                class="w-3 h-3 rounded-full"
-                style={{
-                  backgroundColor:
-                    row[column.property].quickShow === 1 ? "#aee875" : "#ee3a3a"
-                }}
-              ></div>
-              快速展示
-            </div>
-          </div>
-        )
+        slot: "spuAttrs"
       });
     });
     const saleAttrColumns = {
@@ -176,7 +141,8 @@ export function useColumns() {
             id: index,
             ...extandData,
             name: name,
-            price: extandData?.price ?? 3.8
+            price: extandData?.price ?? 3.8,
+            discount: extandData?.discount ?? 0.8
           });
         }
       });

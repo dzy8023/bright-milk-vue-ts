@@ -73,7 +73,7 @@ onMounted(() => {
       :model="attrStore.form"
       class="search-form bg-bg_color w-[99/100] pl-8 pt-[12px] overflow-auto"
     >
-      <el-form-item label="属性名称：" prop="username">
+      <el-form-item label="属性名称：" prop="name">
         <el-input
           v-model="attrStore.form.name"
           placeholder="请输入属性名称"
@@ -81,7 +81,7 @@ onMounted(() => {
           class="!w-[180px]"
         />
       </el-form-item>
-      <el-form-item label="类型：" prop="status">
+      <el-form-item label="类型：" prop="type">
         <el-select
           v-model="attrStore.form.type"
           placeholder="请选择"

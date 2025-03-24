@@ -10,7 +10,8 @@ import {
   fetchUpdateAttr,
   fetchCatIdsByAttrId,
   fetchGetAttrList,
-  fetchAttrNotRelateList
+  fetchAttrNotRelateList,
+  fetchGetAttrListByCatId
 } from "@/api/bm/goods/attr";
 
 /**
@@ -108,7 +109,12 @@ export const useAttrStore = defineStore("AttrStore", {
         attrId: item.id
       }));
     },
-    /** 获取未关联的属性列表 */
+    /**获取分类关联属性列表 */
+    async getAttrListByCatId(data: any) {
+      const result = await fetchGetAttrListByCatId(data);
+      return returnMessage(result);
+    },
+    /**  获取未关联的属性列表 */
     async getAttrNotRelateList(data: any) {
       const result = await fetchAttrNotRelateList(data);
       this.attrList = returnMessage(result).map(item => ({

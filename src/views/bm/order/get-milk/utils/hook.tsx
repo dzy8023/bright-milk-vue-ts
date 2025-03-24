@@ -1,4 +1,3 @@
-import "./reset.css";
 import editForm from "../form/index.vue";
 import { message } from "@/utils/message";
 import { addDialog } from "@/components/ReDialog";

@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { pageSizes } from "@/enums/baseConstant";
-import { message, returnMessage, storeMessage } from "@/utils/message";
+import { message, storeMessage } from "@/utils/message";
 import { storePagination } from "@/store/useStorePagination";
 import {
   fetchGetCategoryPage,
@@ -10,7 +10,6 @@ import {
   fetchAddCategory,
   fetchUpdateCategory,
   fetchGetCategoryTree,
-  fetchGetAttrListByCatId,
   fetchBatchUpdateCategory,
   fetchCategoryRelateAttr
 } from "@/api/bm/goods/category";
@@ -103,11 +102,6 @@ export const useCategoryStore = defineStore("CategoryStore", {
     async changeCategoryStatus(data: any) {
       const result = await fetchChangeCategoryStatus(data);
       return storeMessage(result);
-    },
-    /**获取分类列表 */
-    async getAttrListByCatId(data: any) {
-      const result = await fetchGetAttrListByCatId(data);
-      return returnMessage(result);
     },
     /**批量更新分类 */
     async batchUpdateCategory(data: any) {

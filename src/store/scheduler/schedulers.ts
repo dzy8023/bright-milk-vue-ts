@@ -19,7 +19,7 @@ export const useSchedulersStore = defineStore("schedulersStore", {
   state() {
     return {
       // Schedulers视图列表
-      datalist: [],
+      dataList: [],
       // Schedulers视图列表
       allScheduleJobList: [],
       // 查询表单

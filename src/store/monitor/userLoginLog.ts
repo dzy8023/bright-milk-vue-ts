@@ -15,7 +15,7 @@ export const useUserLoginLogStore = defineStore("userLoginLogStore", {
   state() {
     return {
       // 用户登录日志列表
-      datalist: [],
+      dataList: [],
       // 查询表单
       form: {
         // 用户名

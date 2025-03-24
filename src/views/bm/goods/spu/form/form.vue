@@ -1,15 +1,14 @@
 <script setup lang="ts">
-import { nextTick, ref, watch } from "vue";
+import { ref } from "vue";
 import ReCol from "@/components/ReCol";
-import type { SkuFormProps } from "../utils/types";
+import { FormProps } from "../utils/types";
 import { rules } from "../utils/columns";
 import { usePublicHooks } from "@/views/hooks";
 import ReUpload from "@/components/ReUpload";
 
-const props = withDefaults(defineProps<SkuFormProps>(), {
+const props = withDefaults(defineProps<FormProps>(), {
   formInline: () => ({
     id: "",
-    spuId: "",
     name: "",
     status: 0,
     image: [],
@@ -18,60 +17,17 @@ const props = withDefaults(defineProps<SkuFormProps>(), {
     attrText: "",
     desc: "",
     attrs: [],
-    enableOrder: 0
+    mainImage: []
   })
 });
-// 类型定义
-interface InputState {
-  visible: boolean;
-  value: string;
-}
 const { switchStyle } = usePublicHooks();
 
 const formRef = ref();
 const newFormInline = ref(props.formInline);
-const inputRefs = ref<Record<string, HTMLInputElement>>({});
-const inputStates = ref<InputState[]>([]);
-
-// 初始化 inputStates
-const initInputStates = () => {
-  if (newFormInline.value.attrs.length) {
-    inputStates.value = newFormInline.value.attrs.map(() => ({
-      visible: false,
-      value: ""
-    }));
-  }
-};
 function getRef() {
   return formRef.value;
 }
-const setInputRef = (el: any, index: number) => {
-  if (el) {
-    inputRefs.value[`input-${index}`] = el;
-  }
-};
-// 自定义属性相关方法
-const showCustomInput = async (index: number) => {
-  inputStates.value[index].visible = true;
-  await nextTick();
-  inputRefs.value[`input-${index}`]?.focus();
-};
-const handleCustomAttrConfirm = (index: number) => {
-  const value = inputStates.value[index].value.trim().replaceAll(";", "");
-  if (value) {
-    newFormInline.value.attrs[index].options.push(value);
-  }
-  inputStates.value[index].visible = false;
-  inputStates.value[index].value = "";
-};
-// 监听 modelValue 变化，重新初始化 inputStates
-watch(
-  () => props.formInline?.attrs,
-  () => {
-    initInputStates();
-  },
-  { immediate: true }
-);
+
 defineExpose({ getRef });
 </script>
 <template>
@@ -93,11 +49,19 @@ defineExpose({ getRef });
         </el-form-item>
       </re-col>
     </el-row>
-    <!-- sku图片 -->
+    <!-- 商品主图 -->
     <el-row :gutter="30">
       <re-col>
-        <el-form-item label="商品图片" prop="image">
+        <el-form-item label="商品主图" prop="image">
           <ReUpload v-model="newFormInline.image" />
+        </el-form-item>
+      </re-col>
+    </el-row>
+    <!-- 商品图集 -->
+    <el-row :gutter="30">
+      <re-col>
+        <el-form-item label="商品图集" prop="mainImage">
+          <ReUpload v-model="newFormInline.mainImage" multiple :limit="10" />
         </el-form-item>
       </re-col>
     </el-row>
@@ -126,50 +90,48 @@ defineExpose({ getRef });
         </el-form-item>
       </re-col>
     </el-row>
-    <!-- 商品销售属性（新增一个sku所以销售属性只能单选） -->
+    <!-- 商品规格参数 -->
     <el-row :gutter="30">
       <re-col>
-        <el-form-item
-          v-for="(item, index) in newFormInline.attrs"
-          :key="item.id"
-        >
+        <el-form-item v-for="item in newFormInline.attrs" :key="item.id">
           <template #label>
-            <span v-tippy="item.desc" class="inline">{{ item.attrName }} </span>
+            <span v-tippy="item.desc" class="inline"
+              >{{ item.attrName }}
+              <el-tag v-if="item.choose === 1" type="success" size="small"
+                >多选</el-tag
+              ></span
+            >
           </template>
-          <el-radio-group v-model="item.value">
-            <el-radio
-              v-for="(val, cindex) in item.options"
-              :key="cindex"
+          <el-select
+            v-model="item.value"
+            class="attr-select"
+            :multiple="item.choose === 1"
+            filterable
+            clearable
+            allow-create
+            default-first-option
+            placeholder="请选择或输入值"
+          >
+            <el-option
+              v-for="val in item.options"
+              :key="val"
               :label="val"
               :value="val"
             />
-          </el-radio-group>
-          <!-- 自定义属性输入 -->
-          <div class="custom-attr-input">
-            <el-button
-              v-show="!inputStates[index].visible"
-              class="button-new-tag"
-              size="small"
-              @click="showCustomInput(index)"
-            >
-              +自定义
-            </el-button>
-            <el-input
-              v-show="inputStates[index].visible"
-              :ref="el => setInputRef(el, index)"
-              v-model="inputStates[index].value"
-              size="small"
-              class="custom-input"
-              @keyup.enter="handleCustomAttrConfirm(index)"
-              @blur="handleCustomAttrConfirm(index)"
-            />
-          </div>
+          </el-select>
+          <el-checkbox
+            v-model="item.quickShow"
+            :true-value="1"
+            :false-value="0"
+          >
+            快速展示
+          </el-checkbox>
         </el-form-item>
       </re-col>
     </el-row>
     <!-- 商品属性描述文字、状态 -->
     <el-row :gutter="30">
-      <re-col>
+      <re-col :value="16">
         <el-form-item label="属性描述文字" prop="attrText">
           <el-input
             v-model="newFormInline.attrText"
@@ -178,10 +140,7 @@ defineExpose({ getRef });
           />
         </el-form-item>
       </re-col>
-    </el-row>
-    <!-- 商品状态 -->
-    <el-row :gutter="30">
-      <re-col :value="12">
+      <re-col :value="8">
         <el-form-item label="商品状态">
           <el-switch
             v-model="newFormInline.status"
@@ -190,19 +149,6 @@ defineExpose({ getRef });
             :inactive-value="0"
             active-text="启售"
             inactive-text="停售"
-            :style="switchStyle"
-          />
-        </el-form-item>
-      </re-col>
-      <re-col :value="12">
-        <el-form-item label="是否开启订奶">
-          <el-switch
-            v-model="newFormInline.enableOrder"
-            inline-prompt
-            :active-value="1"
-            :inactive-value="0"
-            active-text="启用"
-            inactive-text="停用"
             :style="switchStyle"
           />
         </el-form-item>

@@ -13,7 +13,7 @@ export type AttrItem = {
   /**属性类型 */
   type: number;
   /**单选、多选 */
-  select?: 0 | 1;
+  choose?: 0 | 1;
 };
 
 /**商品规格属性 */
@@ -25,7 +25,7 @@ export type SpuAttr = {
   /**属性id */
   attrId: number;
   /**属性名称 */
-  name: string;
+  attrName: string;
   /**属性值 */
   value: string;
   /**属性图标 */
@@ -34,4 +34,9 @@ export type SpuAttr = {
   desc?: string;
   /**是否快速展示 */
   quickShow: number;
+};
+/**sku属性 */
+export type SkuAttr = Omit<SpuAttr, "spuId" | "quickShow"> & {
+  /**sku id */
+  skuId: string;
 };

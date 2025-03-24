@@ -36,7 +36,6 @@ import {
   userStatus
 } from "@/enums/baseConstant";
 import { deviceDetection } from "@pureadmin/utils";
-import Tree from "@/views/system/adminUser/tree.vue";
 import Airplane from "@/assets/svg/airplane.svg";
 import { FormInstance } from "element-plus";
 import { usePublicHooks } from "@/views/hooks";
@@ -218,7 +217,7 @@ onMounted(() => {
             ref="tableRef"
             :adaptiveConfig="{ offsetBottom: 96 }"
             :columns="dynamicColumns"
-            :data="adminUserStore.datalist"
+            :data="adminUserStore.dataList"
             :header-cell-style="{
               background: 'var(--el-fill-color-light)',
               color: 'var(--el-text-color-primary)'

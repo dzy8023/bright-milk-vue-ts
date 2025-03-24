@@ -43,7 +43,6 @@ export function onAdd() {
       const form = options.props.formInline as FormItemProps;
       formRef.value.formRef.validate(async (valid: any) => {
         if (!valid) return;
-
         // 添加文件
         form.files = (form.files as UploadFiles).map(file => file.raw);
         const data = {
@@ -52,7 +51,6 @@ export function onAdd() {
           files: form.files
         };
         const result = await filesStore.addFiles(data);
-
         // 成功后关闭窗口
         if (!result) return;
         done();
