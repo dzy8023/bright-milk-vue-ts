@@ -46,6 +46,7 @@ const fileList = computed({
     }
   }
 });
+
 const uploadRef = ref<UploadInstance>();
 const dialogImageUrl = ref("");
 const dialogVisible = ref(false);
@@ -74,7 +75,7 @@ const handleExceed: UploadProps["onExceed"] = files => {
   file.uid = genFileId();
   uploadRef.value!.handleStart(file);
 };
-const emits = defineEmits(["update:modelValue"]); // 触发update:modelValue事件
+const emits = defineEmits(["update:modelValue", "close"]); // 触发update:modelValue事件
 const reset = () => {
   fileList.value = [];
   uploadRef.value!.clearFiles();

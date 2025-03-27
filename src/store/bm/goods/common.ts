@@ -12,7 +12,7 @@ export const useCommonStore = defineStore("CommonStore", {
   getters: {},
   actions: {
     /**上传文件 */
-    async uploadFile(data: any) {
+    async uploadFile(data: File[]) {
       const result = await fetchUploadFile(data);
       return returnMessage(result);
     }

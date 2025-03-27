@@ -13,11 +13,13 @@ import type { FormItemProps, SpuImage } from "./types";
 import type { SkuFormItemProps } from "@/views/bm/goods/sku/utils/types";
 import type { SpuAttr } from "@/types/attr";
 import { useSkuInfoStore } from "@/store/bm/goods/sku";
+import { useCommonStore } from "@/store/bm/goods/common";
 
 export function useGoods(tableRef: Ref, treeRef: Ref) {
   const spuInfoStore = useSpuInfoStore();
   const categoryStore = useCategoryStore();
   const skuInfoStore = useSkuInfoStore();
+  const commonStore = useCommonStore();
   const switchLoadMap = ref({});
   const higherCatOptions = ref();
   const selectedNum = ref(0);
@@ -89,6 +91,7 @@ export function useGoods(tableRef: Ref, treeRef: Ref) {
           name: row?.name ?? "",
           status: row.status ?? 0,
           image: row?.image ? [{ url: row.image }] : [],
+          detailImg: row?.detailImg ? [{ url: row.detailImg }] : [],
           price: row?.price ?? 0,
           discount: row?.discount ?? 0,
           attrText: row?.attrText ?? "",
@@ -137,6 +140,18 @@ export function useGoods(tableRef: Ref, treeRef: Ref) {
               newImage.deleted.push(item);
             }
           });
+          //处理商品详情图
+          if (form.detailImg[0].raw) {
+            newImage.deleted.push({
+              id: null,
+              spuId: null,
+              image: row.detailImg
+            });
+            const res = await commonStore.uploadFile([form.detailImg[0].raw]);
+            newSpuInfo.detailImg = res[0];
+          } else {
+            newSpuInfo.detailImg = null;
+          }
           //处理规格
           for (let i = 0; i < form.attrs.length; i++) {
             if (!form.attrs[i].value || !form.attrs[i].value.length) {
@@ -175,7 +190,6 @@ export function useGoods(tableRef: Ref, treeRef: Ref) {
               }
             }
           }
-          console.log("newImage", newImage, "newAttrs", newAttrs);
           //更新图片
           if (newImage.new.length || newImage.deleted.length) {
             const res = await spuInfoStore.updateSpuInfoImage({
@@ -187,7 +201,6 @@ export function useGoods(tableRef: Ref, treeRef: Ref) {
             } else {
               newSpuInfo.image = null;
             }
-            console.log("update image", res, "newSpuInfo", newSpuInfo);
           } else {
             newSpuInfo.image = null;
           }

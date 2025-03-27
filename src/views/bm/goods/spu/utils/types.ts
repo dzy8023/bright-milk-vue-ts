@@ -25,9 +25,11 @@ export interface FormItemProps
     | "updateTime"
     | "image"
     | "mainImage"
+    | "detailImg"
   > {
   image: UploadUserFile[];
   mainImage: UploadUserFile[];
+  detailImg?: UploadUserFile[];
   attrs?: (Omit<SpuAttr, "value"> & {
     options: string[];
     choose: 0 | 1;

@@ -243,7 +243,8 @@ const submit = (extendData?: any) => {
         id: item.id,
         name: item.name,
         value: item.value,
-        props: `sku-${item.id}`
+        props: `sku-${item.id}`,
+        options: item.options
       }))
   };
 

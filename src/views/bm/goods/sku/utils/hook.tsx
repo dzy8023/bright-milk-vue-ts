@@ -10,7 +10,36 @@ import SkuInfoDialog from "../form/skuinfo.vue";
 export function useSkuInfo() {
   const skuInfoStore = useSkuInfoStore();
   const formRef = ref();
+  const selectedIds = ref<Set<string>>(new Set());
 
+  const handleSelectItem = item => {
+    if (!selectedIds.value.has(item.id)) {
+      selectedIds.value.add(item.id);
+    } else {
+      selectedIds.value.delete(item.id);
+    }
+  };
+  function onSelectionCancel() {
+    selectedIds.value = new Set();
+  }
+  function onbatchDel() {
+    ElMessageBox.confirm(
+      `确认要<strong>批量删除</strong>所选sku信息吗?`,
+      "系统提示",
+      {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+        dangerouslyUseHTMLString: true,
+        draggable: true
+      }
+    ).then(async () => {
+      const ids = Array.from(selectedIds.value);
+      await skuInfoStore.deleteSkuInfo(ids);
+      await onSearch();
+      selectedIds.value = new Set();
+    });
+  }
   function handleSizeChange(val: number) {
     console.log(`${val} items per page`);
   }
@@ -19,13 +48,9 @@ export function useSkuInfo() {
     console.log(`current page: ${val}`);
   }
 
-  /** 当CheckBox选择项发生变化时会触发该事件 */
-  function handleSelectionChange(val) {
-    console.log("handleSelectionChange", val);
-  }
-
   async function onSearch() {
     skuInfoStore.loading = true;
+    selectedIds.value = new Set();
     await skuInfoStore.getSkuInfoPage();
     skuInfoStore.loading = false;
   }
@@ -36,53 +61,12 @@ export function useSkuInfo() {
     await onSearch();
   };
 
-  async function openDialog(isAdd: boolean, row?: SkuFormItemProps) {
-    const title = isAdd ? "新增" : "修改";
-    console.log("add sku", row);
-    const res = await skuInfoStore.getSkuAttrWithOptionsListBySpuId({
-      spuId: row.id
-    });
-    addDialog({
-      title: `为【${row.name}】${title}sku`,
-      props: {
-        formInline: {
-          spuId: row.id,
-          name: row.name,
-          status: row.status,
-          price: row.price,
-          discount: row.discount,
-          attrText: row.attrText,
-          desc: row.desc,
-          attrs: res.map(item => ({
-            ...item,
-            options: item.options.split(";")
-          }))
-        } as SkuFormItemProps
-      },
-      width: "45%",
-      draggable: true,
-      fullscreen: deviceDetection(),
-      fullscreenIcon: true,
-      closeOnClickModal: false,
-      contentRenderer: () =>
-        h(editForm, { ref: formRef, formInline: null, visible: false }),
-      beforeSure: (done, { options }) => {
-        const form = options.props.formInline as SkuFormItemProps;
-        formRef.value.getRef().validate(async valid => {
-          if (!valid) return;
-          const newSkuInfo = {
-            skuInfo: { ...form, skuAttrs: form.attrs },
-            image: form.image[0].raw
-          };
-          delete newSkuInfo.skuInfo.image;
-          delete newSkuInfo.skuInfo.attrs;
-          console.log("newSkuInfo", newSkuInfo);
-          skuInfoStore.createSkuInfo(newSkuInfo);
-          done();
-          await onSearch();
-        });
-      }
-    });
+  function selectAll() {
+    if (selectedIds.value.size === skuInfoStore.dataList.length) {
+      selectedIds.value = new Set();
+      return;
+    }
+    selectedIds.value = new Set(skuInfoStore.dataList.map(item => item.id));
   }
 
   async function handleView(row) {
@@ -186,19 +170,22 @@ export function useSkuInfo() {
     return res;
   }
   onMounted(async () => {
-    onSearch();
+    await onSearch();
   });
 
   return {
+    selectedIds,
     onSearch,
     resetForm,
-    openDialog,
     handleDelete,
     handleUpdate,
     handleChangeStatus,
     handleView,
     handleSizeChange,
     handleCurrentChange,
-    handleSelectionChange
+    handleSelectItem,
+    onSelectionCancel,
+    onbatchDel,
+    selectAll
   };
 }

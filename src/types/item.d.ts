@@ -9,6 +9,8 @@ export type GoodItem = {
   status: number;
   /**商品展示图*/
   image: string;
+  /**商品详情图 */
+  detailImg?: string;
   /**商品名称 */
   name: string;
   /** 商品展示价格*/

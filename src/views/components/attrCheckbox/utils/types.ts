@@ -30,4 +30,5 @@ export type SupAttr = Pick<AttrItem, "id" | "name"> & {
 export type SkuAttr = Pick<AttrItem, "id" | "name"> & {
   value: string[];
   props?: string;
+  options?: string[];
 };

@@ -31,6 +31,12 @@
             </div>
           </el-scrollbar>
         </div>
+        <el-image
+          :src="spu.detailImg"
+          fit="cover"
+          class="thumbnail fixed-thumbnail mt-2"
+          @click="dialogVisible = true"
+        />
       </div>
       <div class="md:w-2/3 p-4">
         <h2 class="text-2xl font-bold">
@@ -57,12 +63,6 @@
             >
           </el-descriptions>
         </p>
-        <el-button type="primary" size="large" @click="handleUpload">
-          上传图片
-        </el-button>
-        <el-button type="primary" size="large" @click="handleSaveSpu">
-          上传spu
-        </el-button>
       </div>
     </div>
     <el-divider />
@@ -106,10 +106,11 @@
           </p>
         </div>
       </div>
-      <el-button type="primary" size="large" @click="handleSaveSku">
-        上传sku
-      </el-button>
     </div>
+    <el-dialog v-model="dialogVisible">
+      <span class="el-dialog__title">商品详情图</span>
+      <img w-full :src="spu.detailImg" alt="商品详情图" />
+    </el-dialog>
   </el-card>
 </template>
 
@@ -120,6 +121,7 @@ const props = defineProps<{
   spu: spuItem;
   skus: skuItem[];
 }>();
+const dialogVisible = ref(false);
 const emits = defineEmits(["uploadSpuImages", "saveSpuInfo", "saveSkuInfo"]);
 const handleUpload = async () => {
   emits("uploadSpuImages");
@@ -132,78 +134,9 @@ const handleSaveSku = async () => {
 };
 //计算属性
 const spu = computed(() => props.spu); // 使用 computed 直接引用 props.spu
-//   ref({
-//   id: 1,
-//   name: "光明浓醇鲜牛奶",
-//   category: "牛奶",
-//   price: 5.2,
-//   discount: 0.5,
-//   attrText: "原味;香浓;果糖",
-//   description: "该产品玻璃瓶包装需要回收，请饮用后及时放回奶箱中，感谢！",
-//   mainImage:
-//     "https://assets.4008117117.com/upload/2023/4/11/6937caf6-9da6-4ec1-94f4-9d71dadd992b.png?x-oss-process=image/resize,m_pad,w_860,h_860",
-//   images: [
-//     "https://assets.4008117117.com/upload/2025/2/18/e6462bb5-e084-4850-b14c-e19d7f933ef9.png?x-oss-process=image/resize,m_pad,w_860,h_860",
-//     "https://assets.4008117117.com/upload/2025/3/5/1ded095e-7a30-473a-a7fb-11d413414c97.png?x-oss-process=image/resize,m_pad,w_860,h_860",
-//     "https://assets.4008117117.com/upload/2025/2/18/e6462bb5-e084-4850-b14c-e19d7f933ef9.png?x-oss-process=image/resize,m_pad,w_860,h_860",
-//     "https://assets.4008117117.com/upload/2025/3/5/1ded095e-7a30-473a-a7fb-11d413414c97.png?x-oss-process=image/resize,m_pad,w_860,h_860"
-//   ],
-//   spuAttrs: [
-//     { attrId: 1, name: "产地", value: "内蒙古;新疆", quickShow: 1 },
-//     { attrId: 2, name: "保质期", value: "30天", quickShow: 1 },
-//     { attrId: 3, name: "包装", value: "玻璃瓶;塑封", quickShow: 0 }
-//   ]
-// });
 
 const skus = computed(() => props.skus); // 使用 computed 直接引用 props.skus
-//   ref([
-//   {
-//     id: 1,
-//     name: "光明浓醇鲜牛奶袋装195ml",
-//     price: 5.2,
-//     discount: 0.5,
-//     attrText: "原味;香浓;果糖",
-//     description: "因配送地址的不同有",
-//     stock: 100,
-//     image:
-//       "https://assets.4008117117.com/upload/2023/9/18/71f19e2b-e472-4fb1-876a-f676a14f79a5.png?x-oss-process=image/resize,m_pad,w_860,h_860",
-//     skuAttrs: [
-//       {
-//         attrId: 1,
-//         name: "规格",
-//         value: "195ml"
-//       },
-//       {
-//         attrId: 2,
-//         name: "包装",
-//         value: "玻璃瓶"
-//       }
-//     ]
-//   },
-//   {
-//     id: 2,
-//     name: "光明浓醇鲜牛奶玻璃瓶250ml",
-//     price: 6.2,
-//     discount: 0.5,
-//     attrText: "原味;香浓;果糖",
-//     description: "因配送地址的不同有",
-//     stock: 100,
-//     image:
-//       "https://assets.4008117117.com/upload/2023/7/14/f5d7f702-e0a2-4c02-8153-5a9c8f806fd0.png?x-oss-process=image/resize,m_pad,w_860,h_860",
-//     skuAttrs: [
-//       {
-//         attrId: 1,
-//         name: "规格",
-//         value: "250ml"
-//       },
-//       {
-//         attrId: 2,
-//         name: "包装",
-//         value: "袋装"
-//       }
-//     ]
-//   }
-// ]);
+
 const selectedImage = ref(spu?.value.mainImage);
 
 // 监听 spu 变化，更新 selectedImage
@@ -214,14 +147,7 @@ watch(
   },
   { immediate: true }
 );
-// // 监听 skus 变化
-// watch(
-//   () => props.skus,
-//   () => {
-//     console.log("final-step", spu.value, skus.value);
-//   },
-//   { immediate: true }
-// );
+
 const handleClick = () => {
   console.log("final-step", spu.value, skus.value);
   console.log("props", props.spu, props.skus);

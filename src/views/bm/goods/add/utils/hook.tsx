@@ -18,7 +18,6 @@ import type {
   PlusStepFromRow
 } from "plus-pro-components";
 import ReUpload from "@/components/ReUpload";
-import { ElButton } from "element-plus";
 import type { UploadUserFile } from "element-plus";
 import type { ReUploadInstance } from "@/components/ReUpload/src/ReUpload";
 import Skutab from "../form/skutab.vue";
@@ -48,6 +47,7 @@ export function useStepsForm() {
   const skuInfoStore = useSkuInfoStore();
   const reUploadSingleRef = ref<ReUploadInstance>();
   const reUploadMultipleRef = ref<ReUploadInstance>();
+  const reUploadDetailImgRef = ref<ReUploadInstance>();
   const data = ref<FieldValues[]>([
     {
       name: "鲜牛奶",
@@ -55,6 +55,7 @@ export function useStepsForm() {
       price: 5.8,
       discount: 0.5,
       image: [],
+      detailImg: [],
       mainImage: [],
       desc: "好喝"
     },
@@ -72,6 +73,7 @@ export function useStepsForm() {
     image: [] as UploadUserFile[],
     //商品图集
     mainImage: [] as UploadUserFile[],
+    detailImg: [] as UploadUserFile[],
     attr: {},
     skus: []
   });
@@ -82,6 +84,7 @@ export function useStepsForm() {
     desc: "",
     attrText: "",
     mainImage: "",
+    detailImg: "",
     category: "",
     spuAttrs: [],
     images: []
@@ -91,7 +94,8 @@ export function useStepsForm() {
   let catId = 0;
   const categoryOptions: Ref<OptionsRow[]> = ref([]);
   const attrData = ref<AttrFormInLine>();
-  const { attrCheckboxRef, columns, tableData, handleSubmit } = useColumns();
+  const { attrCheckboxRef, columns, tableData, skuAttrsOptions, handleSubmit } =
+    useColumns();
 
   // 添加内容修改标记
   const isDirty = ref(false);
@@ -132,14 +136,24 @@ export function useStepsForm() {
   const uploadSpuImages = async () => {
     spu.value.mainImage.push(...spu.value.image);
     console.log("上传商品图片", spu.value.mainImage);
-    const spuImages = await commonStore.uploadFile(
-      spu.value.mainImage.map(item => item.raw)
-    );
+    let spuImages = [];
+    if (spu.value.mainImage.length > 0) {
+      spuImages = await commonStore.uploadFile(
+        spu.value.mainImage.map(item => item.raw)
+      );
+      console.log("上传成功", _spuImages, spuImages);
+    }
+    let detailImg = [];
+    if (spu.value.detailImg.length > 0) {
+      detailImg = await commonStore.uploadFile(
+        spu.value.detailImg.map(item => item.raw)
+      );
+      console.log("上传详情图片", spu.value.detailImg);
+    }
     _spuImages = spuImages;
-    console.log("上传成功", _spuImages, spuImages);
-    return spuImages;
+    return { spuImages: spuImages, detailImg: detailImg[0] };
   };
-  const saveSpuInfo = async (spuImages: string[]) => {
+  const saveSpuInfo = async (spuImages: string[], detailImg: string) => {
     const spuResData = {
       catId: catId,
       catName: spu.value.category.slice(-1)[0].name,
@@ -152,6 +166,7 @@ export function useStepsForm() {
       image: spuImages?.slice(-1)[0] || _spuImages.slice(-1)[0],
       //去除最后一项，剩下的为图集
       mainImage: spuImages?.slice(0, -1) || _spuImages.slice(0, -1),
+      detailImg: detailImg,
       spuAttrs: finalSpu.value.spuAttrs.map(item => ({
         ...item,
         attrName: item.name
@@ -321,27 +336,25 @@ export function useStepsForm() {
                     spu.value.image = files;
                     onChange(files.map(f => f.url));
                   }
-                }),
-                h(
-                  ElButton,
-                  {
-                    type: "primary",
-                    onClick: async () => {
-                      if (reUploadSingleRef.value) {
-                        const files = reUploadSingleRef.value.getFiles();
-                        console.log("上传", files);
-                        const res = await commonStore.uploadFile(
-                          files.map(f => f.raw)
-                        );
-                        console.log(res);
-                        onChange(files.map(f => f.url));
-                      } else {
-                        console.warn("ReUpload 实例未初始化");
-                      }
-                    }
-                  },
-                  () => "上传"
-                )
+                })
+              ]);
+            }
+          },
+          {
+            label: "商品详情图片",
+            prop: "detailImg",
+            renderField(_, onChange) {
+              return h(Fragment, [
+                h(ReUpload, {
+                  ref: reUploadDetailImgRef,
+                  multiple: false,
+                  limit: 1,
+                  modelValue: spu.value.detailImg,
+                  "onUpdate:modelValue": (files: UploadUserFile[]) => {
+                    spu.value.detailImg = files;
+                    onChange(files.map(f => f.url));
+                  }
+                })
               ]);
             }
           },
@@ -359,27 +372,7 @@ export function useStepsForm() {
                     spu.value.mainImage = files;
                     onChange(files.map(f => f.url));
                   }
-                }),
-                h(
-                  ElButton,
-                  {
-                    type: "primary",
-                    onClick: async () => {
-                      if (reUploadMultipleRef.value) {
-                        const files = reUploadMultipleRef.value.getFiles();
-                        console.log("上传", files);
-                        const res = await commonStore.uploadFile(
-                          files.map(f => f.raw)
-                        );
-                        console.log(res);
-                        onChange(files.map(f => f.url));
-                      } else {
-                        console.warn("ReUpload 实例未初始化");
-                      }
-                    }
-                  },
-                  () => "上传"
-                )
+                })
               ]);
             }
           }
@@ -491,6 +484,7 @@ export function useStepsForm() {
                   }}
                   tableData={tableData.value}
                   columns={columns}
+                  skuAttrs={skuAttrsOptions.value}
                 />
               );
             }
@@ -561,6 +555,15 @@ export function useStepsForm() {
     ) {
       spu.value.image[0].url = await readFileAsDataURL(spu.value.image[0]);
     }
+    // 处理 spu.detailImg
+    if (
+      spu.value.detailImg[0]?.raw &&
+      spu.value.detailImg[0]?.url.startsWith("blob:")
+    ) {
+      spu.value.detailImg[0].url = await readFileAsDataURL(
+        spu.value.detailImg[0]
+      );
+    }
     return {
       spuAttrs,
       spuAttrText
@@ -579,7 +582,6 @@ export function useStepsForm() {
     });
     return { skuAttrs };
   };
-
   const preNext = async (step: number) => {
     try {
       switch (step) {
@@ -593,8 +595,9 @@ export function useStepsForm() {
           spu.value["desc"] = String(data.value[0]["desc"]);
           //上传文件
           const sfiles = reUploadSingleRef.value.getFiles();
+          const dfiles = reUploadDetailImgRef.value.getFiles();
           const mfiles = reUploadMultipleRef.value.getFiles();
-          console.log("上传文件", sfiles, mfiles);
+          console.log("上传文件", sfiles, mfiles, dfiles);
 
           //获取attrData
           const _catId = spu.value.category.slice(-1)[0].id;
@@ -630,7 +633,12 @@ export function useStepsForm() {
             const extendData = getExtandData();
             console.log("extendData", extendData);
             attrCheckboxRef.value.submit(extendData);
-            console.log("tableData", tableData.value);
+            console.log(
+              "tableData",
+              tableData.value,
+              "skuAttrsOptions",
+              skuAttrsOptions.value
+            );
           } else {
             console.warn("AttrCheckbox 实例未初始化");
           }
@@ -640,6 +648,7 @@ export function useStepsForm() {
           finalSpu.value = {
             ...spu.value,
             images: spu.value.mainImage.map(item => item.url),
+            detailImg: spu.value.detailImg[0]?.url || "",
             category: spu.value.category.slice(-1)[0].name,
             attrText: spuAttrText,
             mainImage: spu.value.image[0]?.url || "",
@@ -692,11 +701,15 @@ export function useStepsForm() {
           // 保存数据
           // 1. 保存spu
           // 1.1 保存图片,最后一项为主图
-          const spuImages = await uploadSpuImages();
-          //1.2 保存spu
-          const spuReps = await saveSpuInfo(spuImages);
-          // 2 保存sku
-          saveSkuInfo(spuReps);
+          try {
+            const { spuImages, detailImg } = await uploadSpuImages();
+            //1.2 保存spu
+            const spuReps = await saveSpuInfo(spuImages, detailImg);
+            // 2 保存sku
+            saveSkuInfo(spuReps);
+          } catch (error) {
+            console.error("保存失败", error);
+          }
           // 3. 保存完成
           console.log("保存完成");
           break;
@@ -734,15 +747,6 @@ export function useStepsForm() {
       active.value--;
     }
   };
-  const openMessage = () => {
-    message(
-      h("p", null, [
-        h("span", null, "Message can be "),
-        h("i", { style: "color: teal" }, "VNode")
-      ])
-    );
-  };
-
   return {
     stepForm,
     active,
@@ -752,7 +756,6 @@ export function useStepsForm() {
     isDirty,
     uploadSpuImages,
     saveSpuInfo,
-    saveSkuInfo,
-    openMessage
+    saveSkuInfo
   };
 }

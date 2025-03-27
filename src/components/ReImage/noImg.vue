@@ -3,7 +3,7 @@ import noImg from "@/assets/img/noImg.png";
 withDefaults(
   defineProps<{
     name?: string;
-    url: string;
+    url?: string;
   }>(),
   {
     name: "no img"
@@ -14,7 +14,7 @@ withDefaults(
 <template>
   <el-image
     class="el-upload-list__item-thumbnail"
-    :src="url"
+    :src="url ?? noImg"
     :alt="name"
     fit="cover"
     width="100%"

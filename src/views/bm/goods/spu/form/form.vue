@@ -12,6 +12,7 @@ const props = withDefaults(defineProps<FormProps>(), {
     name: "",
     status: 0,
     image: [],
+    detailImg: [],
     price: 0,
     discount: 0,
     attrText: "",
@@ -54,6 +55,11 @@ defineExpose({ getRef });
       <re-col>
         <el-form-item label="商品主图" prop="image">
           <ReUpload v-model="newFormInline.image" />
+        </el-form-item>
+      </re-col>
+      <re-col>
+        <el-form-item label="商品详情图" prop="detailImg">
+          <ReUpload v-model="newFormInline.detailImg" />
         </el-form-item>
       </re-col>
     </el-row>

@@ -2,6 +2,7 @@
 import { nextTick, onMounted, ref } from "vue";
 import { SpuInfoItem } from "../utils/types";
 import ReCopy from "@/components/ReCopy";
+import NoImg from "@/components/ReImage/noImg.vue";
 const carouselRef = ref();
 const props = defineProps<{ spuInfo: SpuInfoItem }>();
 const spuInfo = ref(props.spuInfo);
@@ -21,81 +22,95 @@ onMounted(() => {
 defineEmits(["close"]);
 </script>
 <template>
-  <div class="flex flex-wrap md:flex-nowrap p-4">
-    <!-- 图片区域 -->
-    <div class="md:w-1/2 p-4">
-      <el-carousel
-        ref="carouselRef"
-        class="mb-5"
-        indicator-position="none"
-        :interval="5000"
-        arrow="hover"
-      >
-        <el-carousel-item v-for="(item, index) in images" :key="index">
-          <el-image
-            :src="item"
-            :alt="spuInfo.name"
-            fit="cover"
-            class="w-full rounded-lg"
-          />
-        </el-carousel-item>
-      </el-carousel>
-      <div class="thumbnails flex mt-auto">
-        <el-image
-          :src="spuInfo.image"
-          fit="cover"
-          :class="{ selected: carouselRef?.activeIndex === 0 }"
-          class="thumbnail fixed-thumbnail"
-          @click="carouselRef.setActiveItem(0)"
-        />
-        <el-scrollbar style="max-width: 250px; overflow-x: auto">
-          <div class="scrollable-thumbnails">
+  <!-- 滚动条 -->
+  <!-- 固定高度 -->
+  <el-scrollbar height="500px">
+    <div class="flex flex-wrap md:flex-nowrap p-4">
+      <!-- 图片区域 -->
+      <div class="md:w-1/2 p-4">
+        <el-carousel
+          ref="carouselRef"
+          class="mb-5"
+          indicator-position="none"
+          :interval="5000"
+          arrow="hover"
+        >
+          <el-carousel-item v-for="(item, index) in images" :key="index">
             <el-image
-              v-for="(img, index) in spuInfo.mainImage"
-              :key="index"
-              :src="img.image"
+              :src="item"
+              :alt="spuInfo.name"
               fit="cover"
-              class="thumbnail"
-              :class="{
-                selected: carouselRef?.activeIndex === index + 1
-              }"
-              @click="carouselRef.setActiveItem(index + 1)"
+              class="w-full rounded-lg"
             />
-          </div>
-        </el-scrollbar>
+          </el-carousel-item>
+        </el-carousel>
+        <div class="thumbnails flex mt-auto">
+          <el-image
+            :src="spuInfo.image"
+            fit="cover"
+            :class="{ selected: carouselRef?.activeIndex === 0 }"
+            class="thumbnail fixed-thumbnail"
+            @click="carouselRef.setActiveItem(0)"
+          />
+          <el-scrollbar style="max-width: 250px; overflow-x: auto">
+            <div class="scrollable-thumbnails">
+              <el-image
+                v-for="(img, index) in spuInfo.mainImage"
+                :key="index"
+                :src="img.image"
+                fit="cover"
+                class="thumbnail"
+                :class="{
+                  selected: carouselRef?.activeIndex === index + 1
+                }"
+                @click="carouselRef.setActiveItem(index + 1)"
+              />
+            </div>
+          </el-scrollbar>
+        </div>
+      </div>
+
+      <!-- 文字描述区域 -->
+      <div class="md:w-1/2 p-4">
+        <ReCopy :value="spuInfo.id" />
+        <h2 class="text-2xl font-bold">
+          {{ spuInfo.name }}
+          <el-tag type="success" size="small" round class="mb-4">{{
+            spuInfo.catName
+          }}</el-tag>
+        </h2>
+        <p class="text-gray-500 text-sm">{{ spuInfo.attrText }}</p>
+        <p class="text-red-500 text-xl mt-2">
+          价格：￥{{ spuInfo.price }}
+          <span class="text-xs">折扣：￥{{ spuInfo.discount }}</span>
+          <span class="text-xs ml-[8px]">销量：{{ spuInfo.sales }}</span>
+        </p>
+        <p class="text-gray-500 text-sm mt-1">{{ spuInfo.desc }}</p>
+        <el-divider />
+        <p>
+          规格参数：
+          <el-descriptions border label-width="100px" :column="1">
+            <el-descriptions-item
+              v-for="(attr, index) in spuInfo.attrs"
+              :key="index"
+              :label="attr.attrName"
+              >{{ attr.value }}</el-descriptions-item
+            >
+          </el-descriptions>
+        </p>
       </div>
     </div>
-
-    <!-- 文字描述区域 -->
-    <div class="md:w-1/2 p-4">
-      <ReCopy :value="spuInfo.id" />
-      <h2 class="text-2xl font-bold">
-        {{ spuInfo.name }}
-        <el-tag type="success" size="small" round class="mb-4">{{
-          spuInfo.catName
-        }}</el-tag>
-      </h2>
-      <p class="text-gray-500 text-sm">{{ spuInfo.attrText }}</p>
-      <p class="text-red-500 text-xl mt-2">
-        价格：￥{{ spuInfo.price }}
-        <span class="text-xs">折扣：￥{{ spuInfo.discount }}</span>
-        <span class="text-xs ml-[8px]">销量：{{ spuInfo.sales }}</span>
-      </p>
-      <p class="text-gray-500 text-sm mt-1">{{ spuInfo.desc }}</p>
-      <el-divider />
-      <p>
-        规格参数：
-        <el-descriptions border label-width="100px" :column="1">
-          <el-descriptions-item
-            v-for="(attr, index) in spuInfo.attrs"
-            :key="index"
-            :label="attr.attrName"
-            >{{ attr.value }}</el-descriptions-item
-          >
-        </el-descriptions>
-      </p>
+    <el-divider />
+    <!-- 商品详情图 -->
+    <div class="p-4 flex flex-col items-center">
+      <h3 class="text-xl font-bold mb-2">商品详情图</h3>
+      <NoImg
+        :url="spuInfo.detailImg"
+        fit="cover"
+        class="w-full md:w-1/2 rounded-lg mb-4"
+      />
     </div>
-  </div>
+  </el-scrollbar>
 </template>
 
 <style>

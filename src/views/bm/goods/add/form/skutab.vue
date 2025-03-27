@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import ReUpload from "@/components/ReUpload";
-import { computed, ref } from "vue";
+import { computed, h, ref } from "vue";
 import PureTableBar from "@/components/RePureTableBar/src/bar";
 import More from "@iconify-icons/ep/more-filled";
 import Delete from "@iconify-icons/ep/delete";
@@ -8,15 +8,23 @@ import EditPen from "@iconify-icons/ep/edit-pen";
 import AddFill from "@iconify-icons/ri/add-circle-line";
 import View from "@iconify-icons/ep/view";
 import { useRenderIcon } from "@/components/ReIcon/src/hooks";
+import type { SkuAttr } from "@/views/components/attrCheckbox/utils/types";
+import { SkuFormItemProps } from "../utils/types";
+import { addDialog } from "@/components/ReDialog";
+import { deviceDetection } from "@pureadmin/utils";
+import editForm from "./sku-form.vue";
+
 // import MyTagGroup from "@/views/components/attrCheckbox/utils/my-tag-group.vue";
 defineOptions({
   name: "SkuTab"
 });
 const tableRef = ref();
+const formRef = ref();
 const selectedNum = ref(0);
 const props = defineProps({
   tableData: Array as PropType<Array<any>>,
-  columns: Array as PropType<TableColumnList>
+  columns: Array as PropType<TableColumnList>,
+  skuAttrs: Array as PropType<SkuAttr>
 });
 const emit = defineEmits(["update:tableData"]);
 const tableData = computed({
@@ -27,34 +35,84 @@ const tableData = computed({
     emit("update:tableData", val);
   }
 });
+const skuAttrs = ref(props.skuAttrs);
 const handleTableDataUpdate = (newTableData: Array<any>) => {
   emit("update:tableData", newTableData);
 };
 const handleAdd = (row: any) => {
   // 假设'row'对象具有'id'，并以此作为插入依据
   const index = tableData.value.findIndex(item => item.id === row.id);
-  const newRow = { ...row, id: index + 1 };
-  // 插入行数据到特定位置
-  const updatedTableData = [
-    ...tableData.value.slice(0, index + 1), // 当前行之后的数据
-    newRow, // 新增行
-    ...tableData.value
-      .slice(index + 1)
-      .map(item => ({ ...item, id: item.id + 1 })) // 其他数据
-  ];
-  handleTableDataUpdate(updatedTableData); // 更新表格
+  function callBack(form: SkuFormItemProps) {
+    //不能直接赋值，需要遍历attrs，更新row对象
+    let newRow = { ...row, ...form, id: index + 1 };
+    form.attrs.forEach(item => (newRow[item.props] = item.value));
+    delete newRow.attrs;
+    // 插入行数据到特定位置
+    const updatedTableData = [
+      ...tableData.value.slice(0, index + 1), // 当前行之后的数据
+      newRow, // 新增行
+      ...tableData.value
+        .slice(index + 1)
+        .map(item => ({ ...item, id: item.id + 1 })) // 其他数据
+    ];
+    console.log("newRow", newRow, "tableData", tableData.value);
+    handleTableDataUpdate(updatedTableData); // 更新表格
+  }
+  openDialog(true, row, callBack);
 };
 
 const handleDelete = (row: any) => {
   const newData = tableData.value.filter(item => item.id !== row.id);
   handleTableDataUpdate(newData);
 };
+const openDialog = (
+  isAdd: boolean,
+  row: any,
+  callBack: (form: SkuFormItemProps) => void
+) => {
+  let attrs = skuAttrs.value.map(item => ({
+    ...item,
+    value: isAdd ? "" : (row[item.props] ?? "")
+  }));
+  addDialog({
+    title: `${isAdd ? "新增" : "修改"}【${row.name}】`,
+    props: {
+      formInline: {
+        name: row.name ?? "",
+        price: row.price ?? 0,
+        image: row.image ?? [],
+        discount: row.discount ?? 0,
+        desc: row.desc ?? "",
+        attrs: attrs
+      } as SkuFormItemProps
+    },
+    width: "45%",
+    draggable: true,
+    fullscreen: deviceDetection(),
+    fullscreenIcon: true,
+    closeOnClickModal: false,
+    contentRenderer: () => h(editForm, { ref: formRef, formInline: null }),
+    beforeSure: (done, { options }) => {
+      const form = options.props.formInline as SkuFormItemProps;
+      formRef.value.getRef().validate(async valid => {
+        if (!valid) return;
+        callBack(form);
+        done();
+      });
+    }
+  });
+};
+
 const handleUpdate = (row: any) => {
-  // 假设你需要更新某个 row 的数据
-  const newData = tableData.value.map(item =>
-    item.id === row.id ? row : item
-  );
-  handleTableDataUpdate(newData);
+  function callBack(form: SkuFormItemProps) {
+    //不能直接赋值，需要遍历attrs，更新row对象
+    let _attrs = form.attrs;
+    delete form.attrs;
+    Object.keys(form).forEach(key => (row[key] = form[key]));
+    _attrs.forEach(item => (row[item.props] = item.value));
+  }
+  openDialog(false, row, callBack);
+  console.log("row", row, "tabledata", tableData.value);
 };
 
 function handleSelectionChange(val) {
@@ -81,7 +139,7 @@ function onFullscreen() {
 <template>
   <div class="w-[100%]">
     <PureTableBar
-      title="商品管理（仅演示，操作后不生效）"
+      title="sku列表"
       :columns="columns"
       :isExpandAll="false"
       @fullscreen="onFullscreen"
@@ -214,21 +272,27 @@ function onFullscreen() {
               link
               type="primary"
               :size="size"
-              :icon="useRenderIcon(AddFill)"
-              @click="handleAdd(row)"
-            >
-              新增同类
-            </el-button>
-            <el-button
-              class="reset-margin"
-              link
-              type="primary"
-              :size="size"
               :icon="useRenderIcon(EditPen)"
               @click="handleUpdate(row)"
             >
               修改
             </el-button>
+            <el-popconfirm
+              :title="`是否确认删除商品编号为${row.id}的这条数据`"
+              @confirm="handleDelete(row)"
+            >
+              <template #reference>
+                <el-button
+                  class="reset-margin"
+                  link
+                  type="danger"
+                  :size="size"
+                  :icon="useRenderIcon(Delete)"
+                >
+                  删除
+                </el-button>
+              </template>
+            </el-popconfirm>
             <!-- 更多操作 -->
             <el-dropdown>
               <el-button
@@ -241,22 +305,16 @@ function onFullscreen() {
               <template #dropdown>
                 <el-dropdown-menu>
                   <el-dropdown-item>
-                    <el-popconfirm
-                      :title="`是否确认删除商品编号为${row.id}的这条数据`"
-                      @confirm="handleDelete(row)"
+                    <el-button
+                      class="reset-margin"
+                      link
+                      type="primary"
+                      :size="size"
+                      :icon="useRenderIcon(AddFill)"
+                      @click="handleAdd(row)"
                     >
-                      <template #reference>
-                        <el-button
-                          class="reset-margin"
-                          link
-                          type="danger"
-                          :size="size"
-                          :icon="useRenderIcon(Delete)"
-                        >
-                          删除
-                        </el-button>
-                      </template>
-                    </el-popconfirm>
+                      新增同类
+                    </el-button>
                   </el-dropdown-item>
                 </el-dropdown-menu>
               </template>

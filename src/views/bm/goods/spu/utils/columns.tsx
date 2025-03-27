@@ -17,6 +17,7 @@ export const columns: TableColumnList = [
   {
     label: "商品编号",
     prop: "id",
+    slot: "id",
     width: 90
   },
   {

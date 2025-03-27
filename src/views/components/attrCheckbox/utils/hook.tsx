@@ -21,6 +21,8 @@ export function useColumns() {
   ];
   const tableData = ref([]);
   const attrCheckboxRef = ref<InstanceType<typeof AttrCheckbox>>();
+  //带有options的sku属性列表，示例sku-1:[]
+  const skuAttrsOptions = ref<SkuAttr[]>();
 
   const comCloumns = (cloumns: TableColumnList) => {
     return cloumns.push(
@@ -99,6 +101,7 @@ export function useColumns() {
   // const cloneData = clone(tableData, true);
   const handleSubmit = (data: any, skus: any, extandData?: any) => {
     console.log("data", data, " skus", skus);
+    skuAttrsOptions.value = data.saleAttrs;
     tableData.value = [];
     skus.forEach(sku => {
       tableData.value.push({
@@ -153,6 +156,7 @@ export function useColumns() {
     attrCheckboxRef,
     columns,
     tableData,
+    skuAttrsOptions,
     handleSubmit
   };
 }

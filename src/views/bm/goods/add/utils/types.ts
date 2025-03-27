@@ -1,3 +1,4 @@
+import type { UploadUserFile } from "element-plus";
 type tempType = {
   name: string;
   price: number;
@@ -18,6 +19,23 @@ export type skuItem = tempType & {
 export type spuItem = Omit<skuItem, "skuAttrs" | "image"> & {
   mainImage: string;
   category: string;
+  detailImg?: string;
   spuAttrs: Array<attrItem>;
   images: Array<string>;
 };
+
+interface SkuFormItemProps extends Omit<tempType, "attrText"> {
+  attrs?: {
+    id: number;
+    name: string;
+    value: string;
+    options: string[];
+    props: string;
+  }[];
+  image: UploadUserFile[];
+}
+interface SkuFormProps {
+  formInline: SkuFormItemProps;
+}
+
+export type { SkuFormItemProps, SkuFormProps };

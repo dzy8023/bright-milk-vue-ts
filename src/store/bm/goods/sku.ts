@@ -29,7 +29,9 @@ export const useSkuInfoStore = defineStore("SkuInfoStore", {
         // 商品名称
         name: "",
         // 商品状态
-        status: ""
+        status: "",
+        sortBy: "",
+        isAsc: false
       },
       // 分页查询结果
       pagination: {

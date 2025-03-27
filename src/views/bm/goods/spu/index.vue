@@ -11,6 +11,7 @@ import EditPen from "@iconify-icons/ep/edit-pen";
 import Refresh from "@iconify-icons/ep/refresh";
 import AddFill from "@iconify-icons/ri/add-circle-line";
 import View from "@iconify-icons/ep/view";
+import Upload from "@iconify-icons/ri/upload-line";
 import { GOOD_STATUS_0, GOOD_STATUS_1 } from "@/constant/status";
 import { ElMessage } from "element-plus";
 import type { TabItem } from "./utils/types";
@@ -21,6 +22,7 @@ import { useCategoryStore } from "@/store/bm/goods/category";
 import { auth } from "./utils/auth";
 import { hasAuth } from "@/router/utils";
 import { useRouter } from "vue-router";
+import ReCopy from "@/components/ReCopy";
 
 const { switchStyle } = usePublicHooks();
 const spuInfoStore = useSpuInfoStore();
@@ -173,6 +175,9 @@ const {
             @page-size-change="handleSizeChange"
             @page-current-change="handleCurrentChange"
           >
+            <template #id="{ row }">
+              <ReCopy :value="row.id" />
+            </template>
             <template #status="{ row, index }">
               <el-switch
                 v-model="row.status"
