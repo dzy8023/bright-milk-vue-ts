@@ -49,7 +49,10 @@ export function useGoods(tableRef: Ref, treeRef: Ref) {
             loading: true
           }
         );
-        await spuInfoStore.changeSpuInfoStatus(row.id);
+        const res = await spuInfoStore.changeSpuInfoStatus(row.id);
+        if (!res) {
+          row.status === 0 ? (row.status = 1) : (row.status = 0);
+        }
         switchLoadMap.value[index] = Object.assign(
           {},
           switchLoadMap.value[index],

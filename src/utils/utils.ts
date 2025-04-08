@@ -61,3 +61,13 @@ export const getTreeProp = (tree: any, prop: string) => {
   traverse(tree);
   return Array.from(result);
 };
+/**
+ * 比较两对象是否相同
+ * @param obj1
+ * @param obj2
+ * @param props 属性列表
+ * @returns
+ */
+export const equalObjOnProps = (obj1: any, obj2: any, props: string[]) => {
+  return props.every(prop => obj1[prop] === obj2[prop]);
+};

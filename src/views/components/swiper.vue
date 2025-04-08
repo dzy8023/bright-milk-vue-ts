@@ -25,7 +25,9 @@ const swiperExample: any[] = [
     id: 2,
     label: "分页器",
     options: {
-      pagination: true
+      pagination: {
+        clickable: true
+      }
     }
   },
   {

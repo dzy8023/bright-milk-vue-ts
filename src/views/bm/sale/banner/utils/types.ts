@@ -1,24 +1,17 @@
-// 添加或者修改表单元素
-export interface FormItemProps {
-  // 用户名
-  username: string;
-  // 昵称
-  nickname: string;
-  // 邮箱
-  email: string;
-  // 手机号
-  phone: string;
-  // 密码
-  password: string;
-  // 头像
-  avatar: string;
-  // 性别
-  gender: number;
-  //状态
-  status: boolean;
-}
+import type { UploadUserFile } from "element-plus";
 
-// 添加或修改表单Props
-export interface FormProps {
+interface TabItem {
+  id: number;
+  name: string;
+  image: string;
+  href: string;
+  type: number;
+}
+interface FormItemProps extends Omit<TabItem, "image"> {
+  image: UploadUserFile[];
+}
+interface FormProps {
   formInline: FormItemProps;
 }
+
+export type { TabItem, FormItemProps, FormProps };

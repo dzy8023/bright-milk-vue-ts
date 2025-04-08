@@ -79,7 +79,10 @@ export function useCategory(treeRef: Ref) {
             loading: true
           }
         );
-        await categoryStore.changeCategoryStatus(data.id);
+        const res = await categoryStore.changeCategoryStatus(data.id);
+        if (!res) {
+          data.status = data.status === 0 ? 1 : 0;
+        }
         switchLoadMap.value[data.id] = Object.assign(
           {},
           switchLoadMap.value[data.id],

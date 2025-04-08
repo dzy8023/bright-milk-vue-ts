@@ -2,25 +2,42 @@
 import { ref } from "vue";
 import { PureTableBar } from "@/components/RePureTableBar";
 import { useRenderIcon } from "@/components/ReIcon/src/hooks";
-import noImg from "@/components/ReImage/noImg.vue";
 import Delete from "@iconify-icons/ep/delete";
 import EditPen from "@iconify-icons/ep/edit-pen";
 import Refresh from "@iconify-icons/ep/refresh";
 import AddFill from "@iconify-icons/ri/add-circle-line";
 import { useBanner } from "./utils/hooks";
-import { useBannerStore } from "@/store/bm/sale/banner";
 import { columns } from "./utils/columns";
-import ReCopy from "@/components/ReCopy";
+import { useBannerGroupStore } from "@/store/bm/sale/bannerGroup";
+import { usePublicHooks } from "@/views/hooks";
+import noImg from "@/assets/img/noImg.png";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+import SwiperCore from "swiper";
+import { Swiper, SwiperSlide } from "swiper/vue";
+import { Autoplay, Navigation, Pagination } from "swiper/modules";
 
-defineOptions({
-  name: "SystemDept"
-});
-
+SwiperCore.use([Autoplay, Navigation, Pagination]);
+const { switchStyle } = usePublicHooks();
 const formRef = ref();
 const tableRef = ref();
-const bannerStore = useBannerStore();
+const bannerGroupStore = useBannerGroupStore();
+const swiperOptions = {
+  Autoplay: {
+    delay: 2000,
+    disableOnInteraction: false
+  },
+  Pagination: {
+    clickable: true
+  },
+  loop: true
+};
 const {
   selectedNum,
+  switchLoadMap,
+  onChange,
+
   /** 搜索 */
   onSearch,
   /** 重置 */
@@ -47,34 +64,33 @@ function onFullscreen() {
     <el-form
       ref="formRef"
       :inline="true"
-      :model="bannerStore.form"
+      :model="bannerGroupStore.form"
       class="search-form bg-bg_color w-[99/100] pl-8 pt-[12px] overflow-auto"
     >
-      <el-form-item label="轮播图名称：" prop="name">
+      <el-form-item label="轮播图组名称：" prop="name">
         <el-input
-          v-model="bannerStore.form.name"
-          placeholder="请输入轮播图名称"
+          v-model="bannerGroupStore.form.name"
+          placeholder="请输入轮播图组名称"
           clearable
           class="!w-[180px]"
         />
       </el-form-item>
-      <el-form-item label="跳转类型：" prop="type">
+      <el-form-item label="状态：" prop="status">
         <el-select
-          v-model="bannerStore.form.type"
-          placeholder="请选择跳转类型："
+          v-model="bannerGroupStore.form.status"
+          placeholder="请选择"
+          clearable
           class="!w-[180px]"
         >
-          <el-option label="首页轮播图" value="1" />
-          <el-option label="商品详情页轮播图" value="2" />
-          <el-option label="其他" value="3" />
+          <el-option label="启用" value="1" />
+          <el-option label="禁用" value="0" />
         </el-select>
       </el-form-item>
-
       <el-form-item>
         <el-button
           type="primary"
           :icon="useRenderIcon('ri:search-line')"
-          :loading="bannerStore.loading"
+          :loading="bannerGroupStore.loading"
           @click="onSearch"
         >
           搜索
@@ -86,7 +102,7 @@ function onFullscreen() {
     </el-form>
 
     <PureTableBar
-      title="轮播图管理"
+      title="轮播图管理（仅演示，操作后不生效）"
       :columns="columns"
       :tableRef="tableRef?.getTableRef()"
       @refresh="onSearch"
@@ -133,25 +149,45 @@ function onFullscreen() {
           showOverflowTooltip
           table-layout="auto"
           default-expand-all
-          :loading="bannerStore.loading"
-          :pagination="bannerStore.pagination"
+          :loading="bannerGroupStore.loading"
+          :pagination="bannerGroupStore.pagination"
           :size="size"
-          :data="bannerStore.dataList"
+          :data="bannerGroupStore.dataList"
           :columns="dynamicColumns"
           :header-cell-style="{
             background: 'var(--el-fill-color-light)',
             color: 'var(--el-text-color-primary)'
           }"
-          lazy
           @selection-change="handleSelectionChange"
           @page-size-change="handleSizeChange"
           @page-current-change="handleCurrentChange"
         >
-          <template #image="{ row }">
-            <el-image class="h-[80px]" :src="row.image" />
+          <template #status="{ row, index }">
+            <el-switch
+              v-model="row.status"
+              active-text="启用"
+              inactive-text="禁用"
+              :active-value="1"
+              :inactive-value="0"
+              :loading="switchLoadMap[index]?.loading"
+              :style="switchStyle"
+              inline-prompt
+              @click="onChange(row, index)"
+            />
           </template>
-          <template #href="{ row }">
-            <ReCopy v-if="row.href" :value="row.href" />
+          <template #bannerList="{ row }">
+            <swiper
+              v-if="row.bannerList && row.bannerList.length > 0"
+              v-bind="swiperOptions"
+            >
+              <swiper-slide
+                v-for="(item, index) in row.bannerList"
+                :key="index"
+              >
+                <img :src="item.image" class="h-[70px]" />
+              </swiper-slide>
+            </swiper>
+            <img v-else :src="noImg" class="h-[70px]" />
           </template>
           <template #operation="{ row }">
             <el-button

@@ -41,7 +41,7 @@ export const useAdminUserStore = defineStore("adminUserStore", {
       // 分页查询结果
       pagination: {
         currentPage: 1,
-        pageSize: 150,
+        pageSize: 10,
         total: 1,
         pageSizes
       },

@@ -1,3 +1,4 @@
+import { ElTag } from "element-plus";
 import type { TableColumns } from "@pureadmin/table";
 import { ref } from "vue";
 import { filterEmptyArray } from "@/utils/utils";
@@ -81,9 +82,10 @@ export function useColumns() {
         label: item.name,
         prop: item.props,
         width: 100,
+        // row[column.property]
         cellRenderer: ({ row, column }) => (
           <>
-            <el-tag type="success">{row[column.property]}</el-tag>
+            <ElTag type="success">{row[column.prop as string]}</ElTag>
           </>
         )
       });
