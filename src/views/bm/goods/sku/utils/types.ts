@@ -6,10 +6,14 @@ export interface SkuInfoItem extends Omit<GoodItem, "catName" | "catId"> {
   spuId: string;
   attrs?: SkuAttr[];
   enableOrder: 0 | 1;
+  stock: number;
 }
 
 interface SkuFormItemProps
-  extends Omit<SkuInfoItem, "attrs" | "updateTime" | "createTime" | "image"> {
+  extends Omit<
+    SkuInfoItem,
+    "attrs" | "updateTime" | "createTime" | "image" | "stock"
+  > {
   attrs?: (SkuAttr & {
     options: string[];
     choose: 0 | 1;

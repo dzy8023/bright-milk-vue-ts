@@ -1,60 +1,77 @@
-import { h, reactive } from "vue";
+import { reactive } from "vue";
 import type { FormRules } from "element-plus";
-import { useRenderIcon } from "@/components/ReIcon/src/hooks";
 
 // 表格列
 export const columns: TableColumnList = [
+  { type: "selection", align: "left" },
   {
-    label: "属性编号",
-    prop: "id"
+    type: "index",
+    index: (index: number) => index + 1,
+    label: "序号",
+    minWidth: 60
   },
   {
-    label: "属性名称",
-    prop: "name",
-    cellRenderer: ({ row }) => (
-      <>
-        <span class="inline-block mr-1">
-          {h(useRenderIcon(row.icon), {
-            style: { paddingTop: "1px" }
-          })}
-        </span>
-        <span>{row.name}</span>
-      </>
-    ),
-    minWidth: 90
+    label: "订单号",
+    prop: "orderSn",
+    slot: "orderSn",
+    width: 180
   },
   {
-    label: "属性值",
-    prop: "value",
-    minWidth: 120,
-    cellRenderer: ({ row }) => (
-      <>
-        {row.value.map((item, i) => (
-          <el-tag size="small" type="info" key={i}>
-            {item}
-          </el-tag>
-        ))}
-      </>
-    )
+    label: "用户名",
+    prop: "username",
+    slot: "username",
+    width: 120
   },
   {
-    label: "属性描述",
-    prop: "desc",
-    minWidth: 90
+    label: "手机号",
+    prop: "phone",
+    width: 120
   },
   {
-    label: "属性类型",
-    prop: "type",
+    label: "订单状态",
+    prop: "status",
     sortable: true,
-    minWidth: 90,
-    cellRenderer: ({ row }) => (
-      <>
-        <el-tag size="small" type={row.type === 0 ? "primary" : "success"}>
-          {row.type === 0 ? "规格参数" : "销售属性"}
-        </el-tag>
-      </>
-    )
+    slot: "status",
+    minWidth: 90
   },
+  {
+    label: "订单来源",
+    prop: "sourceType",
+    slot: "sourceType",
+    minWidth: 90
+  },
+  {
+    label: "配送方式",
+    prop: "postType",
+    slot: "postType",
+    minWidth: 90
+  },
+  {
+    label: "总价",
+    prop: "totalAmount",
+    sortable: true,
+    minWidth: 90
+  },
+  {
+    label: "实付金额",
+    prop: "payAmount",
+    sortable: true,
+    minWidth: 90
+  },
+  {
+    label: "总折扣",
+    prop: "discountAmount",
+    sortable: true,
+    minWidth: 90
+  },
+  {
+    label: "配送费",
+    prop: "postFee",
+    sortable: true,
+    minWidth: 90
+  },
+  { label: "更新时间", prop: "updateTime", sortable: true, minWidth: 160 },
+  { label: "创建时间", prop: "createTime", sortable: true, minWidth: 160 },
   {
     label: "操作",
     fixed: "right",
@@ -62,7 +79,50 @@ export const columns: TableColumnList = [
     slot: "operation"
   }
 ];
-
+//
+export const skuColumns: TableColumnList = [
+  {
+    label: "id",
+    prop: "id",
+    slot: "id",
+    width: 180
+  },
+  {
+    label: "商品名称",
+    prop: "name",
+    slot: "name",
+    width: 210
+  },
+  {
+    label: "图片",
+    prop: "image",
+    slot: "image",
+    width: 120
+  },
+  {
+    label: "描述性文字",
+    prop: "attrText",
+    width: 120
+  },
+  {
+    label: "单价",
+    prop: "price",
+    sortable: true,
+    minWidth: 90
+  },
+  {
+    label: "折扣",
+    prop: "discount",
+    sortable: true,
+    minWidth: 90
+  },
+  {
+    label: "数量",
+    prop: "quantity",
+    sortable: true,
+    minWidth: 90
+  }
+];
 /** 自定义表单规则校验 */
 export const rules: any = reactive<FormRules>({
   name: [{ required: true, message: "属性名称为必填项", trigger: "blur" }],

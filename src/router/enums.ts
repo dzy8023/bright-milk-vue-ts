@@ -3,7 +3,7 @@
 const home = 0, // 平台规定只有 home 路由的 rank 才能为 0 ，所以后端在返回 rank 的时候需要从非 0 开始
   vueflow = 1,
   ganttastic = 2,
-  components = 3,
+  components = 99,
   able = 4,
   table = 5,
   form = 6,

@@ -110,3 +110,9 @@ export const fetchGetSkuAttrWithOptionsListBySpuId = (data: any) => {
     params: data
   });
 };
+/**增加库存 */
+export const fetchAddStock = (data: any) => {
+  return apiHttp.request<any>("put", `skuInfo/addStock`, {
+    data
+  });
+};

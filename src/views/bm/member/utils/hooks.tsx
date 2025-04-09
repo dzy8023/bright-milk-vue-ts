@@ -31,7 +31,10 @@ export async function onSearch() {
   await memberStore.getMemberPage();
   memberStore.loading = false;
 }
-
+/**充值 */
+export const handleCharge = (row: any) => {
+  console.log("充值", row);
+};
 /** 添加/更新用户信息 */
 export function openDialog(isAdd: boolean, row?: any) {
   isAddMember.value = isAdd;

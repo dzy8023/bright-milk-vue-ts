@@ -12,12 +12,13 @@ import {
   switchLoadMap,
   openDialog,
   onResetPassword,
-  updateMemberStatus
+  updateMemberStatus,
+  handleCharge
 } from "./utils/hooks";
 import Delete from "@iconify-icons/ep/delete";
 import EditPen from "@iconify-icons/ep/edit-pen";
 import Refresh from "@iconify-icons/ep/refresh";
-import { selectUserinfo } from "@/components/ReTable/Userinfo/columns";
+import { selectMemberInfo } from "@/components/ReTable/Userinfo/columns";
 import { useRenderIcon } from "@/components/ReIcon/src/hooks";
 import Password from "@iconify-icons/ri/lock-password-line";
 import More from "@iconify-icons/ep/more-filled";
@@ -223,7 +224,16 @@ onMounted(() => {
                 </template>
               </el-image>
             </template>
-
+            <template #username="{ row }">
+              <el-button
+                v-show="row.username"
+                link
+                type="primary"
+                @click="selectMemberInfo(row.id)"
+              >
+                {{ row.username }}
+              </el-button>
+            </template>
             <!-- 显示用户状态 -->
             <template #status="{ row, index }">
               <el-switch
@@ -245,29 +255,6 @@ onMounted(() => {
                 {{ row.gender === 1 ? "男" : "女" }}
               </el-tag>
             </template>
-
-            <template #createUser="{ row }">
-              <el-button
-                v-show="row.createUser"
-                link
-                type="primary"
-                @click="selectUserinfo(row.createUser)"
-              >
-                {{ row.createUsername }}
-              </el-button>
-            </template>
-
-            <template #updateUser="{ row }">
-              <el-button
-                v-show="row.updateUser"
-                link
-                type="primary"
-                @click="selectUserinfo(row.updateUser)"
-              >
-                {{ row.updateUsername }}
-              </el-button>
-            </template>
-
             <template #operation="{ row }">
               <!-- 修改 -->
               <el-button
@@ -281,25 +268,17 @@ onMounted(() => {
               >
                 修改
               </el-button>
-
-              <!-- 删除 -->
-              <el-popconfirm
-                v-if="hasAuth(auth.deleted)"
-                :title="`删除 ${row.username}?`"
-                @confirm="onDelete(row)"
+              <el-button
+                v-if="hasAuth(auth.update)"
+                :icon="useRenderIcon(EditPen)"
+                :size="size"
+                class="reset-margin"
+                link
+                type="primary"
+                @click="handleCharge(row)"
               >
-                <template #reference>
-                  <el-button
-                    :icon="useRenderIcon(Delete)"
-                    :size="size"
-                    class="reset-margin"
-                    link
-                    type="primary"
-                  >
-                    删除
-                  </el-button>
-                </template>
-              </el-popconfirm>
+                充值
+              </el-button>
 
               <!-- 更多操作 -->
               <el-dropdown>
@@ -312,6 +291,26 @@ onMounted(() => {
                 />
                 <template #dropdown>
                   <el-dropdown-menu>
+                    <el-dropdown-item v-if="hasAuth(auth.deleted)">
+                      <!-- 删除 -->
+                      <el-popconfirm
+                        :title="`删除 ${row.username}?`"
+                        @confirm="onDelete(row)"
+                      >
+                        <template #reference>
+                          <el-button
+                            :icon="useRenderIcon(Delete)"
+                            :size="size"
+                            class="reset-margin"
+                            link
+                            type="primary"
+                          >
+                            删除
+                          </el-button>
+                        </template>
+                      </el-popconfirm>
+                    </el-dropdown-item>
+
                     <!-- 重置密码 -->
                     <el-dropdown-item v-if="hasAuth(auth.resetPassword)">
                       <el-button

@@ -16,7 +16,12 @@ export const columns: TableColumnList = [
     minWidth: 60
   },
   // 会员名
-  { label: "会员名", prop: "username", minWidth: 180 },
+  {
+    label: "会员名",
+    prop: "username",
+    slot: "username",
+    minWidth: 180
+  },
   // 昵称
   { label: "昵称", prop: "nickname", minWidth: 180 },
   // 手机号

@@ -29,6 +29,43 @@ export const enabledOrNotStatus = [
   { value: true, label: "启用" },
   { value: false, label: "禁用" }
 ];
+/**订单状态 */
+export const orderStatus = [
+  { value: 1, label: "待付款", color: "" },
+  { value: 2, label: "待发货", color: "" },
+  { value: 3, label: "待收货", color: "" },
+  { value: 4, label: "已完成", color: "" },
+  { value: 5, label: "已取消", color: "" },
+  { value: 6, label: "退款中", color: "" },
+  { value: 7, label: "已退款", color: "" },
+  { value: 8, label: "已删除", color: "" }
+];
+/**状态校验 */
+export const verifyStatusMap = {
+  remind: new Set<number>([1]),
+  consign: new Set<number>([2]),
+  cancel: new Set<number>([1, 2]),
+  refund: new Set<number>([6]),
+  delete: new Set<number>([5, 7, 8])
+};
+/** 订单来源 */
+export const orderSourceType: {
+  value: number;
+  label: string;
+  type: "success" | "warning" | "info" | "primary" | "danger";
+}[] = [
+  { value: 1, label: "miniapp", type: "success" },
+  { value: 2, label: "h5", type: "warning" } // 修正了这里的拼写错误
+];
+/**配送方式 */
+export const orderPostType: {
+  value: number;
+  label: string;
+  type: "success" | "warning" | "info" | "primary" | "danger";
+}[] = [
+  { value: 1, label: "自取", type: "success" },
+  { value: 2, label: "配送", type: "warning" }
+];
 
 /** 是否已读 */
 export const isReadStatus = [

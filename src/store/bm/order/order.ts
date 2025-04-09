@@ -1,13 +1,14 @@
 import { defineStore } from "pinia";
 import { pageSizes } from "@/enums/baseConstant";
-import { storeMessage } from "@/utils/message";
+import { returnMessage, storeMessage } from "@/utils/message";
 import {
-  fetchQueryOrder,
   fetchGetOrderPage,
-  fetchAddOrder,
-  fetchUpdateOrder,
   fetchDeleteOrder,
-  fetchChangeOrderStatus
+  fetchQueryOrderDetail,
+  fetchCancelOrder,
+  fetchConsignOrder,
+  fetchRemindOrder,
+  fetchRefundOrder
 } from "@/api/bm/order/order";
 import { storePagination } from "@/store/useStorePagination";
 
@@ -21,12 +22,21 @@ export const useOrderStore = defineStore("OrderStore", {
       dataList: [],
       // 查询表单
       form: {
-        // 分类ID
-        catId: "",
-        // 订单名称
-        name: "",
+        // 用户ID
+        memberId: "",
+        // 用户名称
+        username: "",
+        //电话号码
+        phone: "",
+        // 订单号
+        orderSn: "",
+
         // 订单状态
-        status: ""
+        status: "",
+        // 订单来源
+        sourceType: "",
+        // 配送类型
+        postType: ""
       },
       // 分页查询结果
       pagination: {
@@ -55,33 +65,34 @@ export const useOrderStore = defineStore("OrderStore", {
       return pagination(res);
     },
 
-    /** 查询订单 */
-    async querySupInfo(data: any) {
-      const result = await fetchQueryOrder(data);
-      if (result.code !== 200) return [];
-      return result.result;
+    /** 获取订单详情 */
+    async queryOrderDetail(data: any) {
+      const result = await fetchQueryOrderDetail(data);
+      return returnMessage(result, null);
     },
-
-    /** 添加订单信息 */
-    async addOrder(data: any) {
-      const result = await fetchAddOrder(data);
+    /**催单 */
+    async remindOrder(data: string[]) {
+      const result = await fetchRemindOrder(data);
       return storeMessage(result);
     },
-    /** 修改订单信息 */
-    async updateOrder(data: any) {
-      const result = await fetchUpdateOrder(data);
+    /**发货 */
+    async consignOrder(data: string[]) {
+      const result = await fetchConsignOrder(data);
       return storeMessage(result);
     },
-
+    /**取消订单 */
+    async cancelOrder(data: string[]) {
+      const result = await fetchCancelOrder(data);
+      return storeMessage(result);
+    },
+    /**退款 */
+    async refundOrder(data: any) {
+      const result = await fetchRefundOrder(data);
+      return storeMessage(result);
+    },
     /** 删除订单信息 */
-    async deleteOrder(data: any) {
+    async deleteOrder(data: string[]) {
       const result = await fetchDeleteOrder(data);
-      return storeMessage(result);
-    },
-
-    /** 修改订单状态 */
-    async changeOrderStatus(data: any) {
-      const result = await fetchChangeOrderStatus(data);
       return storeMessage(result);
     }
   }

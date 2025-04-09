@@ -7,7 +7,7 @@ import EditPen from "@iconify-icons/ep/edit-pen";
 import Refresh from "@iconify-icons/ep/refresh";
 import AddFill from "@iconify-icons/ri/add-circle-line";
 import View from "@iconify-icons/ep/view";
-import Close from "@iconify-icons/ep/close";
+import AddStock from "@iconify-icons/ep/shopping-trolley";
 import Check from "@iconify-icons/ep/check";
 import { auth } from "./utils/auth";
 import { hasAuth } from "@/router/utils";
@@ -17,7 +17,6 @@ import { ref } from "vue";
 import { GOOD_STATUS_0, GOOD_STATUS_1 } from "@/constant/status";
 import { useSpuInfoStore } from "@/store/bm/goods/spu";
 import { debounce } from "@pureadmin/utils";
-import { message } from "@/utils/message";
 
 const svg = `
         <path class="path" d="
@@ -52,6 +51,8 @@ const {
   handleCurrentChange,
   handleSelectItem,
   onSelectionCancel,
+  handleAddStock,
+  addStockBatch,
   onbatchDel,
   selectAll
 } = useSkuInfo();
@@ -202,6 +203,9 @@ const createFilter = (queryString: string) => {
               <el-button type="danger" text class="mr-1"> 批量删除 </el-button>
             </template>
           </el-popconfirm>
+          <el-button type="warning" text @click="addStockBatch">
+            批量进货
+          </el-button>
         </div>
         <el-row :gutter="16">
           <el-col
@@ -233,6 +237,16 @@ const createFilter = (queryString: string) => {
                       @click="handleView(row)"
                     >
                       查看
+                    </el-button>
+                  </el-dropdown-item>
+                  <el-dropdown-item>
+                    <el-button
+                      link
+                      type="primary"
+                      :icon="useRenderIcon(AddStock)"
+                      @click="handleAddStock(row)"
+                    >
+                      进货
                     </el-button>
                   </el-dropdown-item>
                   <el-dropdown-item>

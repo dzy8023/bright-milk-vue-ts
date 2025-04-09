@@ -10,7 +10,8 @@ import {
   fetchChangeSkuInfoStatus,
   fetchGetAttrListBySkuId,
   fetchGetSkuAttrWithOptionsListBySpuId,
-  fetchCreateSkuInfo
+  fetchCreateSkuInfo,
+  fetchAddStock
 } from "@/api/bm/goods/sku";
 import { storePagination } from "@/store/useStorePagination";
 
@@ -105,6 +106,11 @@ export const useSkuInfoStore = defineStore("SkuInfoStore", {
     }) {
       const result = await fetchGetSkuAttrWithOptionsListBySpuId(data);
       return returnMessage(result);
+    },
+    /**新增库存 */
+    async addStock(ids: string[], stock: number) {
+      const result = await fetchAddStock({ ids, stock });
+      return storeMessage(result);
     }
   }
 });

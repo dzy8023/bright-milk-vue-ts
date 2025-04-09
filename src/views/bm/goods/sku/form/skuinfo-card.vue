@@ -3,6 +3,7 @@ import { PropType, ref, watch } from "vue";
 import noImg from "@/components/ReImage/noImg.vue";
 import More2Fill from "@iconify-icons/ri/more-2-fill";
 import Fire from "@iconify-icons/ri/fire-line";
+import Stock from "@iconify-icons/ri/store-3-line";
 import type { SkuInfoItem } from "../utils/types";
 
 const props = defineProps({
@@ -44,10 +45,20 @@ watch(
   >
     <el-row>
       <noImg :name="skuInfo.name" :url="skuInfo.image" @click="toggleSelect" />
-      <div class="list-card-item--sales flex">
-        <IconifyIconOffline :icon="Fire" class="text-[24px] text-red-500" />
-        <span class="text-gray-500 inline-block"> {{ skuInfo.sales }}</span>
+      <div class="list-card-item--sales flex-col">
+        <div v-tippy="{ content: '销量' }" class="flex flex-row">
+          <IconifyIconOffline :icon="Fire" class="text-[24px] text-red-500" />
+          <span class="text-gray-500 inline-block"> {{ skuInfo.sales }}</span>
+        </div>
+        <div v-tippy="{ content: '库存' }" class="flex flex-row">
+          <IconifyIconOffline
+            :icon="Stock"
+            class="text-[24px] text-green-500"
+          />
+          <span class="text-gray-500 inline-block"> {{ skuInfo.stock }}</span>
+        </div>
       </div>
+
       <!-- 右上角状态与操作 -->
       <div class="list-card-item--operation">
         <!-- 更改状态 -->

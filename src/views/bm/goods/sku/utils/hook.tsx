@@ -4,13 +4,15 @@ import { h, onMounted, ref } from "vue";
 import type { SkuFormItemProps, SkuInfoItem } from "./types";
 import { useSkuInfoStore } from "@/store/bm/goods/sku";
 import { deviceDetection } from "@pureadmin/utils";
-import { ElMessageBox, type FormInstance } from "element-plus";
+import { ElInputNumber, ElMessageBox, type FormInstance } from "element-plus";
 import SkuInfoDialog from "../form/skuinfo.vue";
+import { message } from "@/utils/message";
 
 export function useSkuInfo() {
   const skuInfoStore = useSkuInfoStore();
   const formRef = ref();
   const selectedIds = ref<Set<string>>(new Set());
+  const stock = ref(0);
 
   const handleSelectItem = item => {
     if (!selectedIds.value.has(item.id)) {
@@ -169,6 +171,38 @@ export function useSkuInfo() {
     }
     return res;
   }
+  async function addStockBatch() {
+    const ids = Array.from(selectedIds.value);
+    if (ids.length === 0) {
+      message("请选择要操作的商品", { type: "warning", duration: 3666 });
+    }
+    openElInputNumber("批量添加库存", ids);
+  }
+  function openElInputNumber(title: string, ids: string[]) {
+    addDialog({
+      title: title,
+      width: "20%",
+      draggable: true,
+      fullscreen: deviceDetection(),
+      fullscreenIcon: true,
+      closeOnClickModal: false,
+      contentRenderer: (): JSX.Element => (
+        <ElInputNumber min={1} max={1000} v-model={stock.value} />
+      ),
+      beforeSure: async done => {
+        console.log(stock.value);
+        const res = await skuInfoStore.addStock(ids, stock.value);
+        if (!res) {
+          return;
+        }
+        done();
+      }
+    });
+  }
+
+  async function handleAddStock(row: SkuInfoItem) {
+    openElInputNumber(`添加${row.name}库存`, [row.id]);
+  }
   onMounted(async () => {
     await onSearch();
   });
@@ -186,6 +220,8 @@ export function useSkuInfo() {
     handleSelectItem,
     onSelectionCancel,
     onbatchDel,
+    addStockBatch,
+    handleAddStock,
     selectAll
   };
 }

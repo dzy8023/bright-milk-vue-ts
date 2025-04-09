@@ -215,21 +215,25 @@ onMounted(() => {
             >
               修改
             </el-button>
+            <!-- 删除操作 -->
+            <el-popconfirm
+              v-if="hasAuth(auth.deleted)"
+              :title="`删除 ${row.title}?`"
+              @confirm="onDelete(row)"
+            >
+              <template #reference>
+                <el-button
+                  :icon="useRenderIcon(Delete)"
+                  :size="size"
+                  class="reset-margin"
+                  link
+                  type="primary"
+                >
+                  删除
+                </el-button>
+              </template>
+            </el-popconfirm>
 
-            <!-- 新增 -->
-            <Auth :value="auth.add">
-              <el-button
-                v-show="row.menuType !== 3"
-                :icon="useRenderIcon(AddFill)"
-                :size="size"
-                class="reset-margin"
-                link
-                type="primary"
-                @click="onAdd(row.id)"
-              >
-                新增
-              </el-button>
-            </Auth>
             <!-- 更多操作 -->
             <el-dropdown>
               <el-button
@@ -241,24 +245,19 @@ onMounted(() => {
               />
               <template #dropdown>
                 <el-dropdown-menu>
-                  <el-dropdown-item v-if="hasAuth(auth.deleted)">
-                    <!-- 删除操作 -->
-                    <el-popconfirm
-                      :title="`删除 ${row.title}?`"
-                      @confirm="onDelete(row)"
+                  <el-dropdown-item v-if="hasAuth(auth.add)">
+                    <!-- 新增 -->
+                    <el-button
+                      v-show="row.menuType !== 3"
+                      :icon="useRenderIcon(AddFill)"
+                      :size="size"
+                      class="reset-margin"
+                      link
+                      type="primary"
+                      @click="onAdd(row.id)"
                     >
-                      <template #reference>
-                        <el-button
-                          :icon="useRenderIcon(Delete)"
-                          :size="size"
-                          class="reset-margin"
-                          link
-                          type="primary"
-                        >
-                          删除
-                        </el-button>
-                      </template>
-                    </el-popconfirm>
+                      新增
+                    </el-button>
                   </el-dropdown-item>
                   <el-dropdown-item>
                     <!-- 分配角色 -->
