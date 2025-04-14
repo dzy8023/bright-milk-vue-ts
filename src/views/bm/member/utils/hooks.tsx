@@ -7,10 +7,13 @@ import { isAddMember } from "./columns";
 import ResetPasswordDialog from "@/components/ReTable/ResetPasswords.vue";
 import DeleteBatchDialog from "@/components/ReTable/DeleteBatchDialog.vue";
 import { useMemberStore } from "@/store/bm/member";
+import { deviceDetection } from "@pureadmin/utils";
+import { ElInputNumber } from "element-plus";
 
 const memberStore = useMemberStore();
 // 表单Ref
 const formRef = ref();
+const amount = ref(0);
 // 重置密码表单校验Ref
 const ruleFormByRestPasswordRef = ref();
 // 重置密码表单
@@ -33,6 +36,31 @@ export async function onSearch() {
 }
 /**充值 */
 export const handleCharge = (row: any) => {
+  addDialog({
+    title: `用户${row.username}充值`,
+    width: "20%",
+    draggable: true,
+    fullscreen: deviceDetection(),
+    fullscreenIcon: true,
+    closeOnClickModal: false,
+    contentRenderer: (): JSX.Element => (
+      <ElInputNumber min={1} max={1000} v-model={amount.value} />
+    ),
+    beforeSure: async done => {
+      console.log(amount.value);
+      let res = false;
+      if (amount.value && amount.value > 0 && amount.value <= 1000) {
+        res = await memberStore.charge({
+          memberId: row.id,
+          amount: amount.value
+        });
+      }
+      if (!res) {
+        return;
+      }
+      done();
+    }
+  });
   console.log("充值", row);
 };
 /** 添加/更新用户信息 */

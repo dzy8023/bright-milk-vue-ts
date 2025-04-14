@@ -109,9 +109,8 @@ export const onDelete = async (row: any) => {
 
   // 是否确认删除
   const result = await messageBox({
-    title: "是否确认删除",
+    title: `是否确认删除【${row.filename}】文件?`,
     showMessage: false,
-    confirmMessage: undefined,
     cancelMessage: "取消删除"
   });
   if (!result) return;

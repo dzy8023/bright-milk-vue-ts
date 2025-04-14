@@ -16,7 +16,7 @@ export const columns: TableColumnList = [
   // 文件的MIME类型
   { label: "文件类型", prop: "fileType", minWidth: 180 },
   // 下载数量
-  { label: "下载次数", prop: "downloadCount", minWidth: 115 },
+  { label: "下载次数", prop: "downloadCount", sortable: true, minWidth: 115 },
   { label: "更新时间", prop: "updateTime", sortable: true, minWidth: 160 },
   { label: "创建时间", prop: "createTime", sortable: true, minWidth: 160 },
   { label: "创建用户", prop: "createUser", slot: "createUser", minWidth: 130 },

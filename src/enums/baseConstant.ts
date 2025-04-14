@@ -104,3 +104,23 @@ export const iconClass = computed(() => {
   ];
 });
 export const MaxCategoryLayer = 3;
+
+export const SseEntityType = {
+  NOTIFICATION: 0,
+  MESSAGE: 1,
+  TODO: 2
+};
+export const SseNotificationType = {
+  /**数据导出 */
+  DATA_EXPORT: 0,
+  /**订单发货 */
+  ORDER_CONSIGN: 1
+};
+export const SseMessageStatus = [
+  "primary",
+  "success",
+  "warning",
+  "info",
+  "danger"
+];
+export const SseNotificationTypeKeys = ["DATA_EXPORT"];

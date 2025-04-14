@@ -41,3 +41,7 @@ export const fetchUpdateMember = (data: any) => {
 export const fetchResetPassword = (data: any) => {
   return apiHttp.request<any>("put", `member/resetPassword`, { data });
 };
+/**充值 */
+export const fetchCharge = (data: any) => {
+  return apiHttp.request<any>("put", `member/charge`, { data });
+};

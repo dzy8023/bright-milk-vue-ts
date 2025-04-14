@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { PropType } from "vue";
-import NoticeItem from "./NoticeItem.vue";
-import { SseMessage } from "@/types/sseMessage";
+import type { SseNotification } from "@/types/sseMessage";
+import NoticeItem00 from "./NoticeItem0-0.vue";
 import ReSwiperItem from "@/components/ReSwiperItem/index.vue";
+
 defineProps({
   list: {
-    type: Array as PropType<Array<SseMessage>>,
+    type: Array as PropType<Array<SseNotification>>,
     default: () => []
   },
   emptyText: {
@@ -13,8 +14,8 @@ defineProps({
     default: ""
   }
 });
-const emits = defineEmits(["delete", "view"]);
-const handleDelete = (item: SseMessage, index: number) => {
+const emits = defineEmits(["delete"]);
+const handleDelete = (item: SseNotification, index: number) => {
   emits("delete", item, index);
 };
 </script>
@@ -23,10 +24,10 @@ const handleDelete = (item: SseMessage, index: number) => {
   <div v-if="list.length">
     <ReSwiperItem
       v-for="(item, index) in list"
-      :key="item.id"
+      :key="index"
       @delete="handleDelete(item, index)"
     >
-      <NoticeItem :noticeItem="item" />
+      <NoticeItem00 :noticeItem="item" />
     </ReSwiperItem>
   </div>
   <el-empty v-else :description="emptyText" />

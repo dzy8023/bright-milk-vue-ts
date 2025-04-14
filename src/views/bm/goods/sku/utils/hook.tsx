@@ -44,10 +44,14 @@ export function useSkuInfo() {
   }
   function handleSizeChange(val: number) {
     console.log(`${val} items per page`);
+    skuInfoStore.pagination.pageSize = val;
+    onSearch();
   }
 
   function handleCurrentChange(val: number) {
     console.log(`current page: ${val}`);
+    skuInfoStore.pagination.currentPage = val;
+    onSearch();
   }
 
   async function onSearch() {
@@ -128,7 +132,7 @@ export function useSkuInfo() {
       props: {
         formInline: {
           id: row.id,
-          spuId: row.id,
+          spuId: row.spuId,
           name: row.name,
           status: row.status,
           price: row.price,

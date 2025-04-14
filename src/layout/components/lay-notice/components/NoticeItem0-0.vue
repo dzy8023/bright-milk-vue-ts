@@ -1,13 +1,16 @@
 <script setup lang="ts">
-import type { SseMessage } from "@/types/sseMessage";
-import { ref, PropType, nextTick } from "vue";
+import type { SseNotification } from "@/types/sseMessage";
+import { ref, PropType, nextTick, h } from "vue";
 import { useNav } from "@/layout/hooks/useNav";
 import { deviceDetection } from "@pureadmin/utils";
-import { SseMessageStatus } from "@/enums/baseConstant";
+import { SseNotificationType } from "@/enums/baseConstant";
+import { addDialog } from "@/components/ReDialog";
+import DataExportInfo from "./DataExportInfo.vue";
+import OrderConsignInfo from "./OrderConsignInfo.vue";
 
 defineProps({
   noticeItem: {
-    type: Object as PropType<SseMessage>,
+    type: Object as PropType<SseNotification>,
     default: () => {}
   }
 });
@@ -26,14 +29,15 @@ function hoverTitle() {
       : (titleTooltip.value = false);
   });
 }
-const getMessageType = (status: number) => {
-  return SseMessageStatus[status] as
-    | "primary"
-    | "success"
-    | "warning"
-    | "info"
-    | "danger";
-};
+function getType(item: SseNotification) {
+  if (!item.content.status) {
+    return 0;
+  } else if (item.content.present == 100) {
+    return 1;
+  } else {
+    return 2;
+  }
+}
 
 function hoverDescription(event, description) {
   // currentWidth 为文本在页面中所占的宽度，创建标签，加入到页面，获取currentWidth ,最后在移除
@@ -53,6 +57,32 @@ function hoverDescription(event, description) {
   currentWidth > 2 * cellWidth
     ? (descriptionTooltip.value = true)
     : (descriptionTooltip.value = false);
+}
+const openDialog = (item: SseNotification, component: any) => {
+  addDialog({
+    title: `${item.title}`,
+    width: "46%",
+    draggable: true,
+    fullscreen: deviceDetection(),
+    fullscreenIcon: true,
+    closeOnClickModal: true,
+    contentRenderer: () => h(component, { noticeItem: item })
+  });
+};
+function handleClick(item: SseNotification) {
+  switch (item.childType) {
+    case SseNotificationType.DATA_EXPORT:
+      if (item.content.status) {
+        openDialog(item, DataExportInfo);
+      }
+      break;
+    case SseNotificationType.ORDER_CONSIGN:
+      console.log(item.content);
+      openDialog(item, OrderConsignInfo);
+      break;
+    default:
+      break;
+  }
 }
 </script>
 
@@ -85,12 +115,24 @@ function hoverDescription(event, description) {
           </div>
         </el-tooltip>
         <el-tag
-          v-if="noticeItem?.extra"
-          :type="getMessageType(noticeItem.status)"
+          v-if="noticeItem?.status !== null"
+          :type="
+            getType(noticeItem) === 0
+              ? 'primary'
+              : getType(noticeItem) === 1
+                ? 'success'
+                : 'danger'
+          "
           size="small"
           class="notice-title-extra"
         >
-          {{ noticeItem?.extra }}
+          {{
+            getType(noticeItem) === 0
+              ? "进行中"
+              : getType(noticeItem) === 1
+                ? "已完成"
+                : "失败"
+          }}
         </el-tag>
       </div>
 
@@ -103,12 +145,20 @@ function hoverDescription(event, description) {
       >
         <div
           ref="descriptionRef"
-          class="notice-text-description"
+          :class="[
+            'notice-text-description',
+            noticeItem.content.status ? 'completed' : ''
+          ]"
           @mouseover="hoverDescription($event, noticeItem.summary)"
+          @click="handleClick(noticeItem)"
         >
           {{ noticeItem.summary }}
         </div>
       </el-tooltip>
+      <el-progress
+        v-if="noticeItem.content.present"
+        :percentage="noticeItem.content.present"
+      />
       <div class="notice-text-datetime text-[#00000073] dark:text-white">
         {{ noticeItem.createdTime }}
       </div>
@@ -127,6 +177,8 @@ function hoverDescription(event, description) {
   align-items: flex-start;
   justify-content: space-between;
   padding: 12px 0;
+
+  // border-bottom: 1px solid #f0f0f0;
 
   .notice-container-avatar {
     margin-right: 16px;
@@ -174,6 +226,11 @@ function hoverDescription(event, description) {
       text-overflow: ellipsis;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
+    }
+
+    .notice-text-description.completed:hover {
+      color: blue;
+      cursor: pointer; /* 可选：让鼠标显示为指针，提高交互感 */
     }
 
     .notice-text-datetime {

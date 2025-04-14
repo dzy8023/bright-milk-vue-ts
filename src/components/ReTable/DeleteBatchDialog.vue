@@ -17,7 +17,7 @@ const props = withDefaults(defineProps<FormProps>(), {
 
 const rules = reactive({
   confirmText: [
-    { required: true, message: $t("deleteBatchPlaceholder"), trigger: "blur" }
+    { required: true, message: "请输入确认删除（yes/y）", trigger: "blur" }
   ]
 });
 
@@ -34,10 +34,10 @@ defineExpose({ formDeletedBatchRef });
     :rules="rules"
     label-width="auto"
   >
-    <el-form-item :label="$t('confirmText')" prop="confirmText">
+    <el-form-item label="删除确认" prop="confirmText">
       <el-input
         v-model="form.confirmText"
-        :placeholder="$t('deleteBatchPlaceholder')"
+        placeholder="请确认删除（yes/y）"
         autocomplete="off"
         type="text"
       />

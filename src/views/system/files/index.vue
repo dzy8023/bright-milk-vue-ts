@@ -241,22 +241,16 @@ onMounted(() => {
                 <el-dropdown-menu>
                   <!-- 上传头像 -->
                   <el-dropdown-item v-if="hasAuth(auth.deleted)">
-                    <el-popconfirm
-                      :title="`删除 ${row.filename}?`"
-                      @confirm="onDelete(row)"
+                    <el-button
+                      :icon="useRenderIcon(Delete)"
+                      :size="size"
+                      class="reset-margin"
+                      link
+                      type="primary"
+                      @click="onDelete(row)"
                     >
-                      <template #reference>
-                        <el-button
-                          :icon="useRenderIcon(Delete)"
-                          :size="size"
-                          class="reset-margin"
-                          link
-                          type="primary"
-                        >
-                          删除
-                        </el-button>
-                      </template>
-                    </el-popconfirm>
+                      删除
+                    </el-button>
                   </el-dropdown-item>
                 </el-dropdown-menu>
               </template>

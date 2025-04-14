@@ -17,10 +17,19 @@ export const downloadFilesByFileId = (data: any) => {
   });
 };
 
-/** 系统文件管理---批量下载系统文件 */
+// /** 系统文件管理---批量下载系统文件 */
+// export const downloadFilesByFilepath = (data: any) => {
+//   return http.request<any>("get", `files/downloadFilesByFilepath`, {
+//     params: data,
+//     responseType: "blob"
+//   });
+// };
+/** 系统文件管理---下载系统文件 */
 export const downloadFilesByFilepath = (data: any) => {
+  // 对中文参数进行encodeURIComponent编码
+  const encodedFilepath = encodeURIComponent(data.filepath);
   return http.request<any>("get", `files/downloadFilesByFilepath`, {
-    params: data,
+    params: { filepath: encodedFilepath },
     responseType: "blob"
   });
 };

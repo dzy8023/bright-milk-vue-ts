@@ -9,7 +9,8 @@ import {
   fetchDeleteMember,
   fetchAddMember,
   fetchUpdateMember,
-  fetchResetPassword
+  fetchResetPassword,
+  fetchCharge
 } from "@/api/bm/member";
 
 /**
@@ -93,6 +94,10 @@ export const useMemberStore = defineStore("MemberStore", {
     async resetPassword(data: any) {
       const result = await fetchResetPassword(data);
       return storeMessage(result);
+    },
+    async charge(data: { memberId: string; amount: number }) {
+      const res = await fetchCharge(data);
+      return storeMessage(res);
     }
   }
 });

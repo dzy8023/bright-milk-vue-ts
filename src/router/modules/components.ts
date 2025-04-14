@@ -10,6 +10,14 @@ export default {
   },
   children: [
     {
+      path: "/components/charts",
+      name: "Charts",
+      component: () => import("@/views/components/charts.vue"),
+      meta: {
+        title: "图表"
+      }
+    },
+    {
       path: "/components/attrCheckbox",
       name: "AttrCheckbox",
       component: () => import("@/views/components/attrCheckbox/index.vue"),
