@@ -66,7 +66,6 @@
       </div>
     </div>
     <el-divider />
-    <h2 @click="handleClick">sku</h2>
     <div v-loading="!skus">
       <div
         v-for="(sku, index) in skus"

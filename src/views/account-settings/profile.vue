@@ -20,6 +20,7 @@ import { useAdminUserStore } from "@/store/system/adminUser";
 const userInfoFormRef = ref<FormInstance>();
 const uploadRef = ref();
 const cropRef = ref();
+const fileList = ref();
 // 剪裁完成后头像地址，base64内容
 const imgBase64Src = ref("");
 
@@ -41,6 +42,7 @@ const onChange = (uploadFile: any) => {
   reader.onload = e => {
     imgBase64Src.value = e.target.result as string;
     isShow.value = true;
+    fileList.value = [];
   };
   reader.readAsDataURL(uploadFile.raw);
 };
@@ -90,11 +92,12 @@ onMounted(() => {
         <el-avatar :size="80" :src="userInfos.avatar" />
         <el-upload
           ref="uploadRef"
+          v-model:file-list="fileList"
           :auto-upload="false"
           :limit="1"
-          :on-change="onChange"
           :show-file-list="false"
           accept="image/*"
+          :on-change="onChange"
         >
           <el-button class="ml-4" plain>
             <IconifyIconOffline :icon="uploadLine" />
@@ -155,7 +158,7 @@ onMounted(() => {
           <el-option
             v-for="(item, index) in genderConstant"
             :key="index"
-            label="item.label"
+            :label="item.label"
             :navigationBar="false"
             :value="item.value"
           />

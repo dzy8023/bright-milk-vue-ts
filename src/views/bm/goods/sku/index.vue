@@ -111,10 +111,10 @@ const createFilter = (queryString: string) => {
             </template>
           </el-input>
         </el-form-item>
-        <el-form-item label="spuId" prop="spuId">
+        <el-form-item label="商品Id" prop="spuId">
           <el-autocomplete
             v-model="skuInfoStore.form.spuId"
-            placeholder="请输入spuId"
+            placeholder="请输入商品Id"
             clearable
             class="!w-[200px]"
             :fetch-suggestions="querySearch"

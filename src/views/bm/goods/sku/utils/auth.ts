@@ -1,10 +1,14 @@
 export const auth = {
   // 分页查询
-  search: ["skuinfo::getSkuInfoList"],
+  page: ["skuInfo::page"],
   // 添加操作
-  add: ["skuinfo::addSkuInfo"],
+  add: ["skuInfo::create"],
   // 更新操作
-  update: ["skuinfo::updateSkuInfo"],
+  update: ["skuInfo::update"],
   // 删除操作
-  deleted: ["skuinfo::deleteSkuInfo"]
+  deleted: ["skuInfo::delete"],
+  // 启用操作
+  changeStatus: ["skuInfo::changeStatus"],
+  //进货
+  addStock: ["skuInfo::addStock"]
 };

@@ -115,7 +115,7 @@ const {
       </el-form>
 
       <PureTableBar
-        title="商品管理（仅演示，操作后不生效）"
+        title="商品管理"
         :columns="columns"
         :isExpandAll="false"
         @refresh="onSearch"
@@ -216,20 +216,7 @@ const {
                     color: 'var(--el-text-color-primary)'
                   }"
                   @vue:mounted="subMonted(row)"
-                  ><template #status="{ row, index }">
-                    <el-switch
-                      v-model="row.status"
-                      :active-text="GOOD_STATUS_1"
-                      :inactive-text="GOOD_STATUS_0"
-                      :active-value="1"
-                      :inactive-value="0"
-                      :loading="switchLoadMap[index]?.loading"
-                      :style="switchStyle"
-                      inline-prompt
-                      :onChange="() => console.log(row, index)"
-                    />
-                  </template>
-                </pure-table>
+                />
               </div>
             </template>
             <template #operation="{ row }: { row: TabItem }">
@@ -243,16 +230,23 @@ const {
               >
                 查看
               </el-button>
-              <el-button
-                class="reset-margin"
-                link
-                type="primary"
-                :size="size"
-                :icon="useRenderIcon(EditPen)"
-                @click="handleUpdate(false, row)"
+
+              <el-popconfirm
+                :title="`是否确认删除商品【${row.name}】`"
+                @confirm="handleDelete(row)"
               >
-                修改
-              </el-button>
+                <template #reference>
+                  <el-button
+                    class="reset-margin"
+                    link
+                    type="danger"
+                    :size="size"
+                    :icon="useRenderIcon(Delete)"
+                  >
+                    删除
+                  </el-button>
+                </template>
+              </el-popconfirm>
               <!-- 更多操作 -->
               <el-dropdown>
                 <el-button
@@ -275,22 +269,16 @@ const {
                       </el-button>
                     </el-dropdown-item>
                     <el-dropdown-item>
-                      <el-popconfirm
-                        :title="`是否确认删除商品编号为${row.id}的这条数据`"
-                        @confirm="handleDelete(row)"
+                      <el-button
+                        class="reset-margin"
+                        link
+                        type="primary"
+                        :size="size"
+                        :icon="useRenderIcon(EditPen)"
+                        @click="handleUpdate(false, row)"
                       >
-                        <template #reference>
-                          <el-button
-                            class="reset-margin"
-                            link
-                            type="danger"
-                            :size="size"
-                            :icon="useRenderIcon(Delete)"
-                          >
-                            删除
-                          </el-button>
-                        </template>
-                      </el-popconfirm>
+                        修改
+                      </el-button>
                     </el-dropdown-item>
                   </el-dropdown-menu>
                 </template>

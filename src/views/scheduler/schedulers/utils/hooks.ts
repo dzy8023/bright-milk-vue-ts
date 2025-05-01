@@ -6,6 +6,7 @@ import { messageBox } from "@/utils/message";
 import type { FormItemProps } from "@/views/scheduler/schedulers/utils/types";
 
 export const formRef = ref();
+export const switchLoadMap = ref({});
 const schedulersStore = useSchedulersStore();
 
 /** 搜索初始化Schedulers视图 */
@@ -140,4 +141,47 @@ export const onResume = async (row: any) => {
   // 恢复任务
   await schedulersStore.resumeSchedulers(data);
   await onSearch();
+};
+/**
+ * * 是否记录日志
+ * @param row
+ * @param index
+ */
+export const onchangeLogEnabled = async (row: any, index: number) => {
+  // 点击时开始loading加载
+  switchLoadMap.value[index] = Object.assign({}, switchLoadMap.value[index], {
+    loading: true
+  });
+
+  // 是否确认修改显示状态
+  const confirm = await messageBox({
+    title: `是否要修改【${row.jobName}】的日志状态`,
+    showMessage: false,
+    confirmMessage: undefined,
+    cancelMessage: "取消"
+  });
+
+  // 取消修改
+  if (!confirm) {
+    row.logEnabled = row.logEnabled === 1 ? 0 : 1;
+    switchLoadMap.value[index] = Object.assign({}, switchLoadMap.value[index], {
+      loading: false
+    });
+    return;
+  }
+
+  // 确认修改
+  const data = {
+    jobName: row.jobName,
+    jobGroup: row.jobGroup,
+    logEnabled: row.logEnabled
+  };
+  console.log(data);
+  const result = await schedulersStore.changeLogEnabled(data);
+  console.log(result);
+  await onSearch();
+
+  switchLoadMap.value[index] = Object.assign({}, switchLoadMap.value[index], {
+    loading: false
+  });
 };

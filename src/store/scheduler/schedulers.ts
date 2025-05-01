@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import {
   fetchAddSchedulers,
+  fetchChangeLogEnabled,
   fetchDeleteSchedulers,
   fetchGetAllScheduleJobList,
   fetchGetSchedulersList,
@@ -102,6 +103,10 @@ export const useSchedulersStore = defineStore("schedulersStore", {
     /** 恢复任务 */
     async resumeSchedulers(data: any) {
       const result = await fetchResumeSchedulers(data);
+      return storeMessage(result);
+    },
+    async changeLogEnabled(data: any) {
+      const result = await fetchChangeLogEnabled(data);
       return storeMessage(result);
     }
   }

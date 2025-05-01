@@ -1,10 +1,14 @@
 export const auth = {
-  // 分页查询
-  search: ["category::getCategoryList"],
+  // 查询分类树
+  tree: ["category::tree"],
   // 添加操作
-  add: ["category::addCategory"],
+  add: ["category::add"],
   // 更新操作
-  update: ["category::updateCategory"],
+  update: ["category::update"],
   // 删除操作
-  deleted: ["category::deleteCategory"]
+  deleted: ["category::delete"],
+  //更新分类状态
+  changeStatus: ["category::changeStatus"],
+  //关联属性
+  relateAttr: ["category::categoryRelateAttr"]
 };

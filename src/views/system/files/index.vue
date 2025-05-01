@@ -219,7 +219,7 @@ onMounted(() => {
             </el-button>
             <el-button
               v-if="hasAuth(auth.downloadFilesByFileId)"
-              :icon="useRenderIcon(EditPen)"
+              :icon="useRenderIcon(Download)"
               :size="size"
               class="reset-margin"
               link

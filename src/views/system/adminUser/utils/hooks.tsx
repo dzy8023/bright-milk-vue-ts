@@ -241,6 +241,7 @@ export const onUploadAvatar = (row: any) => {
         onCropper: info => (avatarInfo.value = info)
       }),
     beforeSure: async done => {
+      console.log(avatarInfo.value);
       // 上传头像
       const data = { userId: row.id, avatar: avatarInfo.value.blob };
       const result = await fetchUploadAvatarByAdmin(data);
@@ -302,7 +303,7 @@ export const onResetPassword = (row: any) => {
  */
 export const onAssignRolesToUser = (row: any) => {
   addDialog({
-    title: `$为 ${row.username} 分配角色`,
+    title: `为 ${row.username} 分配角色`,
     width: "45%",
     draggable: true,
     closeOnClickModal: false,

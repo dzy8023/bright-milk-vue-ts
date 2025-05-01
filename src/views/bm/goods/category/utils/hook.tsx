@@ -201,10 +201,11 @@ export function useCategory(treeRef: Ref) {
       ),
       beforeSure: async (done: any) => {
         const attrList = [];
+        console.log(relateRef.value.relateAttr, attrStore.attrList);
         attrStore.attrList.forEach(item => {
-          if (relateRef.value.relateAttr.includes(item.id)) {
+          if (relateRef.value.relateAttr.includes(item.attrId)) {
             attrList.push({
-              attrId: item.id,
+              attrId: item.attrId,
               choose: item.choose
             });
           }

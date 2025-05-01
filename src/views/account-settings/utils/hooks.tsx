@@ -41,12 +41,12 @@ export const onSearchByUserinfo = async () => {
 
 /** 修改头像 */
 export const handleSubmitImage = async () => {
+  console.log(cropperBlob.value);
   // 上传头像表单
   const formData = createFormData({
     files: new File([cropperBlob.value], "avatar"),
     type: "avatar"
   });
-
   // 上传头像
   const result = await fetchUploadFile(formData);
 
@@ -54,6 +54,7 @@ export const handleSubmitImage = async () => {
   if (result.code === 200) {
     uploadAvatarSrc.value = result.result.filepath;
     userInfos.avatar = result.result.url;
+    console.log(result);
     message("上传成功", { type: "success" });
     isShow.value = false;
   }

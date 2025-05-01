@@ -8,7 +8,6 @@ import {
   // onMounted,
   // onBeforeUnmount
 } from "vue";
-// https://plus-pro-components.com/components/steps-form.html
 import { Edit, Medal, Sell, Finished } from "@element-plus/icons-vue";
 
 import { message } from "@/utils/message";
@@ -130,9 +129,6 @@ export function useStepsForm() {
     };
   };
 
-  let _spuImages = [];
-  let _spuReps: any = {};
-
   const uploadSpuImages = async () => {
     spu.value.mainImage.push(...spu.value.image);
     console.log("上传商品图片", spu.value.mainImage);
@@ -141,7 +137,10 @@ export function useStepsForm() {
       spuImages = await commonStore.uploadFile(
         spu.value.mainImage.map(item => item.raw)
       );
-      console.log("上传成功", _spuImages, spuImages);
+      if (spuImages.length === 0) {
+        throw new Error("上传商品图片失败");
+      }
+      console.log("上传成功", spuImages);
     }
     let detailImg = [];
     if (spu.value.detailImg.length > 0) {
@@ -150,7 +149,6 @@ export function useStepsForm() {
       );
       console.log("上传详情图片", spu.value.detailImg);
     }
-    _spuImages = spuImages;
     return { spuImages: spuImages, detailImg: detailImg[0] };
   };
   const saveSpuInfo = async (spuImages: string[], detailImg: string) => {
@@ -163,9 +161,9 @@ export function useStepsForm() {
       discount: spu.value.discount,
       desc: spu.value.desc,
       //取最后一项
-      image: spuImages?.slice(-1)[0] || _spuImages.slice(-1)[0],
+      image: spuImages?.slice(-1)[0],
       //去除最后一项，剩下的为图集
-      mainImage: spuImages?.slice(0, -1) || _spuImages.slice(0, -1),
+      mainImage: spuImages?.slice(0, -1),
       detailImg: detailImg,
       spuAttrs: finalSpu.value.spuAttrs.map(item => ({
         ...item,
@@ -174,15 +172,14 @@ export function useStepsForm() {
     };
     console.log("spuResData", spuResData);
     const spuReps = await spuInfoStore.createSpuInfo(spuResData);
-    _spuReps = spuReps;
-    console.log("spuRes", _spuReps, spuReps);
+    console.log("spuRes", spuReps);
     return spuReps;
   };
   const saveSkuInfo = async (spuReps: any) => {
     const skuResData = [];
     finalSku.value.forEach((item, index) => {
       const skuRes = {
-        spuId: spuReps?.id || _spuReps.id,
+        spuId: spuReps?.id,
         name: item.name,
         attrText: item.attrText,
         desc: item.desc,
@@ -376,51 +373,51 @@ export function useStepsForm() {
               ]);
             }
           }
-        ]
-        // rules: {
-        //   name: [
-        //     {
-        //       required: true,
-        //       message: "请输入商品名称",
-        //       trigger: "blur"
-        //     },
-        //     {
-        //       max: 64,
-        //       message: "名称最多64个字符",
-        //       trigger: "blur"
-        //     }
-        //   ],
-        //   catIds: [
-        //     {
-        //       type: "array",
-        //       required: true,
-        //       message: "请选择商品分类",
-        //       trigger: "blur"
-        //     }
-        //   ],
-        //   //价格要大于0, 且最多两位小数
-        //   price: [
-        //     { required: true, message: "请输入商品价格", trigger: "blur" },
-        //     {
-        //       type: "number",
-        //       min: 0.01,
-        //       message: "价格必须为大于0的数字",
-        //       trigger: "blur"
-        //     }
-        //   ],
-        // discount: [
-        //     { required: true, message: "请输入商品折扣", trigger: "blur" },
-        //     {
-        //       type: "number",
-        //       min: 0.01,
-        //       message: "折扣必须为大于0的数字",
-        //       trigger: "blur"
-        //     }
-        //   ],
-        //   image: [
-        //     { required: true, message: "请上传商品图片", trigger: "change" }
-        //   ]
-        // }
+        ],
+        rules: {
+          name: [
+            {
+              required: true,
+              message: "请输入商品名称",
+              trigger: "blur"
+            },
+            {
+              max: 64,
+              message: "名称最多64个字符",
+              trigger: "blur"
+            }
+          ],
+          catIds: [
+            {
+              type: "array",
+              required: true,
+              message: "请选择商品分类",
+              trigger: "blur"
+            }
+          ],
+          //价格要大于0, 且最多两位小数
+          price: [
+            { required: true, message: "请输入商品价格", trigger: "blur" },
+            {
+              type: "number",
+              min: 0.01,
+              message: "价格必须为大于0的数字",
+              trigger: "blur"
+            }
+          ],
+          discount: [
+            { required: true, message: "请输入商品折扣", trigger: "blur" },
+            {
+              type: "number",
+              min: 0.01,
+              message: "折扣必须为大于0的数字",
+              trigger: "blur"
+            }
+          ],
+          image: [
+            { required: true, message: "请上传商品图片", trigger: "change" }
+          ]
+        }
       }
     },
     {
@@ -467,14 +464,14 @@ export function useStepsForm() {
       }
     },
     {
-      title: "SKU信息",
+      title: "库存信息",
       icon: Sell,
       form: {
         modelValue: {},
         columns: [
           {
             hasLabel: false,
-            label: "SKU信息",
+            label: "库存信息",
             prop: "time",
             renderField: _ => {
               return (
@@ -500,7 +497,7 @@ export function useStepsForm() {
         columns: [
           {
             hasLabel: false,
-            label: "SKU信息",
+            label: "库存信息",
             prop: "time",
             renderField: _ => {
               return (
@@ -703,8 +700,14 @@ export function useStepsForm() {
           // 1.1 保存图片,最后一项为主图
           try {
             const { spuImages, detailImg } = await uploadSpuImages();
+            if (spuImages.length === 0) {
+              throw new Error("请上传商品图片");
+            }
             //1.2 保存spu
             const spuReps = await saveSpuInfo(spuImages, detailImg);
+            if (!spuReps) {
+              throw new Error("保存spu失败");
+            }
             // 2 保存sku
             saveSkuInfo(spuReps);
           } catch (error) {
@@ -729,12 +732,6 @@ export function useStepsForm() {
       if (active.value === stepForm.value.length) {
         active.value++;
         isDirty.value = false; // 最后一步完成后，重置修改标记
-        message(
-          h("p", null, [
-            h("span", null, "Message can be "),
-            h("i", { style: "color: teal" }, "VNode")
-          ])
-        );
       }
     } else {
       message("已经是最后一步了");

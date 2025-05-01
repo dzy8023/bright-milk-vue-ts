@@ -85,7 +85,7 @@ export function useColumns() {
         // row[column.property]
         cellRenderer: ({ row, column }) => (
           <>
-            <ElTag type="success">{row[column.prop as string]}</ElTag>
+            <ElTag type="success">{row[column.property as string]}</ElTag>
           </>
         )
       });

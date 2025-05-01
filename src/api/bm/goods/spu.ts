@@ -14,7 +14,7 @@ export const fetchGetSpuInfoPage = (data: any) => {
 };
 
 /** 商品信息---删除商品信息 */
-export const fetchDeleteSpuInfo = (data: any) => {
+export const fetchDeleteSpuInfo = (data: string[]) => {
   return apiHttp.request<object>("delete", "spuInfo/delete", { data });
 };
 

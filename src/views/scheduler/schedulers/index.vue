@@ -10,7 +10,9 @@ import {
   onPause,
   onResume,
   onSearch,
-  onUpdate
+  onUpdate,
+  switchLoadMap,
+  onchangeLogEnabled
 } from "@/views/scheduler/schedulers/utils/hooks";
 import Delete from "@iconify-icons/ep/delete";
 import EditPen from "@iconify-icons/ep/edit-pen";
@@ -22,7 +24,8 @@ import { useRenderIcon } from "@/components/ReIcon/src/hooks";
 import { FormInstance } from "element-plus";
 import { auth } from "@/views/scheduler/schedulers/utils/auth";
 import { hasAuth } from "@/router/utils";
-
+import { usePublicHooks } from "@/views/hooks";
+const { switchStyle } = usePublicHooks();
 const tableRef = ref();
 const formRef = ref();
 const schedulersStore = useSchedulersStore();
@@ -164,6 +167,19 @@ onMounted(() => {
           @page-size-change="onPageSizeChange"
           @page-current-change="onCurrentPageChange"
         >
+          <template #logEnabled="{ row, index }">
+            <el-switch
+              v-model="row.logEnabled"
+              active-text="启用"
+              :active-value="1"
+              inactive-text="禁用"
+              :inactive-value="0"
+              :loading="switchLoadMap[index]?.loading"
+              :style="switchStyle"
+              inline-prompt
+              @click="onchangeLogEnabled(row, index)"
+            />
+          </template>
           <template #createUser="{ row }">
             <el-button
               v-show="row.createUser"

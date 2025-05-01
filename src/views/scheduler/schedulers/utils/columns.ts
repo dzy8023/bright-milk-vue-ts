@@ -22,6 +22,7 @@ export const columns: TableColumnList = [
   { label: "触发器状态", prop: "triggerState" },
   // corn表达式
   { label: "corn表达式", prop: "cronExpression" },
+  { label: "日志", prop: "logEnabled", slot: "logEnabled" },
   { label: "操作", fixed: "right", width: 210, slot: "operation" }
 ];
 

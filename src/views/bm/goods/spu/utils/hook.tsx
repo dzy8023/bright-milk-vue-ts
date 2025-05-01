@@ -275,7 +275,7 @@ export function useGoods(tableRef: Ref, treeRef: Ref) {
   }
 
   async function handleDelete(row) {
-    await spuInfoStore.deleteSpuInfo(row.id);
+    await spuInfoStore.deleteSpuInfo([row.id]);
     message(`您删除了商品编号为${row.id}的这条数据`, { type: "success" });
     onSearch();
   }
@@ -303,14 +303,11 @@ export function useGoods(tableRef: Ref, treeRef: Ref) {
   }
 
   /** 批量删除 */
-  function onbatchDel() {
+  async function onbatchDel() {
     // 返回当前选中的行
     const curSelected = tableRef.value.getTableRef().getSelectionRows();
-    // 接下来根据实际业务，通过选中行的某项数据，比如下面的id，调用接口进行批量删除
-    message(`已删除商品编号为 ${getKeyList(curSelected, "id")} 的数据`, {
-      type: "success"
-    });
     tableRef.value.getTableRef().clearSelection();
+    await spuInfoStore.deleteSpuInfo(getKeyList(curSelected, "id"));
     onSearch();
   }
 

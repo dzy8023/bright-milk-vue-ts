@@ -47,3 +47,9 @@ export const fetchDeleteSchedulers = (data: any) => {
     data
   });
 };
+/**更改任务日志状态 */
+export const fetchChangeLogEnabled = (data: any) => {
+  return apiHttp.request<object>("put", "schedulers/changeLogEnabled", {
+    data
+  });
+};
