@@ -1,5 +1,6 @@
 import { removeToken, setToken, type DataInfo } from "./auth";
 import { subBefore, getQueryMap } from "@pureadmin/utils";
+import { message } from "@/utils/message";
 
 /**
  * 简版前端单点登录，根据实际业务自行编写，平台启动后本地可以跳后面这个链接进行测试 http://localhost:8848/#/permission/page/index?username=sso&roles=admin&accessToken=eyJhbGciOiJIUzUxMiJ9.admin
@@ -76,4 +77,83 @@ export function download(blob: any, filename: string) {
   // 清理创建的临时元素和 URL
   URL.revokeObjectURL(url);
   document.body.removeChild(a);
+}
+
+/**
+ * 下载文本
+ * @param text
+ * @param filename
+ */
+export function downloadTextAsFile(text: string, filename: string) {
+  // 直接创建 File 对象（比 Blob 更高级）
+  const file = new File([text], filename, { type: "text/plain" });
+
+  // 创建下载链接
+  const url = URL.createObjectURL(file);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+
+  // 触发下载
+  document.body.appendChild(a);
+  a.click();
+
+  // 清理
+  requestIdleCallback(() => {
+    document.body.removeChild(a);
+    URL.revokeObjectURL(a.href);
+  });
+}
+
+/**
+ * 下载blob文件
+ * @param response
+ * @param fileName
+ */
+export const downloadBlob = async (response: any, fileName: string) => {
+  const result = await blobToJson(response);
+  if (result) return;
+
+  try {
+    // 从响应头获取文件名
+    const contentDisposition = response.headers["content-disposition"];
+    // let fileName = 'download.zip';
+    if (contentDisposition) {
+      const fileNameMatch = contentDisposition.match(/filename=?(.+)/);
+      if (fileNameMatch && fileNameMatch[1]) {
+        fileName = fileNameMatch[1];
+      }
+    }
+
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", fileName);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+/**
+ * 将 Blob 数据转换为 JSON 对象
+ * @param blob Blob 数据
+ * @returns 解析后的 JSON 对象
+ */
+async function blobToJson(blob: any): Promise<any> {
+  try {
+    const text = await blob.data.text();
+
+    const json = JSON.parse(text);
+    if (json.code !== 200) {
+      message(json.message, { type: "error" });
+      return true;
+    }
+    return false;
+  } catch {
+    return false;
+  }
 }

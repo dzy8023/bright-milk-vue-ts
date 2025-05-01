@@ -15,20 +15,25 @@ import {
   onSearch,
   onUpdate,
   powerTreeIsShow,
-  tableRef
+  tableRef,
+  downloadRoleExcel,
+  onUpdateByFile
 } from "@/views/system/role/utils/hooks";
 import Delete from "@iconify-icons/ep/delete";
 import EditPen from "@iconify-icons/ep/edit-pen";
 import Refresh from "@iconify-icons/ep/refresh";
+import Menu from "@iconify-icons/ep/menu";
+import More from "@iconify-icons/ep/more-filled";
+import Download from "@iconify-icons/ep/download";
+import Upload from "@iconify-icons/ri/upload-line";
+
 import { selectUserinfo } from "@/components/ReTable/Userinfo/columns";
 
 import { useRoleStore } from "@/store/system/role";
 import { useRenderIcon } from "@/components/ReIcon/src/hooks";
-import More from "@iconify-icons/ep/more-filled";
 
 import { deviceDetection } from "@pureadmin/utils";
-import Menu from "@iconify-icons/ep/menu";
-import AssignPowersToRole from "@/views/system/role/assign-powers-to-role.vue";
+import AssignPowersToRole from "@/views/system/role/components/assign-powers-to-role.vue";
 import { auth } from "@/views/system/role/utils/auth";
 import { hasAuth } from "@/router/utils";
 
@@ -130,6 +135,27 @@ onMounted(() => {
         @refresh="onSearch"
       >
         <template #buttons>
+          <!-- 下载Excel配置 -->
+          <el-button
+            v-if="hasAuth(auth.update)"
+            :icon="useRenderIcon(Download)"
+            plain
+            type="primary"
+            @click="downloadRoleExcel"
+          >
+            下载配置
+          </el-button>
+          <!-- 文件更新 -->
+          <el-button
+            v-if="hasAuth(auth.update)"
+            :icon="useRenderIcon(Upload)"
+            plain
+            type="primary"
+            @click="onUpdateByFile"
+          >
+            文件导入
+          </el-button>
+
           <el-button
             v-if="hasAuth(auth.add)"
             :icon="useRenderIcon(AddFill)"
@@ -239,7 +265,6 @@ onMounted(() => {
                 />
                 <template #dropdown>
                   <el-dropdown-menu>
-                    <!-- 上传头像 -->
                     <el-dropdown-item v-if="hasAuth(auth.assignPowersToRole)">
                       <el-button
                         :icon="useRenderIcon(Menu)"

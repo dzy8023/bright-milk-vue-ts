@@ -1,10 +1,10 @@
 import { addDialog } from "@/components/ReDialog/index";
-import RoleDialog from "@/views/system/role/role-dialog.vue";
+import RoleDialog from "@/views/system/role/components/role-dialog.vue";
 import { useRoleStore } from "@/store/system/role";
 import { h, ref } from "vue";
 import { message, messageBox } from "@/utils/message";
 import type { FormItemProps } from "@/views/system/role/utils/types";
-
+import FileUploadDialog from "@/components/ReUpload/src/file-upload-dialog.vue";
 import { fetchGetPowerListByRoleId } from "@/api/system/power";
 import { isAllEmpty } from "@pureadmin/utils";
 import DeleteBatchDialog from "@/components/ReTable/DeleteBatchDialog.vue";
@@ -116,7 +116,8 @@ export const onDeleteBatch = async () => {
     draggable: true,
     fullscreenIcon: true,
     closeOnClickModal: false,
-    contentRenderer: () => h(DeleteBatchDialog, { ref: formDeletedBatchRef }),
+    contentRenderer: () =>
+      h(DeleteBatchDialog, { ref: formDeletedBatchRef, formInline: null }),
     beforeSure: (done, { options }) => {
       formDeletedBatchRef.value.formDeletedBatchRef.validate(
         async (valid: any) => {
@@ -152,4 +153,34 @@ export const onMenuPowerClick = async (row: any) => {
     const { result } = await fetchGetPowerListByRoleId({ id });
     powerTreeRef.value.setCheckedKeys(result);
   }
+};
+/* 使用Excel导出导出角色列表 */
+export const downloadRoleExcel = () => {
+  roleStore.downloadRoleByFile();
+};
+
+/* 使用文件更新角色 */
+export const onUpdateByFile = () => {
+  addDialog({
+    title: `更新角色`,
+    width: "30%",
+    props: { form: { file: undefined } },
+    draggable: true,
+    fullscreenIcon: true,
+    closeOnClickModal: false,
+    contentRenderer: () => h(FileUploadDialog, { ref: formRef, form: null }),
+    beforeSure: (done, { options }) => {
+      const form = options.props.form;
+      formRef.value.formRef.validate(async (valid: any) => {
+        if (!valid) return;
+        // 更新文件 data
+        const data = { file: form.file[0].raw };
+
+        const result = await roleStore.editRoleByFile(data);
+        if (!result) return;
+        done();
+        await onSearch();
+      });
+    }
+  });
 };

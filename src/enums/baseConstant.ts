@@ -1,4 +1,12 @@
 import { computed } from "vue";
+export const RequestMethod = [
+  "",
+  "GET",
+  "PUT",
+  "POST",
+  "DELETE",
+  /* 'HEAD', 'CONNECT', 'OPTIONS', 'TRACE',  */ "PATCH"
+];
 
 /** 是否默认 */
 export const isDefaultOptions = [

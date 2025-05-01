@@ -23,8 +23,8 @@ import {
 import { Plus } from "@element-plus/icons-vue";
 import { beforeUpload } from "@/views/message-management/message-editing/utils/hooks";
 import SplitPane from "@/components/ReSplitPane";
-import RichEditor from "@/views/message-management/message-send/rich-editor.vue";
-import MarkdownEditor from "@/views/message-management/message-send/markdown-editor.vue";
+import RichEditor from "./rich-editor.vue";
+import MarkdownEditor from "./markdown-editor.vue";
 import ImageLoading from "@/components/ReImage/index.vue";
 import { usePublicHooks } from "@/views/hooks";
 

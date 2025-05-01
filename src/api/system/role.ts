@@ -1,5 +1,5 @@
 import type { PageResult } from "@/types/result";
-import { apiHttp } from "@/utils/http";
+import { apiHttp, http } from "@/utils/http";
 /** 角色---获取角色列表 */
 export const fetchGetRoleList = (data: any) => {
   return apiHttp.request<PageResult<any>>("get", "role/getRoleList", {
@@ -39,4 +39,21 @@ export const fetchUpdateRole = (data: any) => {
 /** 角色---删除角色 */
 export const fetchDeleteRole = (data: any) => {
   return apiHttp.request<object>("delete", "role/deleteRole", { data });
+};
+
+/** 角色---使用Excel导出导出角色列表 */
+export const exportRoleList = () => {
+  return http.request<any>("get", `role/file/export`, {
+    responseType: "blob"
+  });
+};
+
+/* 角色---使用Excel更新角色列表 */
+export const updateRoleByFile = (data: any) => {
+  return apiHttp.request<any>(
+    "put",
+    `/role/file/import`,
+    { data },
+    { headers: { "Content-Type": "multipart/form-data" } }
+  );
 };

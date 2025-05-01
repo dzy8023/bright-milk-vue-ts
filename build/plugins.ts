@@ -7,10 +7,9 @@ import vueJsx from "@vitejs/plugin-vue-jsx";
 import { configCompressPlugin } from "./compress";
 import removeNoMatch from "vite-plugin-router-warn";
 import { visualizer } from "rollup-plugin-visualizer";
+import Icons from "unplugin-icons/vite";
 import removeConsole from "vite-plugin-remove-console";
 import { codeInspectorPlugin } from "code-inspector-plugin";
-import { themePreprocessorPlugin } from "@pureadmin/theme";
-import { genScssMultipleScopeVars } from "../src/layout/theme";
 
 export function getPluginsList(
   VITE_CDN: boolean,
@@ -45,15 +44,13 @@ export function getPluginsList(
     //   infixName: false,
     //   enableProd: true
     // }),
-    // 自定义主题
-    themePreprocessorPlugin({
-      scss: {
-        multipleScopeVars: genScssMultipleScopeVars(),
-        extract: true
-      }
-    }),
     // svg组件化支持
     svgLoader(),
+    // 自动按需加载图标
+    Icons({
+      compiler: "vue3",
+      scale: 1
+    }),
     VITE_CDN ? cdn : null,
     configCompressPlugin(VITE_COMPRESSION),
     // 线上环境删除console

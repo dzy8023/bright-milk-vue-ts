@@ -4,7 +4,7 @@ import { usePowerStore } from "@/store/system/power";
 import { h, reactive, ref } from "vue";
 import { message, messageBox } from "@/utils/message";
 import type { FormItemProps } from "@/views/system/power/utils/types";
-
+import FileUploadDialog from "@/components/ReUpload/src/file-upload-dialog.vue";
 import { handleTree } from "@pureadmin/utils";
 import { powerCascadeProps } from "@/views/system/power/utils/columns";
 import { ElCascader, ElForm, ElFormItem } from "element-plus";
@@ -183,6 +183,36 @@ export const onUpdateBatchParent = async () => {
         const result = await powerStore.updateBatchByPowerWithParentId(form);
         if (!result) return;
 
+        done();
+        await onSearch();
+      });
+    }
+  });
+};
+/* 导出权限 */
+export const downloadPermission = (type: string) => {
+  powerStore.downloadPermissionByFile({ type });
+};
+
+/* 导入权限 */
+export const uploadPermission = async (type: string) => {
+  addDialog({
+    title: `修改权限`,
+    width: "30%",
+    props: { form: { file: undefined } },
+    draggable: true,
+    fullscreenIcon: true,
+    closeOnClickModal: false,
+    contentRenderer: () => h(FileUploadDialog, { ref: formRef, form: null }),
+    beforeSure: (done, { options }) => {
+      const form = options.props.form;
+      formRef.value.formRef.validate(async (valid: any) => {
+        if (!valid) return;
+        // 更新文件 data
+        const data = { file: form.file[0].raw, type };
+
+        const result = await powerStore.uploadPermissionByFile(data);
+        if (!result) return;
         done();
         await onSearch();
       });

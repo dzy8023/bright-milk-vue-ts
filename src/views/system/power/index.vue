@@ -2,8 +2,8 @@
 import { computed, onMounted, ref } from "vue";
 import { columns } from "@/views/system/power/utils/columns";
 import PureTableBar from "@/components/RePureTableBar/src/bar";
-import AddFill from "@iconify-icons/ri/add-circle-line";
 import PureTable from "@pureadmin/table";
+import { RequestMethod } from "@/enums/baseConstant";
 import {
   onAdd,
   onDelete,
@@ -11,13 +11,18 @@ import {
   onSearch,
   onUpdate,
   onUpdateBatchParent,
-  powerIds
+  powerIds,
+  downloadPermission,
+  uploadPermission
 } from "@/views/system/power/utils/hooks";
 import More from "@iconify-icons/ep/more-filled";
-
+import AddFill from "@iconify-icons/ri/add-circle-line";
 import Delete from "@iconify-icons/ep/delete";
 import EditPen from "@iconify-icons/ep/edit-pen";
 import Refresh from "@iconify-icons/ep/refresh";
+import Download from "@iconify-icons/ep/download";
+import Upload from "@iconify-icons/ri/upload-line";
+
 import { selectUserinfo } from "@/components/ReTable/Userinfo/columns";
 
 import { usePowerStore } from "@/store/system/power";
@@ -73,6 +78,7 @@ computed(() => [
   "dark:!text-white",
   "dark:hover:!text-primary"
 ]);
+
 onMounted(() => {
   onSearch();
 });
@@ -111,6 +117,23 @@ onMounted(() => {
             clearable
           />
         </el-form-item>
+        <el-form-item label="请求方法" prop="requestMethod">
+          <el-select
+            v-model="powerStore.form.requestMethod"
+            placeholder="请选择请求方法"
+            autocomplete="off"
+            class="!w-[180px]"
+            clearable
+            filterable
+          >
+            <el-option
+              v-for="item in RequestMethod"
+              :key="item"
+              :label="item"
+              :value="item"
+            />
+          </el-select>
+        </el-form-item>
         <el-form-item>
           <el-button
             :icon="useRenderIcon('ri:search-line')"
@@ -136,6 +159,39 @@ onMounted(() => {
       @refresh="onSearch"
     >
       <template #buttons>
+        <!-- 下载配置 -->
+        <el-dropdown v-if="hasAuth(auth.update)" class="mr-1" type="primary">
+          <el-button :icon="useRenderIcon(Download)" plain type="primary">
+            下载配置
+          </el-button>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item @click="downloadPermission('json')"
+                >下载JSON</el-dropdown-item
+              >
+              <el-dropdown-item @click="downloadPermission('excel')"
+                >下载Excel</el-dropdown-item
+              >
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
+
+        <!-- 更新配置 -->
+        <el-dropdown v-if="hasAuth(auth.update)" class="mr-1" type="primary">
+          <el-button :icon="useRenderIcon(Upload)" plain type="primary"
+            >文件导入</el-button
+          >
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item @click="uploadPermission('json')"
+                >使用JSON更新</el-dropdown-item
+              >
+              <el-dropdown-item @click="uploadPermission('excel')"
+                >使用Excel更新</el-dropdown-item
+              >
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
         <!-- 添加权限按钮 -->
         <el-button
           v-if="hasAuth(auth.add)"
@@ -229,18 +285,24 @@ onMounted(() => {
             >
               修改
             </el-button>
-            <!-- 添加 -->
-            <el-button
-              v-if="hasAuth(auth.add)"
-              :icon="useRenderIcon(AddFill)"
-              :size="size"
-              class="reset-margin"
-              link
-              type="primary"
-              @click="onAdd(row.id)"
+            <!-- 删除 -->
+            <el-popconfirm
+              v-if="hasAuth(auth.deleted)"
+              :title="`删除${row.powerName}?`"
+              @confirm="onDelete(row)"
             >
-              新增
-            </el-button>
+              <template #reference>
+                <el-button
+                  :icon="useRenderIcon(Delete)"
+                  :size="size"
+                  class="reset-margin"
+                  link
+                  type="danger"
+                >
+                  删除
+                </el-button>
+              </template>
+            </el-popconfirm>
             <!-- 更多操作 -->
             <el-dropdown>
               <el-button
@@ -252,24 +314,18 @@ onMounted(() => {
               />
               <template #dropdown>
                 <el-dropdown-menu>
-                  <el-dropdown-item v-if="hasAuth(auth.deleted)">
-                    <!-- 删除 -->
-                    <el-popconfirm
-                      :title="`删除${row.powerName}?`"
-                      @confirm="onDelete(row)"
+                  <el-dropdown-item v-if="hasAuth(auth.add)">
+                    <!-- 添加 -->
+                    <el-button
+                      :icon="useRenderIcon(AddFill)"
+                      :size="size"
+                      class="reset-margin"
+                      link
+                      type="primary"
+                      @click="onAdd(row.id)"
                     >
-                      <template #reference>
-                        <el-button
-                          :icon="useRenderIcon(Delete)"
-                          :size="size"
-                          class="reset-margin"
-                          link
-                          type="primary"
-                        >
-                          删除
-                        </el-button>
-                      </template>
-                    </el-popconfirm>
+                      新增
+                    </el-button>
                   </el-dropdown-item>
                 </el-dropdown-menu>
               </template>

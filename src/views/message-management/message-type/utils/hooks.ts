@@ -1,5 +1,5 @@
 import { addDialog } from "@/components/ReDialog/index";
-import MessageTypeDialog from "@/views/message-management/message-type/message-type-dialog.vue";
+import MessageTypeDialog from "@/views/message-management/message-type/components/message-type-dialog.vue";
 import { useMessageTypeStore } from "@/store/message/messageType";
 import { h, ref } from "vue";
 import { message, messageBox } from "@/utils/message";
@@ -119,7 +119,8 @@ export const onDeleteBatch = async () => {
     draggable: true,
     fullscreenIcon: true,
     closeOnClickModal: false,
-    contentRenderer: () => h(DeleteBatchDialog, { ref: formDeletedBatchRef }),
+    contentRenderer: () =>
+      h(DeleteBatchDialog, { ref: formDeletedBatchRef, formInline: null }),
     beforeSure: (done, { options }) => {
       formDeletedBatchRef.value.formDeletedBatchRef.validate(
         async (valid: any) => {

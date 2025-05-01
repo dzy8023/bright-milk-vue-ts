@@ -1,5 +1,5 @@
 import { addDialog } from "@/components/ReDialog/index";
-import SchedulersGroupDialog from "@/views/scheduler/schedulersGroup/schedulers-group-dialog.vue";
+import SchedulersGroupDialog from "@/views/scheduler/schedulersGroup/components/schedulers-group-dialog.vue";
 import { useSchedulersGroupStore } from "@/store/scheduler/schedulersGroup";
 import { h, ref } from "vue";
 import { message, messageBox } from "@/utils/message";
@@ -115,7 +115,8 @@ export const onDeleteBatch = async () => {
     draggable: true,
     fullscreenIcon: true,
     closeOnClickModal: false,
-    contentRenderer: () => h(DeleteBatchDialog, { ref: formDeletedBatchRef }),
+    contentRenderer: () =>
+      h(DeleteBatchDialog, { ref: formDeletedBatchRef, formInline: null }),
     beforeSure: (done, { options }) => {
       formDeletedBatchRef.value.formDeletedBatchRef.validate(
         async (valid: any) => {

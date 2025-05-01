@@ -1,15 +1,19 @@
 import { defineStore } from "pinia";
 import {
+  exportPermission,
   fetchAddPower,
   fetchDeletePower,
   fetchGetAllPowers,
   fetchGetPowerList,
   fetchUpdateBatchByPowerWithParentId,
-  fetchUpdatePower
+  fetchUpdatePower,
+  getSystemApiInfoList,
+  importPermission
 } from "@/api/system/power";
 import { pageSizes } from "@/enums/baseConstant";
 import { storeMessage } from "@/utils/message";
 import { storePagination } from "@/store/useStorePagination";
+import { downloadBlob } from "@/utils/sso";
 
 /**
  * 权限 Store
@@ -21,6 +25,8 @@ export const usePowerStore = defineStore("powerStore", {
       dataList: [],
       // 权限树形结构
       allPowerList: [],
+      // 系统api列表
+      systemApiInfoList: [],
       // 查询表单
       form: {
         // 权限编码
@@ -28,7 +34,9 @@ export const usePowerStore = defineStore("powerStore", {
         // 权限名称
         powerName: undefined,
         // 请求路径
-        requestUrl: undefined
+        requestUrl: undefined,
+        // 请求方法
+        requestMethod: undefined
       },
       // 分页查询结果
       pagination: {
@@ -88,6 +96,25 @@ export const usePowerStore = defineStore("powerStore", {
       const result = await fetchGetAllPowers();
       if (result.code !== 200) return;
       this.allPowerList = result.result;
+    },
+    /* 获取系统API信息 */
+    async loadSystemApiInfoList() {
+      const result = await getSystemApiInfoList();
+      if (result.code !== 200) return;
+      this.systemApiInfoList = result.result;
+    },
+
+    /* 使用Excel导出权限 */
+    async downloadPermissionByFile(data: any) {
+      const result = await exportPermission(data);
+
+      downloadBlob(result, "role.zip");
+    },
+
+    /* 使用文件导入权限 */
+    async uploadPermissionByFile(data: any) {
+      const result = await importPermission(data);
+      return storeMessage(result);
     }
   }
 });

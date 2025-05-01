@@ -1,15 +1,18 @@
 import { defineStore } from "pinia";
 import {
+  exportRoleList,
   fetchAddRole,
   fetchAssignPowersToRole,
   fetchDeleteRole,
   fetchGetAllRoles,
   fetchGetRoleList,
-  fetchUpdateRole
+  fetchUpdateRole,
+  updateRoleByFile
 } from "@/api/system/role";
 import { pageSizes } from "@/enums/baseConstant";
 import { storeMessage } from "@/utils/message";
 import { storePagination } from "@/store/useStorePagination";
+import { downloadBlob } from "@/utils/sso";
 
 /**
  * 角色 Store
@@ -89,6 +92,18 @@ export const useRoleStore = defineStore("roleStore", {
     /** 删除角色 */
     async deleteRole(data: any) {
       const result = await fetchDeleteRole(data);
+      return storeMessage(result);
+    },
+    /* 使用Excel导出角色 */
+    async downloadRoleByFile() {
+      const result = await exportRoleList();
+
+      downloadBlob(result, "role.zip");
+    },
+
+    /* 使用Excel更新角色列表 */
+    async editRoleByFile(data: any) {
+      const result = await updateRoleByFile(data);
       return storeMessage(result);
     }
   }

@@ -11,13 +11,9 @@ import EditPen from "@iconify-icons/ep/edit-pen";
 import Refresh from "@iconify-icons/ep/refresh";
 import AddFill from "@iconify-icons/ri/add-circle-line";
 import View from "@iconify-icons/ep/view";
-import Upload from "@iconify-icons/ri/upload-line";
-import { GOOD_STATUS_0, GOOD_STATUS_1 } from "@/constant/status";
-import { ElMessage } from "element-plus";
 import type { TabItem } from "./utils/types";
 import { usePublicHooks } from "@/views/hooks";
 import { useSpuInfoStore } from "@/store/bm/goods/spu";
-import { useAttrStore } from "@/store/bm/goods/attr";
 import { useCategoryStore } from "@/store/bm/goods/category";
 import { auth } from "./utils/auth";
 import { hasAuth } from "@/router/utils";
@@ -95,8 +91,8 @@ const {
             clearable
             class="!w-[180px]"
           >
-            <el-option :label="GOOD_STATUS_1" value="1" />
-            <el-option :label="GOOD_STATUS_0" value="0" />
+            <el-option label="起售" value="1" />
+            <el-option label="禁售" value="0" />
           </el-select>
         </el-form-item>
         <el-form-item>
@@ -181,8 +177,8 @@ const {
             <template #status="{ row, index }">
               <el-switch
                 v-model="row.status"
-                :active-text="GOOD_STATUS_1"
-                :inactive-text="GOOD_STATUS_0"
+                active-text="起售"
+                inactive-text="禁售"
                 :active-value="1"
                 :inactive-value="0"
                 :loading="switchLoadMap[index]?.loading"

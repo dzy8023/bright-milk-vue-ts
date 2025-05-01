@@ -4,14 +4,12 @@ import { useNav } from "@/layout/hooks/useNav";
 import { useLayout } from "@/layout/hooks/useLayout";
 import bg from "@/assets/login/bg.png";
 import illustration from "@/assets/login/illustration.svg?component";
-import { onMounted, toRaw } from "vue";
+import { toRaw } from "vue";
 import { useDataThemeChange } from "@/layout/hooks/useDataThemeChange";
 import dayIcon from "@/assets/svg/day.svg?component";
 import darkIcon from "@/assets/svg/dark.svg?component";
-import globalization from "@/assets/svg/globalization.svg?component";
-import Check from "@iconify-icons/ep/check";
-import LoginForm from "@/views/login/login-form.vue";
-import LoginEmail from "@/views/login/login-email.vue";
+import LoginForm from "./components/login-form.vue";
+import LoginEmail from "./components/login-email.vue";
 import { currentPage } from "@/views/login/utils/hooks";
 
 const { initStorage } = useLayout();

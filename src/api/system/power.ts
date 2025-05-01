@@ -1,5 +1,5 @@
 import type { PageResult } from "@/types/result";
-import { apiHttp } from "@/utils/http";
+import { apiHttp, http } from "@/utils/http";
 /** 权限---获取权限列表 */
 export const fetchGetPowerList = (data: any) => {
   return apiHttp.request<PageResult<any>>("get", "power/getPowerList", {
@@ -43,4 +43,28 @@ export const fetchUpdateBatchByPowerWithParentId = (data: any) => {
 /** 权限---删除权限 */
 export const fetchDeletePower = (data: any) => {
   return apiHttp.request<object>("delete", "power/deletePower", { data });
+};
+
+/* 权限---获取系统API信息 */
+export const getSystemApiInfoList = () => {
+  return apiHttp.request<any>("get", "permission/private/getSystemApiInfoList");
+};
+/** 权限---导出权限 */
+export const exportPermission = (data: any) => {
+  return http.request<any>(
+    "get",
+    "permission/file/export",
+    { params: data },
+    { responseType: "blob" }
+  );
+};
+
+/** 权限---导入权限权限 */
+export const importPermission = (data: any) => {
+  return apiHttp.request<any>(
+    "put",
+    "permission/file/import",
+    { data },
+    { headers: { "Content-Type": "multipart/form-data" } }
+  );
 };

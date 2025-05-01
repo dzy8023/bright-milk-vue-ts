@@ -2,7 +2,6 @@ import { message } from "@/utils/message";
 import { getKeyList, deviceDetection, cloneDeep } from "@pureadmin/utils";
 import { ElMessageBox } from "element-plus";
 import { type Ref, ref, onMounted, h } from "vue";
-import { GOOD_STATUS_0, GOOD_STATUS_1 } from "@/constant/status";
 import { useCategoryStore } from "@/store/bm/goods/category";
 import { useSpuInfoStore } from "@/store/bm/goods/spu";
 import { addDialog } from "@/components/ReDialog/index";
@@ -28,7 +27,7 @@ export function useGoods(tableRef: Ref, treeRef: Ref) {
   function onChange(row, index) {
     ElMessageBox.confirm(
       `确认要<strong>${
-        row.status === 0 ? GOOD_STATUS_0 : GOOD_STATUS_1
+        row.status === 0 ? "禁售" : "起售"
       }</strong><strong style='color:var(--el-color-primary)'>${
         row.name
       }</strong>商品吗?`,

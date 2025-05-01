@@ -28,9 +28,9 @@ export const buildEnvironment = () => {
       ignoreTryCatch: false
     },
     // 规定触发警告的 chunk 大小, 当某个代码分块的大小超过该限制时，Vite 会发出警告
-    chunkSizeWarningLimit: 2000,
+    chunkSizeWarningLimit: 4000,
     rollupOptions: {
-      external: ["md-editor-v3", "echarts"],
+      // external: ["md-editor-v3", "echarts"],
       input: {
         index: pathResolve("../index.html", import.meta.url)
       },

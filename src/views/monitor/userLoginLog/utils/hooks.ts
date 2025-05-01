@@ -1,5 +1,5 @@
 import { addDialog } from "@/components/ReDialog/index";
-import UserLoginLogDialog from "@/views/monitor/userLoginLog/user-login-log-dialog.vue";
+import UserLoginLogDialog from "@/views/monitor/userLoginLog/components/user-login-log-dialog.vue";
 import { useUserLoginLogStore } from "@/store/monitor/userLoginLog";
 import { h, ref } from "vue";
 import { message, messageBox } from "@/utils/message";
@@ -80,7 +80,8 @@ export const onDeleteBatch = async () => {
     draggable: true,
     fullscreenIcon: true,
     closeOnClickModal: false,
-    contentRenderer: () => h(DeleteBatchDialog, { ref: formDeletedBatchRef }),
+    contentRenderer: () =>
+      h(DeleteBatchDialog, { ref: formDeletedBatchRef, formInline: null }),
     beforeSure: (done, { options }) => {
       formDeletedBatchRef.value.formDeletedBatchRef.validate(
         async (valid: any) => {

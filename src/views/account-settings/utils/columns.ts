@@ -2,13 +2,13 @@ import dayjs from "dayjs";
 import { reactive } from "vue";
 import type { FormRules } from "element-plus";
 import ProfileIcon from "@iconify-icons/ri/user-3-line";
-import Profile from "@/views/account-settings/profile.vue";
+import Profile from "../components/account-settings/profile.vue";
 import PreferencesIcon from "@iconify-icons/ri/settings-3-line";
-import Preferences from "@/views/account-settings/preferences.vue";
+import Preferences from "../components/account-settings/preferences.vue";
 import SecurityLogIcon from "@iconify-icons/ri/window-line";
-import SecurityLog from "@/views/account-settings/security-log.vue";
+import SecurityLog from "../components/account-settings/security-log.vue";
 import AccountManagementIcon from "@iconify-icons/ri/profile-line";
-import AccountManagement from "@/views/account-settings/account-management.vue";
+import AccountManagement from "../components/account-settings/account-management.vue";
 
 export const columns: TableColumnList = [
   {
@@ -27,8 +27,8 @@ export const columns: TableColumnList = [
   // { label: $t('userLoginLog_userAgent'), prop: 'userAgent' },
   // 操作类型
   { label: "操作类型", prop: "type" },
-  // // 标识客户端是否是通过Ajax发送请求的
-  // { label: $t('userLoginLog_xRequestedWith'), prop: 'xRequestedWith', width: 150 },
+  // 标识客户端是否是通过Ajax发送请求的
+  { label: "Ajax请求", prop: "xRequestedWith", width: 150 },
   // 创建时间也就是操作时间
   {
     label: "操作时间",

@@ -1,11 +1,11 @@
-import editForm from "../menu-dialog.vue";
+import editForm from "@/views/system/menu/components//menu-dialog.vue";
 
 import { addDialog, closeAllDialog } from "@/components/ReDialog/index";
 import { h, ref } from "vue";
 import type { FormItemProps } from "./types";
 import { cloneDeep, deviceDetection } from "@pureadmin/utils";
 import { userMenuStore } from "@/store/system/menu";
-import AssignRouterToRole from "@/views/system/menu/assign-router-to-role.vue";
+import AssignRouterToRole from "@/views/system/menu/components/assign-router-to-role.vue";
 import { messageBox } from "@/utils/message";
 import { formatHigherMenuOptions } from "@/views/system/menu/utils/columns";
 import { ElText } from "element-plus";
