@@ -7,8 +7,6 @@ import {
   fetchQueryMember,
   fetchChangeMemberStatus,
   fetchDeleteMember,
-  fetchAddMember,
-  fetchUpdateMember,
   fetchResetPassword,
   fetchCharge
 } from "@/api/bm/member";
@@ -66,17 +64,6 @@ export const useMemberStore = defineStore("MemberStore", {
       const result = await fetchQueryMember(data);
       if (result.code !== 200) return [];
       return result.result;
-    },
-
-    /** 添加会员信息 */
-    async addMember(data: any) {
-      const result = await fetchAddMember(data);
-      return storeMessage(result);
-    },
-    /** 修改会员信息 */
-    async updateMember(data: any) {
-      const result = await fetchUpdateMember(data);
-      return storeMessage(result);
     },
 
     /** 删除会员信息 */

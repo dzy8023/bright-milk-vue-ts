@@ -47,11 +47,11 @@ onMounted(() => {
           <h1 class="list-card-item_detail--name">用户信息</h1>
         </div>
         <el-tag
-          :color="userinfo.status ? '#F67676' : '#00a870'"
+          :color="userinfo.status ? '#00a870' : '#F67676'"
           class="mx-1 list-card-item_detail--operation--tag"
           effect="dark"
         >
-          状态：{{ userinfo.status ? "禁用" : "正常" }}
+          状态：{{ userinfo.status ? "正常" : "禁用" }}
         </el-tag>
       </el-row>
 

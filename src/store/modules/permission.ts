@@ -9,7 +9,7 @@ import {
   formatFlatteningRoutes,
   getKeyList,
   store
-} from "./utils";
+} from "../utils";
 import { useMultiTagsStoreHook } from "./multiTags";
 
 export const usePermissionStore = defineStore("pure-permission", {
@@ -30,9 +30,8 @@ export const usePermissionStore = defineStore("pure-permission", {
         filterTree(ascending(this.constantMenus.concat(routes)))
       );
       this.flatteningRoutes = formatFlatteningRoutes(
-        this.constantMenus.concat(routes)
+        this.constantMenus.concat(routes) as any
       );
-      console.log("菜单", this.wholeMenus);
     },
     cacheOperate({ mode, name }: cacheType) {
       const delIndex = this.cachePageList.findIndex(v => v === name);

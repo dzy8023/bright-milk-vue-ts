@@ -2,12 +2,13 @@
   "compilerOptions": {
     "target": "ESNext",
     "module": "ESNext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "strict": false,
+    "strictFunctionTypes": false,
+    "noImplicitThis": true,
     "jsx": "preserve",
     "importHelpers": true,
     "experimentalDecorators": true,
-    "strictFunctionTypes": false,
     "skipLibCheck": true,
     "esModuleInterop": true,
     "isolatedModules": true,
@@ -34,8 +35,8 @@
       "vite/client",
       "element-plus/global",
       "@pureadmin/table/volar",
-      "@pureadmin/descriptions/volar",
-      "plus-pro-components/global"
+      "unplugin-icons/types/vue",
+      "@pureadmin/descriptions/volar"
     ]
   },
   "include": [

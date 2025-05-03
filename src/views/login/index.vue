@@ -41,7 +41,7 @@ const { title } = useNav();
       </div>
       <div class="login-box">
         <div class="login-form">
-          <img alt="logo" class="avatar" src="/logo.png" />
+          <img alt="logo" src="/logo.png" />
           <Motion>
             <h2 class="outline-none">{{ title }}</h2>
           </Motion>

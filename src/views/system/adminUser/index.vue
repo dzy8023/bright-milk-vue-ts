@@ -258,9 +258,9 @@ onMounted(() => {
               <el-switch
                 v-model="row.status"
                 active-text="启用"
-                :active-value="false"
+                :active-value="true"
                 inactive-text="禁用"
-                :inactive-value="true"
+                :inactive-value="false"
                 :loading="switchLoadMap[index]?.loading"
                 :style="switchStyle"
                 inline-prompt

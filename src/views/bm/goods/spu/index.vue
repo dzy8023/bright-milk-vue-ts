@@ -115,7 +115,7 @@ const {
       </el-form>
 
       <PureTableBar
-        title="商品管理（仅演示，操作后不生效）"
+        title="商品管理"
         :columns="columns"
         :isExpandAll="false"
         @refresh="onSearch"

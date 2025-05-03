@@ -40,4 +40,7 @@
     "v-ripple"
   ],
   "vscodeCustomCodeColor.highlightValueColor": "#b392f0",
+  "i18n-ally.localesPaths": [
+    "locales"
+  ],
 }

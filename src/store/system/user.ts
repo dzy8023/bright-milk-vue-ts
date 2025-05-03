@@ -15,7 +15,7 @@ import {
   fetchPostEmailCode,
   refreshTokenApi
 } from "@/api/system/adminUser";
-import { useMultiTagsStoreHook } from "../multiTags";
+import { useMultiTagsStoreHook } from "../modules/multiTags";
 import { type DataInfo, removeToken, setToken, userKey } from "@/utils/auth";
 import { message, storeMessage } from "@/utils/message";
 import { fetchGetRoleListByUserId } from "@/api/system/role";
