@@ -1,0 +1,14 @@
+services:
+  milk-admin:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: milk-admin
+    ports:
+      - "80:80"
+    networks:
+      - milk
+
+networks:
+  milk:
+    external: true

@@ -52,7 +52,6 @@ export const useSpuInfoStore = defineStore("SpuInfoStore", {
       const data = { ...this.pagination, ...this.form };
       delete data.pageSizes;
       delete data.total;
-      delete data.background;
       // 获取商品信息列表
       const res = await fetchGetSpuInfoPage(data);
       // 公共页面函数hook

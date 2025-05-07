@@ -12,7 +12,7 @@ export interface UserResult {
   /** 按钮级别权限 */
   permissions: Array<string>;
   /** `token` */
-  accessToken: string;
+  token: string;
   /** 用于调用刷新`accessToken`的接口时所需的`token` */
   refreshToken: string;
   /** `accessToken`的过期时间（格式'xxxx/xx/xx xx:xx:xx'） */
@@ -21,7 +21,7 @@ export interface UserResult {
 
 export interface RefreshTokenResult {
   /** `token` */
-  accessToken: string;
+  token: string;
   /** 用于调用刷新`accessToken`的接口时所需的`token` */
   refreshToken: string;
   /** `accessToken`的过期时间（格式'xxxx/xx/xx xx:xx:xx'） */
@@ -30,7 +30,11 @@ export interface RefreshTokenResult {
 
 /** 登录 */
 export const fetchLogin = (data?: object) => {
-  return apiHttp.request<UserResult>("post", "/login", { data });
+  return apiHttp.request<UserResult>("post", "user/login", { data });
+};
+/**双因素认证 */
+export const fetchLoginOtpVerify = (data: any) => {
+  return apiHttp.request<UserResult>("post", "user/login/otp", { data });
 };
 
 /** 发送邮件 */

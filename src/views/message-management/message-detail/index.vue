@@ -78,38 +78,42 @@ onBeforeMount(() => {
 
 <style lang="scss">
 .pure-account-settings {
-  background: $menuBg;
+  background: var(--pure-theme-menu-bg) !important;
 }
 
 .pure-account-settings-menu {
   background-color: transparent;
   border: none;
 
-  .el-menu-item {
-    height: 48px !important;
-    color: $menuText;
-    background-color: transparent !important;
-    transition: color 0.2s;
+  .pure-account-settings-menu {
+    background-color: transparent;
+    border: none;
 
-    &:hover {
-      color: $menuTitleHover !important;
-    }
-
-    &.is-active {
-      color: #fff !important;
+    .el-menu-item {
+      height: 48px !important;
+      color: var(--pure-theme-menu-text);
+      transition: color 0.2s;
 
       &:hover {
-        color: #fff !important;
+        color: var(--pure-theme-menu-title-hover) !important;
       }
 
-      &::before {
-        position: absolute;
-        inset: 0 8px;
-        margin: 4px 0;
-        clear: both;
-        content: "";
-        background: var(--el-color-primary);
-        border-radius: 3px;
+      &.is-active {
+        color: #fff !important;
+
+        &:hover {
+          color: #fff !important;
+        }
+
+        &::before {
+          position: absolute;
+          inset: 0 8px;
+          clear: both;
+          margin: 4px 0;
+          content: "";
+          background: var(--el-color-primary);
+          border-radius: 3px;
+        }
       }
     }
   }

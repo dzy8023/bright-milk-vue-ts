@@ -11,6 +11,7 @@ import {
   fetchAssignRolesToUsers,
   fetchGetUserinfo,
   fetchLogin,
+  fetchLoginOtpVerify,
   fetchLogout,
   fetchPostEmailCode,
   refreshTokenApi
@@ -43,7 +44,14 @@ export const useUserStore = defineStore("system-user", {
     async loginByUsername(data: any) {
       data = this.isRemembered ? { ...data, readMeDay: this.readMeDay } : data;
       const result = await fetchLogin(data);
-
+      if (result.code === 200) {
+        setToken(result.result);
+      }
+      return result;
+    },
+    /**双因素认证 */
+    async loginOtpVerify(data: { token: string; code: string }) {
+      const result = await fetchLoginOtpVerify(data);
       if (result.code === 200) {
         setToken(result.result);
         return true;
@@ -77,7 +85,6 @@ export const useUserStore = defineStore("system-user", {
         await router.push("/login");
         return true;
       }
-
       message(result.msg, { type: "error" });
     },
 

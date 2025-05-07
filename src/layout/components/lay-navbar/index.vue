@@ -7,23 +7,10 @@ import LaySidebarFullScreen from "../lay-sidebar/components/SidebarFullScreen.vu
 import LaySidebarBreadCrumb from "../lay-sidebar/components/SidebarBreadCrumb.vue";
 import LaySidebarTopCollapse from "../lay-sidebar/components/SidebarTopCollapse.vue";
 
-import GlobalizationIcon from "@/assets/svg/globalization.svg?component";
 import Setting from "@iconify-icons/ri/settings-3-line";
-import Check from "@iconify-icons/ep/check";
-import { onMounted } from "vue";
 import DropdownMenu from "@/layout/components/lay-navbar/dropdown-menu.vue";
 
-const {
-  layout,
-  device,
-  logout,
-  onPanel,
-  pureApp,
-  username,
-  userAvatar,
-  avatarsStyle,
-  toggleSideBar
-} = useNav();
+const { layout, device, onPanel, pureApp, toggleSideBar } = useNav();
 </script>
 
 <template>

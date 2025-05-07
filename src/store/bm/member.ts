@@ -49,7 +49,6 @@ export const useMemberStore = defineStore("MemberStore", {
       const data = { ...this.pagination, ...this.form };
       delete data.pageSizes;
       delete data.total;
-      delete data.background;
 
       // 获取会员信息列表
       const result = await fetchGetMemberPage(data);

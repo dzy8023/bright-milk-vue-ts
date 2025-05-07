@@ -55,6 +55,10 @@ const handleEdit = () => {
     query: { id: milk.value.milkId }
   });
 };
+function formatProductName(name, maxLength = 8, suffix = "...") {
+  if (!name) return "";
+  return name.length > maxLength ? name.slice(0, maxLength) + suffix : name;
+}
 
 const initTopSalesChart = () => {
   if (topSalesChart.value) {
@@ -84,7 +88,7 @@ const initTopSalesChart = () => {
             // 插入图片，布局为左侧为图片，右侧为文字内容
             return `<div style="display: flex; align-items: center;">
                     <img src="${item.value.image}" style="width: 60px; height: 60px; margin-right: 10px;" />
-                    <span>${item.marker}${item.name}<br/>销量: ${item.value.sales}</span>
+                    <span>${item.marker}${item.value.name}<br/>销量: ${item.value.sales}</span>
                   </div>`;
           })
           .join("<br/>");
@@ -128,13 +132,20 @@ const initTopSalesChart = () => {
     },
     yAxis: {
       type: "category",
-      // 添加点击事件
-      triggerEvent: true
+      triggerEvent: true,
+      data: props.topSalesData.map(item => item.id),
+      axisLabel: {
+        interval: 0,
+        formatter: function (id) {
+          const item = props.topSalesData.find(i => i.id === id);
+          return formatProductName(item?.name, 7);
+        }
+      }
     },
     series: {
       color: "#698dc8",
       type: "bar",
-      encode: { y: "name", x: "sales" },
+      encode: { y: "id", x: "sales" },
       itemStyle: {
         borderRadius: [0, 10, 10, 0]
       }
@@ -144,21 +155,22 @@ const initTopSalesChart = () => {
   if (props.topSalesData.length > 0) {
     chart.on("click", function (params) {
       if (params.componentType == "xAxis" || params.componentType == "yAxis") {
-        props.topSalesData.forEach(item => {
-          if (item.name === params.value) {
-            ElMessage.info(`商品名称：${item.name}，商品ID：${item.id}`);
-            data.value = { ...item, term: props.dateRange };
-            console.log(data.value);
-            dialogVisible.value = true;
-          }
-        });
+        const target = props.topSalesData.find(
+          item => item.id === params.value
+        );
+        console.log(target, params);
+        if (target) {
+          ElMessage.info(`商品名称：${target.name}，商品ID：${target.id}`);
+          data.value = { ...target, term: props.dateRange };
+          console.log(data.value);
+          dialogVisible.value = true;
+        }
       } else {
         ElMessage.info(
-          `商品名称：${params.name}，商品销量：${params.data.sales}`
+          `商品名称：${params.value.name}，商品销量：${params.data.sales}`
         );
       }
     });
-
     chart.on("mouseover", params => {
       if (params.componentType == "yAxis") {
         const yAxisItem = {
@@ -170,7 +182,7 @@ const initTopSalesChart = () => {
           }
         };
         let ydata = props.topSalesData.map(item => {
-          return item.name === params.value ? yAxisItem : item.name; // 添加 return 语句
+          return item.id === params.value ? yAxisItem : item.id; // 添加 return 语句
         });
         option.yAxis.data = ydata;
         chart.setOption(option);
@@ -179,7 +191,7 @@ const initTopSalesChart = () => {
 
     chart.on("mouseout", params => {
       if (params.componentType == "yAxis") {
-        let ydata = props.topSalesData.map(item => item.name);
+        let ydata = props.topSalesData.map(item => item.id);
         option.yAxis.data = ydata;
         chart.setOption(option);
       }

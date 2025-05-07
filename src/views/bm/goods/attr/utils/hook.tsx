@@ -183,7 +183,7 @@ export function useAttr(tableRef: any, treeRef: Ref) {
       const res = await attrStore.getCatIdsByAttrId(id);
       //遍历树，给选中的节点添加select属性
       forEachTree(initData.value, item => {
-        let index = res.result.findIndex(item1 => item1.catId === item.id);
+        const index = res.result.findIndex(item1 => item1.catId === item.id);
         if (index !== -1) {
           item.select = res.result[index].select;
         }

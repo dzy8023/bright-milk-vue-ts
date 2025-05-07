@@ -57,7 +57,6 @@ export const useOrderStore = defineStore("OrderStore", {
       const data = { ...this.pagination, ...this.form };
       delete data.pageSizes;
       delete data.total;
-      delete data.background;
       // 获取订单信息列表
       const res = await fetchGetOrderPage(data);
       // 公共页面函数hook

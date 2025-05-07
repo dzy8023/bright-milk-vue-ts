@@ -165,12 +165,14 @@ router.beforeEach((to: ToRouteType, _from, next) => {
             if (route && route.meta?.title) {
               if (isAllEmpty(route.parentId) && route.meta?.backstage) {
                 // 此处为动态顶级路由（目录）
-                const { path, name, meta } = route.children[0];
-                useMultiTagsStoreHook().handleTags("push", {
-                  path,
-                  name,
-                  meta
-                });
+                if (route.children && route.children.length > 0) {
+                  const { path, name, meta } = route.children[0];
+                  useMultiTagsStoreHook().handleTags("push", {
+                    path,
+                    name,
+                    meta
+                  });
+                }
               } else {
                 const { path, name, meta } = route;
                 useMultiTagsStoreHook().handleTags("push", {

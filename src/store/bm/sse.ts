@@ -138,7 +138,7 @@ export const useSseStore = defineStore("SseStore", {
               data.content = JSON.parse(data.content);
               // 这里假设你已经在某个地方定义了 SseNotification 类型
               const notificationData = data as SseNotification;
-              let index = this.noticesData[0].list.findIndex(
+              const index = this.noticesData[0].list.findIndex(
                 item => item.id === notificationData.id
               );
               if (index !== -1) {

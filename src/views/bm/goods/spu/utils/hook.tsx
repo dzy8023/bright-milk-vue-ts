@@ -125,7 +125,7 @@ export function useGoods(tableRef: Ref, treeRef: Ref) {
           const newSpuInfo = { ...form };
           delete newSpuInfo.mainImage;
           delete newSpuInfo.attrs;
-          let stateIds = [];
+          const stateIds = [];
           if (form.image[0].raw) {
             newImage.new.push(form.image[0].raw);
             newImage.deleted = [{ id: null, spuId: null, image: row.image }];
@@ -144,7 +144,7 @@ export function useGoods(tableRef: Ref, treeRef: Ref) {
             }
           });
           //处理商品详情图
-          if (form.detailImg[0].raw) {
+          if (form.detailImg[0]?.raw) {
             newImage.deleted.push({
               id: null,
               spuId: null,
@@ -155,6 +155,7 @@ export function useGoods(tableRef: Ref, treeRef: Ref) {
           } else {
             newSpuInfo.detailImg = null;
           }
+          console.log(newImage);
           //处理规格
           for (let i = 0; i < form.attrs.length; i++) {
             if (!form.attrs[i].value || !form.attrs[i].value.length) {
@@ -193,7 +194,7 @@ export function useGoods(tableRef: Ref, treeRef: Ref) {
               }
             }
           }
-          //更新图片
+          // 更新图片
           if (newImage.new.length || newImage.deleted.length) {
             const res = await spuInfoStore.updateSpuInfoImage({
               ...newImage,
@@ -275,7 +276,7 @@ export function useGoods(tableRef: Ref, treeRef: Ref) {
   }
 
   async function handleDelete(row) {
-    await spuInfoStore.deleteSpuInfo(row.id);
+    await spuInfoStore.deleteSpuInfo([row.id]);
     message(`您删除了商品编号为${row.id}的这条数据`, { type: "success" });
     onSearch();
   }

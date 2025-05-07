@@ -111,7 +111,7 @@ onMounted(() => {
       :class="['flex', deviceDetection() ? 'flex-wrap' : '']"
     >
       <PureTableBar
-        title="属性管理（仅演示，操作后不生效）"
+        title="属性管理"
         :class="[isShow && !deviceDetection() ? '!w-[60vw]' : 'w-full']"
         style="transition: width 220ms cubic-bezier(0.4, 0, 0.2, 1)"
         :columns="columns"

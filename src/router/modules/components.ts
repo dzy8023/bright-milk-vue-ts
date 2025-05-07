@@ -10,6 +10,14 @@ export default {
   },
   children: [
     {
+      path: "/components/totp",
+      name: "Totp",
+      component: () => import("@/views/components/totp.vue"),
+      meta: {
+        title: "二次验证"
+      }
+    },
+    {
       path: "/components/charts",
       name: "Charts",
       component: () => import("@/views/components/charts.vue"),

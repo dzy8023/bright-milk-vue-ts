@@ -2,10 +2,9 @@
 import { useNav } from "@/layout/hooks/useNav";
 import LogoutCircleRLine from "@iconify-icons/ri/logout-circle-r-line";
 import AccountSettingsIcon from "@iconify-icons/ri/user-settings-line";
-import { useRouter } from "vue-router";
 
-const { logout, username, userAvatar, avatarsStyle } = useNav();
-const router = useRouter();
+const { logout, username, userAvatar, avatarsStyle, toAccountSettings } =
+  useNav();
 </script>
 
 <template>
@@ -15,7 +14,7 @@ const router = useRouter();
       <p v-if="username" class="dark:text-white">{{ username }}</p>
     </span>
     <template #dropdown>
-      <el-dropdown-item @click="router.push({ name: 'AccountSettings' })">
+      <el-dropdown-item @click="toAccountSettings">
         <IconifyIconOffline :icon="AccountSettingsIcon" style="margin: 5px" />
         账户设置
       </el-dropdown-item>

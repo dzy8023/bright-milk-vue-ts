@@ -1,17 +1,17 @@
 <script lang="tsx" setup>
-import { reactive, ref } from "vue";
+import { h, reactive, ref } from "vue";
 import { deviceDetection } from "@pureadmin/utils";
-import { addDialog } from "@/components/ReDialog/index";
+import { addDialog, closeDialog } from "@/components/ReDialog/index";
 import { useAdminUserStore } from "@/store/system/adminUser";
 import ResetPasswordDialog from "@/components/ReTable/ResetPasswords.vue";
 import { removeToken } from "@/utils/auth";
 import { useRouter } from "vue-router";
-
+import totpEnable from "./totp-enable.vue";
 // 重置密码表单校验Ref
 const ruleFormByRestPasswordRef = ref();
 const adminUserStore = useAdminUserStore();
 const router = useRouter();
-
+const formRef = ref();
 // 重置密码表单
 const restPasswordForm = reactive({
   password: ""
@@ -52,13 +52,37 @@ const onResetPassword = () => {
     }
   });
 };
-
+const openTotpDialog = () => {
+  addDialog({
+    title: `双因素认证`,
+    width: "45%",
+    draggable: true,
+    fullscreen: deviceDetection(),
+    fullscreenIcon: true,
+    closeOnClickModal: false,
+    contentRenderer: ({ options, index }) =>
+      h(totpEnable, {
+        ref: formRef,
+        closeDialog: () => closeDialog(options, index, { command: "sure" }),
+        onClose: async (code: any) => {
+          closeDialog(options, index, { command: "sure" });
+        }
+      })
+  });
+};
 const list = ref([
   {
     title: "账号密码",
     illustrate: "忘记密码或重置密码，修改密码后会跳转到登录页重新登录",
     button: "修改",
     callback: onResetPassword
+  },
+  {
+    title: "双因素认证",
+    illustrate:
+      "开启双因素认证后，会出现二维码，使用freeotp扫码后保存密钥，下次登录需要输入验证码，因此需谨慎保管好密钥，避免泄露",
+    button: "开启",
+    callback: openTotpDialog
   }
   // {
   // 	title: '密保手机',

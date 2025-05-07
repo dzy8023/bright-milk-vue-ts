@@ -83,6 +83,9 @@ importers:
       plus-pro-components:
         specifier: ^0.1.18
         version: 0.1.22(element-plus@2.9.8(vue@3.5.13(typescript@5.8.3)))(vue@3.5.13(typescript@5.8.3))
+      qrcode.vue:
+        specifier: ^3.6.0
+        version: 3.6.0(vue@3.5.13(typescript@5.8.3))
       qs:
         specifier: ^6.14.0
         version: 6.14.0
@@ -3626,6 +3629,11 @@ packages:
   punycode@2.3.1:
     resolution: {integrity: sha512-vYt7UD1U9Wg6138shLtLOvdAu+8DsC/ilFtEVHcH+wydcSpNE20AfSOduf6MkRFahL5FY7X1oU7nKVZFtfq8Fg==}
     engines: {node: '>=6'}
+
+  qrcode.vue@3.6.0:
+    resolution: {integrity: sha512-vQcl2fyHYHMjDO1GguCldJxepq2izQjBkDEEu9NENgfVKP6mv/e2SU62WbqYHGwTgWXLhxZ1NCD1dAZKHQq1fg==, tarball: https://registry.npmmirror.com/qrcode.vue/-/qrcode.vue-3.6.0.tgz}
+    peerDependencies:
+      vue: ^3.0.0
 
   qs@6.14.0:
     resolution: {integrity: sha512-YWWTjgABSKcvs/nWBi9PycY/JiPJqOD4JA6o9Sej2AtvSGarXxKC3OQSk4pAarbdQlKAh5D4FCQkJNkW+GAn3w==}
@@ -7892,6 +7900,10 @@ snapshots:
   punycode.js@2.3.1: {}
 
   punycode@2.3.1: {}
+
+  qrcode.vue@3.6.0(vue@3.5.13(typescript@5.8.3)):
+    dependencies:
+      vue: 3.5.13(typescript@5.8.3)
 
   qs@6.14.0:
     dependencies:

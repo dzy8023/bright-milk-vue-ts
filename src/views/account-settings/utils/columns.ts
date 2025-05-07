@@ -2,13 +2,9 @@ import dayjs from "dayjs";
 import { reactive } from "vue";
 import type { FormRules } from "element-plus";
 import ProfileIcon from "@iconify-icons/ri/user-3-line";
-import Profile from "@/views/account-settings/profile.vue";
 import PreferencesIcon from "@iconify-icons/ri/settings-3-line";
-import Preferences from "@/views/account-settings/preferences.vue";
 import SecurityLogIcon from "@iconify-icons/ri/window-line";
-import SecurityLog from "@/views/account-settings/security-log.vue";
 import AccountManagementIcon from "@iconify-icons/ri/profile-line";
-import AccountManagement from "@/views/account-settings/account-management.vue";
 
 export const columns: TableColumnList = [
   {
@@ -47,29 +43,39 @@ export const rules = reactive<FormRules<any>>({
 });
 
 // tab栏内容
+import { defineAsyncComponent } from "vue";
+
 export const panes = [
   {
     key: "profile",
     label: "个人信息",
     icon: ProfileIcon,
-    component: Profile
+    component: defineAsyncComponent(
+      () => import("@/views/account-settings/profile.vue")
+    )
   },
   {
     key: "preferences",
     label: "偏好设置",
     icon: PreferencesIcon,
-    component: Preferences
+    component: defineAsyncComponent(
+      () => import("@/views/account-settings/preferences.vue")
+    )
   },
   {
     key: "securityLog",
     label: "安全日志",
     icon: SecurityLogIcon,
-    component: SecurityLog
+    component: defineAsyncComponent(
+      () => import("@/views/account-settings/security-log.vue")
+    )
   },
   {
     key: "accountManagement",
     label: "账户管理",
     icon: AccountManagementIcon,
-    component: AccountManagement
+    component: defineAsyncComponent(
+      () => import("@/views/account-settings/account-management.vue")
+    )
   }
 ];

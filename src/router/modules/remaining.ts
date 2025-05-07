@@ -6,7 +6,7 @@ export default [
     name: "Login",
     component: () => import("@/views/login/index.vue"),
     meta: {
-      title: "menus.pureLogin",
+      title: "登录",
       showLink: false,
       rank: 101
     }
@@ -15,7 +15,7 @@ export default [
     path: "/redirect",
     component: Layout,
     meta: {
-      title: "status.pureLoad",
+      title: "加载中",
       showLink: false,
       rank: 102
     },
@@ -32,7 +32,7 @@ export default [
     name: "AccountSettings",
     component: () => import("@/views/account-settings/index.vue"),
     meta: {
-      title: "buttons.accountSettings",
+      title: "账号设置",
       showLink: false,
       rank: 103
     }
@@ -42,14 +42,14 @@ export default [
     name: "MessageDetail",
     component: () =>
       import("@/views/message-management/message-detail/index.vue"),
-    meta: { title: "message", showLink: false, rank: 104 },
+    meta: { title: "消息详情", showLink: false, rank: 104 },
     children: [
       {
         path: "/message-detail/:messageType",
         name: "MessageDetailByMessageType",
         component: () =>
           import("@/views/message-management/message-detail/detail-type.vue"),
-        meta: { title: "message", showLink: false }
+        meta: { title: "消息详情", showLink: false }
       },
       {
         path: "/message-detail/:messageType/:messageId",
@@ -58,7 +58,7 @@ export default [
           import(
             "@/views/message-management/message-detail/detail-message-id.vue"
           ),
-        meta: { title: "message", showLink: false }
+        meta: { title: "消息详情", showLink: false }
       }
     ]
   }

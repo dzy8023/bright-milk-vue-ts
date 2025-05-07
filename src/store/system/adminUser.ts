@@ -57,7 +57,6 @@ export const useAdminUserStore = defineStore("adminUserStore", {
       const data = { ...this.pagination, ...this.form };
       delete data.pageSizes;
       delete data.total;
-      delete data.background;
 
       // 获取用户信息列表
       const result = await fetchGetAdminUserList(data);
