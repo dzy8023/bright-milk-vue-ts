@@ -88,10 +88,17 @@ const props = defineProps({
 const revenueChart = ref(null);
 const initData = () => {
   let data = [];
-  props.dateRange.forEach((item, index) => {
-    const revenue = props.revenueData.find(revenue => revenue.date === item);
-    data[index] = revenue ? revenue.amount : 0;
-  });
+  if (props.dateRange.length <= 15) {
+    props.dateRange.forEach((item, index) => {
+      const revenue = props.revenueData.find(revenue => revenue.date === item);
+      data[index] = revenue ? revenue.amount : 0;
+    });
+  } else {
+    props.dateRange.forEach((item, index) => {
+      const revenue = props.revenueData.find(revenue => revenue.date === item);
+      data[index] = revenue ? revenue.amount : "-";
+    });
+  }
   return data;
 };
 const initRevenueChart = () => {
@@ -147,6 +154,7 @@ const initRevenueChart = () => {
         name: "营业额",
         data: data,
         type: "line",
+        connectNulls: true,
         itemStyle: {
           color: "#fd7f7f"
         },

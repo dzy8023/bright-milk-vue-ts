@@ -14,7 +14,6 @@ import { hasAuth } from "@/router/utils";
 import { useSkuInfoStore } from "@/store/bm/goods/sku";
 import { useSkuInfo } from "./utils/hook";
 import { ref } from "vue";
-import { GOOD_STATUS_0, GOOD_STATUS_1 } from "@/constant/status";
 import { useSpuInfoStore } from "@/store/bm/goods/spu";
 import { debounce } from "@pureadmin/utils";
 
@@ -111,10 +110,10 @@ const createFilter = (queryString: string) => {
             </template>
           </el-input>
         </el-form-item>
-        <el-form-item label="商品id" prop="spuId">
+        <el-form-item label="商品Id" prop="spuId">
           <el-autocomplete
             v-model="skuInfoStore.form.spuId"
-            placeholder="请输入商品id"
+            placeholder="请输入商品Id"
             clearable
             class="!w-[200px]"
             :fetch-suggestions="querySearch"
@@ -133,8 +132,8 @@ const createFilter = (queryString: string) => {
             clearable
             class="!w-[180px]"
           >
-            <el-option :label="GOOD_STATUS_1" value="1" />
-            <el-option :label="GOOD_STATUS_0" value="0" />
+            <el-option label="起售" value="1" />
+            <el-option label="禁售" value="0" />
           </el-select>
         </el-form-item>
         <el-form-item>

@@ -89,11 +89,20 @@ const storeMessage = (result: Data<any>) => {
   return true;
 };
 
-const returnMessage = (result: Data<any>, defaultData: any = []) => {
+const returnMessage = (
+  result: Data<any>,
+  defaultData: any = [],
+  messageType: boolean = false
+) => {
   if (result.code == 200) {
+    if (messageType) {
+      message(result.msg, { type: "success", duration: 3666 });
+    }
     return result.result;
   } else {
-    message(result.msg, { type: "error", duration: 3666 });
+    if (!messageType) {
+      message(result.msg, { type: "error", duration: 3666 });
+    }
     return defaultData;
   }
 };

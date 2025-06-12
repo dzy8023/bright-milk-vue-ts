@@ -196,6 +196,7 @@ export function useSkuInfo() {
       beforeSure: async done => {
         console.log(stock.value);
         const res = await skuInfoStore.addStock(ids, stock.value);
+        await onSearch();
         if (!res) {
           return;
         }

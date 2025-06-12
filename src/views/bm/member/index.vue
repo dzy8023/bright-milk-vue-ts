@@ -73,7 +73,7 @@ onMounted(() => {
 <template>
   <div :class="['flex', 'justify-between', deviceDetection() && 'flex-wrap']">
     <div :class="[deviceDetection() ? ['w-full', 'mt-2'] : 'w-[calc(100%)]']">
-      <Auth :value="auth.search">
+      <Auth :value="auth.page">
         <el-form
           ref="formRef"
           :inline="true"
@@ -163,14 +163,14 @@ onMounted(() => {
         @refresh="onSearch"
       >
         <template #buttons>
-          <el-button
+          <!-- <el-button
             v-if="hasAuth(auth.add)"
             :icon="useRenderIcon(AddFill)"
             type="primary"
             @click="openDialog(true)"
           >
             新增
-          </el-button>
+          </el-button> -->
 
           <!-- 批量删除按钮 -->
           <el-button
@@ -256,20 +256,8 @@ onMounted(() => {
               </el-tag>
             </template>
             <template #operation="{ row }">
-              <!-- 修改 -->
               <el-button
-                v-if="hasAuth(auth.update)"
-                :icon="useRenderIcon(EditPen)"
-                :size="size"
-                class="reset-margin"
-                link
-                type="primary"
-                @click="openDialog(false, row)"
-              >
-                修改
-              </el-button>
-              <el-button
-                v-if="hasAuth(auth.update)"
+                v-if="hasAuth(auth.charge)"
                 :icon="useRenderIcon(EditPen)"
                 :size="size"
                 class="reset-margin"
@@ -279,7 +267,24 @@ onMounted(() => {
               >
                 充值
               </el-button>
-
+              <!-- 删除 -->
+              <el-popconfirm
+                v-if="hasAuth(auth.deleted)"
+                :title="`删除 ${row.username}?`"
+                @confirm="onDelete(row)"
+              >
+                <template #reference>
+                  <el-button
+                    :icon="useRenderIcon(Delete)"
+                    :size="size"
+                    class="reset-margin"
+                    link
+                    type="danger"
+                  >
+                    删除
+                  </el-button>
+                </template>
+              </el-popconfirm>
               <!-- 更多操作 -->
               <el-dropdown>
                 <el-button
@@ -291,24 +296,18 @@ onMounted(() => {
                 />
                 <template #dropdown>
                   <el-dropdown-menu>
-                    <el-dropdown-item v-if="hasAuth(auth.deleted)">
-                      <!-- 删除 -->
-                      <el-popconfirm
-                        :title="`删除 ${row.username}?`"
-                        @confirm="onDelete(row)"
+                    <el-dropdown-item v-if="hasAuth(auth.changeStatus)">
+                      <!-- 修改 -->
+                      <el-button
+                        :icon="useRenderIcon(EditPen)"
+                        :size="size"
+                        class="reset-margin"
+                        link
+                        type="primary"
+                        @click="openDialog(false, row)"
                       >
-                        <template #reference>
-                          <el-button
-                            :icon="useRenderIcon(Delete)"
-                            :size="size"
-                            class="reset-margin"
-                            link
-                            type="primary"
-                          >
-                            删除
-                          </el-button>
-                        </template>
-                      </el-popconfirm>
+                        修改
+                      </el-button>
                     </el-dropdown-item>
 
                     <!-- 重置密码 -->

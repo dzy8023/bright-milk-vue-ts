@@ -8,8 +8,6 @@ const props = defineProps({
   catId: { type: Number as PropType<Number> },
   warning: { type: String as PropType<String> }
 });
-const { switchStyle } = usePublicHooks();
-
 const attrStore = useAttrStore();
 const categoryStore = useCategoryStore();
 // 关联的属性

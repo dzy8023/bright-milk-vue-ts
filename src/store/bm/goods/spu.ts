@@ -31,7 +31,8 @@ export const useSpuInfoStore = defineStore("SpuInfoStore", {
         // 商品名称
         name: "",
         // 商品状态
-        status: ""
+        status: "",
+        id: ""
       },
       // 分页查询结果
       pagination: {

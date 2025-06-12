@@ -1,10 +1,12 @@
 export const auth = {
   // 分页查询
-  search: ["order::getOrderList"],
-  // 添加操作
-  add: ["order::addOrder"],
-  // 更新操作
-  update: ["order::updateOrder"],
-  // 删除操作
-  deleted: ["order::deleteOrder"]
+  page: ["order::page"],
+  // 发货
+  consign: ["order::consign"],
+  // 取消订单
+  cancel: ["order::cancel"],
+  // 退款
+  refund: ["order::refund"],
+  //删除订单
+  delete: ["order::delete"]
 };

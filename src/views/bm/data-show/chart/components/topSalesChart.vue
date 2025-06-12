@@ -18,7 +18,7 @@
       <el-button type="primary" size="large" @click="dialogVisible = false"
         >关闭</el-button
       >
-      <el-button type="primary" size="large" @click="handleEdit"
+      <el-button type="primary" size="large" @click="handleEdit(data.id)"
         >编辑</el-button
       >
     </template>
@@ -48,17 +48,13 @@ const data = ref(null);
 const handleClose = () => {
   dialogVisible.value = false;
 };
-const handleEdit = () => {
+const handleEdit = id => {
   ElMessage.success("编辑成功");
   router.push({
-    path: "/admin/milk/add",
-    query: { id: milk.value.milkId }
+    path: "/goods/spu",
+    query: { id }
   });
 };
-function formatProductName(name, maxLength = 8, suffix = "...") {
-  if (!name) return "";
-  return name.length > maxLength ? name.slice(0, maxLength) + suffix : name;
-}
 
 const initTopSalesChart = () => {
   if (topSalesChart.value) {
@@ -117,7 +113,7 @@ const initTopSalesChart = () => {
         props.topSalesData[props.topSalesData.length - 1].sales
           ? props.topSalesData[props.topSalesData.length - 1].sales
           : 0,
-      text: ["High Score", "Low Score"],
+      text: ["高", "低"],
       // Map the score column to color
       dimension: "sales",
       inRange: {
@@ -137,8 +133,8 @@ const initTopSalesChart = () => {
       axisLabel: {
         interval: 0,
         formatter: function (id) {
-          const item = props.topSalesData.find(i => i.id === id);
-          return formatProductName(item?.name, 7);
+          const match = props.topSalesData.find(item => item.id === id);
+          return match ? match.name : id;
         }
       }
     },

@@ -8,18 +8,12 @@ import { addDialog, closeDialog } from "@/components/ReDialog";
 import { deviceDetection } from "@pureadmin/utils";
 import totpDialog from "../components/totp-dialog.vue";
 
-export const currentPage = ref("default");
 export function useLogin() {
   const loading = ref(false);
   // 0普通登录，1邮箱登录，其中0为普通登录
   const router = useRouter();
   const userStore = useUserStore();
   const formRef = ref();
-
-  /** 返回到默认登录页面 */
-  const onBack = () => {
-    currentPage.value = "default";
-  };
   /**双因素认证弹窗 */
   const onTotpDialog = (token?: string) => {
     addDialog({
@@ -88,14 +82,9 @@ export function useLogin() {
       }
     });
   };
-  const handleEmailLogin = () => {
-    currentPage.value = "email";
-  };
   return {
     loading,
-    onBack,
     onTotpDialog,
-    onLogin,
-    handleEmailLogin
+    onLogin
   };
 }

@@ -104,10 +104,10 @@ onMounted(async () => {
     :allow-drop="handleAllowDrop"
     @node-drop="handleDrop"
   >
-    <template v-slot="{ node, data }">
+    <template #default="{ node, data }">
       <span class="flex items-center justify-between" style="width: 100%">
         <span class="flex-1">{{ data.name }}</span>
-        <div class="flex">
+        <div class="flex" @click.stop>
           <el-switch
             v-model="data.status"
             :active-value="1"

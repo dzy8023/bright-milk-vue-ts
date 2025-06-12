@@ -1,10 +1,12 @@
 export const auth = {
   // 分页查询
-  search: ["spuInfo::getSpuInfoList"],
+  page: ["spuInfo::page"],
   // 添加操作
-  add: ["spuInfo::addSpuInfo"],
+  add: ["spuInfo::create"],
   // 更新操作
-  update: ["spuInfo::updateSpuInfo"],
+  update: ["spuInfo::update"],
   // 删除操作
-  deleted: ["spuInfo::deleteSpuInfo"]
+  deleted: ["spuInfo::delete"],
+  // 启用操作
+  changeStatus: ["spuInfo::changeStatus"]
 };

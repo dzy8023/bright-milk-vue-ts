@@ -22,7 +22,14 @@ export const emailRules = reactive(<FormRules>{
       trigger: "blur"
     }
   ],
-  emailCode: [{ required: true, trigger: "blur", type: "string" }]
+  emailCode: [
+    {
+      required: true,
+      trigger: "blur",
+      type: "string",
+      message: "请输入邮箱验证码"
+    }
+  ]
 });
 
 /** 登录校验 */

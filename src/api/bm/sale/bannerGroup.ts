@@ -26,7 +26,7 @@ export const fetchDeleteBannerGroup = (data: any) => {
 };
 /**  启用/禁用轮播图组*/
 export const fetchChangeBannerGroupStatus = (data: string) => {
-  return apiHttp.request<any>("put", "bannerGroup/updateStatus", {
+  return apiHttp.request<any>("put", "bannerGroup/changeStatus", {
     data
   });
 };

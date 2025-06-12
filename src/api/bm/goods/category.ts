@@ -26,7 +26,7 @@ export const fetchDeleteCategory = (data: any) => {
 
 /** 分类管理--- 启用/禁用分类*/
 export const fetchChangeCategoryStatus = (data: string) => {
-  return apiHttp.request<any>("put", "category/updateStatus", {
+  return apiHttp.request<any>("put", "category/changeStatus", {
     data
   });
 };

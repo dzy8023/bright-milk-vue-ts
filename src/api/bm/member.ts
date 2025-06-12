@@ -24,19 +24,6 @@ export const fetchChangeMemberStatus = (data: string) => {
     data
   });
 };
-
-/** 会员管理--- 新增会员*/
-export const fetchAddMember = (data: any) => {
-  return apiHttp.request<any>("post", "member/add", {
-    data
-  });
-};
-/** 会员管理--- 更新会员*/
-export const fetchUpdateMember = (data: any) => {
-  return apiHttp.request<any>("put", "member/update", {
-    data
-  });
-};
 /** 会员管理--- 重置密码*/
 export const fetchResetPassword = (data: any) => {
   return apiHttp.request<any>("put", `member/resetPassword`, { data });

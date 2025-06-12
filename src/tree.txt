@@ -1,0 +1,40 @@
+.
+|-- App.vue
+|-- api
+|-- assets
+|-- components
+|-- config
+|-- constant
+|-- directives
+|-- enums
+|-- layout
+|-- main.ts
+|-- plugins
+|-- router
+|-- store
+|   |-- bm
+|   |-- configuration
+|   |-- index.ts
+|   |-- message
+|   |-- modules
+|   |-- monitor
+|   |-- scheduler
+|   |-- system
+|-- style
+|-- types
+|-- utils
+|   |-- http
+`-- views
+    |-- account-settings
+    |-- bm
+    |-- components
+    |-- configuration
+    |-- error
+    |-- hooks.ts
+    |-- login
+    |-- message-management
+    |-- monitor
+    |-- scheduler
+    |-- system
+
+147 directories, 233 files

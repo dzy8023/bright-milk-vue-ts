@@ -139,7 +139,7 @@ function onFullscreen() {
 <template>
   <div class="w-[100%]">
     <PureTableBar
-      title="sku列表"
+      title="库存列表"
       :columns="columns"
       :isExpandAll="false"
       @fullscreen="onFullscreen"

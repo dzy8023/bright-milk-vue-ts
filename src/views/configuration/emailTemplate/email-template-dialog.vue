@@ -54,7 +54,7 @@ defineExpose({ formRef });
         <el-option
           v-for="(item, index) in emailTemplateStore.emailUserList"
           :key="index"
-          label="item.key"
+          :label="item.key"
           :navigationBar="false"
           :value="item.value"
         />
@@ -100,7 +100,7 @@ defineExpose({ formRef });
         <el-option
           v-for="(item, index) in emailTemplateStore.allEmailTypes"
           :key="index"
-          label="item.key"
+          :label="item.key"
           :navigationBar="false"
           :value="item.value"
         />

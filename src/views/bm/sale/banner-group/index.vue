@@ -102,7 +102,7 @@ function onFullscreen() {
     </el-form>
 
     <PureTableBar
-      title="轮播图管理"
+      title="轮播图管理（仅演示，操作后不生效）"
       :columns="columns"
       :tableRef="tableRef?.getTableRef()"
       @refresh="onSearch"

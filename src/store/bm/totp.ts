@@ -33,7 +33,7 @@ export const useTotpStore = defineStore("TotpStore", {
     },
     async testVerify(code: string) {
       const result = await fetchTestTotpVerify(code, this.secret);
-      return returnMessage(result);
+      return result;
     },
     async getUserTotpInfo() {
       const res = await fetchUserTotpInfo();

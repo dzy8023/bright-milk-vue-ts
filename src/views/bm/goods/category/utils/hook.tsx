@@ -176,7 +176,7 @@ export function useCategory(treeRef: Ref) {
             return;
           }
           done();
-          let _eppandKeys = isAdd ? (node ? [node.data.id] : []) : [data.id];
+          const _eppandKeys = isAdd ? (node ? [node.data.id] : []) : [data.id];
           if (form.parentId > 0) {
             _eppandKeys.push(form.parentId);
           }
@@ -201,10 +201,11 @@ export function useCategory(treeRef: Ref) {
       ),
       beforeSure: async (done: any) => {
         const attrList = [];
+        console.log(relateRef.value.relateAttr, attrStore.attrList);
         attrStore.attrList.forEach(item => {
-          if (relateRef.value.relateAttr.includes(item.id)) {
+          if (relateRef.value.relateAttr.includes(item.attrId)) {
             attrList.push({
-              attrId: item.id,
+              attrId: item.attrId,
               choose: item.choose
             });
           }
@@ -327,7 +328,7 @@ export function useCategory(treeRef: Ref) {
     }
   };
   const handleExpandAll = () => {
-    let _expandKeys = [];
+    const _expandKeys = [];
     //递归遍历树
     function traverse(node: any) {
       if (node.children && node.children.length > 0) {

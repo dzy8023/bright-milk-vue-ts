@@ -81,7 +81,7 @@ const list = ref([
     title: "双因素认证",
     illustrate:
       "开启双因素认证后，会出现二维码，使用freeotp扫码后保存密钥，下次登录需要输入验证码，因此需谨慎保管好密钥，避免泄露",
-    button: "开启",
+    button: "修改",
     callback: openTotpDialog
   }
   // {

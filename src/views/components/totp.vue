@@ -60,6 +60,7 @@ import { onMounted, onUnmounted, ref } from "vue";
 import QrcodeVue from "qrcode.vue";
 import OtpInput from "@/views/components/code.vue";
 import { useTotpStore } from "@/store/bm/totp";
+import { message } from "@/utils/message";
 
 const totpStore = useTotpStore();
 const resultMessage = ref("");
@@ -93,7 +94,7 @@ const enable2fa = async () => {
 const verifyCode = async (code: string) => {
   const res = await totpStore.testVerify(code);
   if (res.code === 200) {
-    console.log(res);
+    message(res.msg, { type: "success", duration: 3666 });
     resultMessage.value = "验证通过";
     resultSuccess.value = true;
   } else {
@@ -102,6 +103,7 @@ const verifyCode = async (code: string) => {
   }
 };
 const startTimer = () => {
+  progressWidth.value = 0;
   intervalId = setInterval(() => {
     if (progressWidth.value < 100) {
       progressWidth.value += 10 / 3;

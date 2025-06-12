@@ -17,7 +17,15 @@ const props = defineProps({
   }
 });
 const orderChart = ref(null);
-const color = ["#5c7bd9", "#9fe080", "#ffdc60"];
+const color = [
+  "#5c7bd9",
+  "#65b581",
+  "#b7d488",
+  "#247e0d",
+  "#8c8c8c",
+  "#f201f5",
+  "#f58482"
+];
 const initData = () => {
   return props.orderOverviewData.map((item, index) => {
     return {

@@ -4,21 +4,21 @@ import { useNav } from "@/layout/hooks/useNav";
 import { useLayout } from "@/layout/hooks/useLayout";
 import bg from "@/assets/login/bg.png";
 import illustration from "@/assets/login/illustration.svg?component";
-import { toRaw } from "vue";
+import { ref, toRaw } from "vue";
 import { useDataThemeChange } from "@/layout/hooks/useDataThemeChange";
 import dayIcon from "@/assets/svg/day.svg?component";
 import darkIcon from "@/assets/svg/dark.svg?component";
-import globalization from "@/assets/svg/globalization.svg?component";
-import Check from "@iconify-icons/ep/check";
 import LoginForm from "@/views/login/login-form.vue";
 import LoginEmail from "@/views/login/login-email.vue";
-import { currentPage } from "./utils/hooks";
-
+const currentPage = ref("default");
 const { initStorage } = useLayout();
 initStorage();
 
 const { dataTheme, overallStyle, dataThemeChange } = useDataThemeChange();
 dataThemeChange(overallStyle.value);
+const onChange = (type: string) => {
+  currentPage.value = type;
+};
 const { title } = useNav();
 </script>
 
@@ -43,12 +43,12 @@ const { title } = useNav();
         <div class="login-form">
           <img alt="logo" src="/logo.png" />
           <Motion>
-            <h2 class="outline-none">{{ title }}</h2>
+            <h2 class="outline-none">{{ title }}{{ currentPage }}</h2>
           </Motion>
 
           <!-- 登录表单 -->
-          <login-form v-if="currentPage === 'default'" />
-          <login-email v-if="currentPage === 'email'" />
+          <login-form v-if="currentPage === 'default'" @change="onChange" />
+          <login-email v-if="currentPage === 'email'" @change="onChange" />
         </div>
       </div>
     </div>

@@ -1,10 +1,12 @@
 export const auth = {
   // 分页查询
-  search: ["attr::getAttrList"],
+  page: ["attr::page"],
   // 添加操作
-  add: ["attr::addAttr"],
+  add: ["attr::add"],
   // 更新操作
-  update: ["attr::updateAttr"],
+  update: ["attr::update"],
   // 删除操作
-  deleted: ["attr::deleteAttr"]
+  delete: ["attr::delete"],
+  //根据attrId查询属性值列表
+  getCatIds: ["attr::catIds"]
 };

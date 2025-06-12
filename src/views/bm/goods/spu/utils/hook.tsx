@@ -2,7 +2,6 @@ import { message } from "@/utils/message";
 import { getKeyList, deviceDetection, cloneDeep } from "@pureadmin/utils";
 import { ElMessageBox } from "element-plus";
 import { type Ref, ref, onMounted, h } from "vue";
-import { GOOD_STATUS_0, GOOD_STATUS_1 } from "@/constant/status";
 import { useCategoryStore } from "@/store/bm/goods/category";
 import { useSpuInfoStore } from "@/store/bm/goods/spu";
 import { addDialog } from "@/components/ReDialog/index";
@@ -14,6 +13,7 @@ import type { SkuFormItemProps } from "@/views/bm/goods/sku/utils/types";
 import type { SpuAttr } from "@/types/attr";
 import { useSkuInfoStore } from "@/store/bm/goods/sku";
 import { useCommonStore } from "@/store/bm/goods/common";
+import router from "@/router";
 
 export function useGoods(tableRef: Ref, treeRef: Ref) {
   const spuInfoStore = useSpuInfoStore();
@@ -28,7 +28,7 @@ export function useGoods(tableRef: Ref, treeRef: Ref) {
   function onChange(row, index) {
     ElMessageBox.confirm(
       `确认要<strong>${
-        row.status === 0 ? GOOD_STATUS_0 : GOOD_STATUS_1
+        row.status === 0 ? "禁售" : "起售"
       }</strong><strong style='color:var(--el-color-primary)'>${
         row.name
       }</strong>商品吗?`,
@@ -144,7 +144,7 @@ export function useGoods(tableRef: Ref, treeRef: Ref) {
             }
           });
           //处理商品详情图
-          if (form.detailImg[0]?.raw) {
+          if (form.detailImg[0].raw) {
             newImage.deleted.push({
               id: null,
               spuId: null,
@@ -155,7 +155,6 @@ export function useGoods(tableRef: Ref, treeRef: Ref) {
           } else {
             newSpuInfo.detailImg = null;
           }
-          console.log(newImage);
           //处理规格
           for (let i = 0; i < form.attrs.length; i++) {
             if (!form.attrs[i].value || !form.attrs[i].value.length) {
@@ -194,7 +193,7 @@ export function useGoods(tableRef: Ref, treeRef: Ref) {
               }
             }
           }
-          // 更新图片
+          //更新图片
           if (newImage.new.length || newImage.deleted.length) {
             const res = await spuInfoStore.updateSpuInfoImage({
               ...newImage,
@@ -304,14 +303,11 @@ export function useGoods(tableRef: Ref, treeRef: Ref) {
   }
 
   /** 批量删除 */
-  function onbatchDel() {
+  async function onbatchDel() {
     // 返回当前选中的行
     const curSelected = tableRef.value.getTableRef().getSelectionRows();
-    // 接下来根据实际业务，通过选中行的某项数据，比如下面的id，调用接口进行批量删除
-    message(`已删除商品编号为 ${getKeyList(curSelected, "id")} 的数据`, {
-      type: "success"
-    });
     tableRef.value.getTableRef().clearSelection();
+    await spuInfoStore.deleteSpuInfo(getKeyList(curSelected, "id"));
     onSearch();
   }
 
@@ -343,7 +339,13 @@ export function useGoods(tableRef: Ref, treeRef: Ref) {
   }
 
   onMounted(async () => {
+    //获取路由参数
+    const { id } = router.currentRoute.value.query as { id: string };
+    if (id) {
+      spuInfoStore.form.id = id;
+    }
     await Promise.all([onSearch(), onSearchTree()]);
+    spuInfoStore.form.id = "";
   });
   async function onViewSpuInfo(row) {
     const spuInfoRef = ref();

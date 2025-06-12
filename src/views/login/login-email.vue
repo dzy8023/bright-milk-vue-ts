@@ -9,18 +9,18 @@ import { useUserStore } from "@/store/system/user";
 import { message } from "@/utils/message";
 import Motion from "./utils/motion";
 import { FormInstance } from "element-plus";
-import { currentPage, useLogin } from "./utils/hooks";
+import { useLogin } from "./utils/hooks";
 
 const userStore = useUserStore();
 const ruleFormRef = ref<FormInstance>();
 const sendSecond = ref(60);
 const timer = ref(null);
-const { loading, onLogin, onBack } = useLogin();
+const { loading, onLogin } = useLogin();
 const ruleForm = reactive({
   username: "2890716703@qq.com",
   password: "admin123",
   emailCode: "",
-  type: currentPage.value
+  type: "email"
 });
 
 /**
@@ -67,6 +67,7 @@ function onkeypress({ code }: KeyboardEvent) {
 onMounted(() => {
   window.document.addEventListener("keypress", onkeypress);
 });
+const emits = defineEmits(["change"]);
 
 onBeforeUnmount(() => {
   window.document.removeEventListener("keypress", onkeypress);
@@ -125,9 +126,7 @@ onBeforeUnmount(() => {
         </el-input>
         <el-checkbox v-model="userStore.isRemembered">
           <el-text size="small" type="primary"
-            >{{
-              userStore.readMeDay
-            }}天免登录(邮箱验证码随便输入,后端校验验证码已注释)
+            >{{ userStore.readMeDay }}天免登录
           </el-text>
         </el-checkbox>
       </el-form-item>
@@ -147,7 +146,12 @@ onBeforeUnmount(() => {
 
     <Motion :delay="200">
       <el-form-item>
-        <el-button class="w-full mt-4" size="default" @click="onBack">
+        <el-button
+          :style="{ marginTop: '10px' }"
+          class="w-full"
+          size="default"
+          @click="() => emits('change', 'default')"
+        >
           返回
         </el-button>
       </el-form-item>
